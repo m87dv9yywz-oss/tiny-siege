@@ -1,6 +1,8 @@
 {
   "score": 5,
-  "summary": "Prototype static review: strict parent UID ownership, shared exact validation on create/update, bounded schema 1/2 XP and paths, four enumerated maps, server timestamps and default deny. Added schema downgrade protection and legacy/new maximum-bound and malformed Grove tests. Current emulator validation is required in CI; client economy remains casual, not anticheat.",
+  "summary": "Prototype rules reviewed and verified by CI: authenticated parent UID ownership, shared complete create/update validation, exact sized maps with every required field typed (including same-size replacement attacks), bounded optional stars/primitive XP/path tiers/history/counters, fresh server timestamps and default denial elsewhere. Full legacy/new schemas at maximum bounds, migration, downgrade rejection and concurrent transaction accounting passed. Client-owned game economy remains casual, not anticheat.",
   "findings": [],
-  "validationStatus": "Current PR CI pending"
+  "validationStatus": "Passed on 09cacd0; final documentation/UI PR checks also required",
+  "validationRun": "https://github.com/m87dv9yywz-oss/tiny-siege/actions/runs/38484071294",
+  "rulesGitBlob": "c6be375ae8402abcd26a3e023369de231fca7409"
 }

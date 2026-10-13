@@ -363,7 +363,11 @@ export class UI {
         `<div class="eyebrow">NEXT WAVE · NEW VISITORS</div><h1 id="modal-title">Meet the newcomers</h1><div class="enemy-introductions">${types
           .map((type) => {
             const d = ENEMY_GUIDE[type];
-            return `<article><span>${d.icon}</span><div><h2>${d.name}</h2><b>${d.ability}</b><p>${d.tip}</p></div></article>`;
+            const key = this.scene?.textures.exists(`enemy-${type}-intact`)
+              ? `enemy-${type}-intact`
+              : `enemy-${type}`;
+            const art = this.scene?.textures.getBase64(key);
+            return `<article>${art ? `<img class="enemy-portrait" src="${art}" alt="${d.name}">` : `<span>${d.icon}</span>`}<div><h2>${d.name}</h2><b>${d.ability}</b><p>${d.tip}</p></div></article>`;
           })
           .join(
             "",
