@@ -269,15 +269,16 @@ export class KingdomUI {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  collection(type = this.collectionType || "archer") {
+  collection(type = this.collectionType || "archer", state = null) {
     this.collectionType = type;
     if (!this.store.current) {
       this.ui.menu();
       return;
     }
     const p = this.store.current;
-    this.wasPlaying = !this.ui.inMenu;
-    this.wasPaused = this.model.paused;
+    state ||= { playing: !this.ui.inMenu, paused: this.model.paused };
+    this.wasPlaying = state.playing;
+    this.wasPaused = state.paused;
     this.model.paused = true;
     this.ui.modal(
       `<div class="eyebrow">${escape(p.nickname)}’S KINGDOM</div><h1 id="modal-title">♛ ${p.crowns} Crowns</h1><p>Permanent unlocks. Battle upgrades still cost gold.</p><div class="collection-tabs" role="group" aria-label="Tower collection">${TYPES.map((t) => `<button data-collection="${t}" aria-pressed="${t === type}" style="--tower-color:${TOWERS[t].hex}"><img src="${this.portrait({ type: t, paths: [0, 0, 0] })}" alt=""><span>${TOWERS[t].name}</span></button>`).join("")}</div><div class="collection-grid">${[
@@ -300,14 +301,10 @@ export class KingdomUI {
         )}</div><button id="back" class="primary">${this.wasPlaying ? "Return to battle" : "Back to maps"}</button><p id="save-message" role="status"></p>`,
     );
     $("modal").querySelector(".modal-card").classList.add("collection-card");
-    const playing = this.wasPlaying,
-      paused = this.wasPaused;
     document.querySelectorAll("[data-collection]").forEach(
       (b) =>
         (b.onclick = () => {
-          this.collection(b.dataset.collection);
-          this.wasPlaying = playing;
-          this.wasPaused = paused;
+          this.collection(b.dataset.collection, state);
         }),
     );
     document.querySelectorAll("[data-collection-tree]").forEach(
@@ -331,34 +328,30 @@ export class KingdomUI {
                 (b) => (b.onclick = () => draw(Number(b.dataset.guidePath))),
               );
             $("close-guide").onclick = () => {
-              this.collection(type);
-              this.wasPlaying = playing;
-              this.wasPaused = paused;
+              this.collection(type, state);
             };
+            this.ui.overlayClose = $("close-guide").onclick;
           };
           draw(0);
         }),
     );
     const resume = () => {
-      this.model.paused = this.wasPaused;
-      if (this.wasPlaying) {
+      this.model.paused = state.paused;
+      if (state.playing) {
         $("modal").hidden = true;
         $("app").inert = false;
         this.ui.refresh(true);
       } else this.menu();
     };
     $("back").onclick = resume;
+    this.ui.overlayClose = resume;
     const purchase = (op) =>
       this.safe(() => {
         this.store.commit({ id: crypto.randomUUID(), ...op });
         this.model.profile =
           this.model.campaign.id === "classic" ? null : this.store.current;
         this.cloud?.sync();
-        const wasPlaying = this.wasPlaying,
-          wasPaused = this.wasPaused;
-        this.collection();
-        this.wasPlaying = wasPlaying;
-        this.wasPaused = wasPaused;
+        this.collection(type, state);
       });
     document
       .querySelectorAll("[data-unlock-tower]")

@@ -204,3 +204,34 @@ for (const [width, height] of [
         );
       }
   });
+test("Kingdom tabs and future trees preserve the original battle pause state", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await ready(page);
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Reading Knight");
+  await page.locator("#profile-form button").click();
+  await page.locator('[data-map="emerald"]').click();
+  await page.locator("#start-wave").click();
+  for (const paused of [false, true]) {
+    if (paused) await page.locator("#pause").click();
+    await page.locator("#kingdom-button").click();
+    await page.locator('[data-collection="grove"]').click();
+    await page.locator('[data-collection-tree="grove"]').click();
+    if (paused) {
+      await page.locator("#close-guide").click();
+      await page.locator("#back").click();
+    } else {
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Escape");
+    }
+    await expect(page.locator("#modal")).toBeHidden();
+    expect(await page.evaluate(() => window.__tinySiege.model.paused)).toBe(
+      paused,
+    );
+    await expect(page.locator("#pause")).toContainText(
+      paused ? "Resume" : "Pause",
+    );
+  }
+});

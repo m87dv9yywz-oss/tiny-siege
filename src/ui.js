@@ -88,7 +88,11 @@ export class UI {
         : "♫ <span>Sound off</span>";
     };
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && this.helpOpen) {
+      if (
+        e.key === "Escape" &&
+        !$("modal").hidden &&
+        (this.helpOpen || this.overlayClose)
+      ) {
         e.preventDefault();
         e.stopPropagation();
         if (this.overlayClose) this.overlayClose();
