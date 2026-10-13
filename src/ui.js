@@ -8,6 +8,7 @@ export class UI {
     this.helpOpen = false;
     this.placing = null;
     this.selected = null;
+    this.upgradeOpen = false;
     this.sound = false;
     this.reducedEffects = false;
     this.drag = null;
@@ -25,6 +26,19 @@ export class UI {
         }),
     );
     this.bindDrag();
+    $("show-upgrades").onclick = () => this.openUpgrades();
+    $("clear-range").onclick = () => this.cancel();
+    document.addEventListener("pointerdown", (e) => {
+      if (
+        this.upgradeOpen &&
+        !this.inMenu &&
+        !this.helpOpen &&
+        !e.target.closest(
+          "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal",
+        )
+      )
+        this.closeUpgrades();
+    });
     $("effects").onclick = () => {
       this.reducedEffects = !this.reducedEffects;
       $("effects").textContent = this.reducedEffects
@@ -133,6 +147,7 @@ export class UI {
             if (tower) {
               this.placing = null;
               this.selected = tower.id;
+              this.upgradeOpen = true;
             }
           } else this.placing = null;
           setTimeout(() => {
@@ -193,7 +208,10 @@ export class UI {
       this.placing = null;
       this.result(event.result);
     }
-    if (event.type === "sell") this.selected = null;
+    if (event.type === "sell") {
+      this.selected = null;
+      this.upgradeOpen = false;
+    }
     this.refresh();
   }
   toast(message) {
@@ -210,12 +228,30 @@ export class UI {
       return;
     this.placing = this.placing === type ? null : type;
     this.selected = null;
+    this.upgradeOpen = false;
+    this.refresh(true);
+  }
+  selectTower(tower) {
+    const same = this.selected === tower.id;
+    this.placing = null;
+    this.upgradeOpen = this.upgradeOpen || same;
+    this.selected = tower.id;
+    this.refresh(true);
+  }
+  openUpgrades() {
+    if (!this.model.towers.some((t) => t.id === this.selected)) return;
+    this.upgradeOpen = true;
+    this.refresh(true);
+  }
+  closeUpgrades() {
+    this.upgradeOpen = false;
     this.refresh(true);
   }
   cancel() {
     this.drag = null;
     this.placing = null;
     this.selected = null;
+    this.upgradeOpen = false;
     this.refresh(true);
   }
   beginWave() {
@@ -240,6 +276,7 @@ export class UI {
     this.helpOpen = false;
     this.placing = null;
     this.selected = null;
+    this.upgradeOpen = false;
     this.model.reset();
     $("modal").hidden = true;
     $("app").inert = false;
@@ -266,7 +303,7 @@ export class UI {
   help() {
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to upgrade or sell for 70%. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Mix splash damage, fire, and lightning with Frost to slow the march. Cannons break armor, fire melts it, and piercing arrows punch through. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Protect your 20 lives through wave 20 and defeat the Thorn King.</li><li>Keys <b>1–5</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
+      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Mix splash damage, fire, and lightning with Frost to slow the march. Cannons break armor, fire melts it, and piercing arrows punch through. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Protect your 20 lives through wave 20 and defeat the Thorn King.</li><li>Keys <b>1–5</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
     );
     $("close-help").onclick = () => this.closeHelp();
   }
@@ -302,6 +339,7 @@ export class UI {
         m.speed,
         m.ended,
         this.selected,
+        this.upgradeOpen,
         this.placing,
         this.inMenu,
       ].join("|");
@@ -351,12 +389,38 @@ export class UI {
     });
     const t = m.towers.find((t) => t.id === this.selected),
       panel = $("selection-panel");
+    $("tower-inspector").hidden =
+      !t || this.upgradeOpen || !!this.placing || this.inMenu || !!m.ended;
+    if (t) $("range-tower-name").textContent = towerName(t);
     const panelKey = t
-      ? [t.id, ...t.paths, t.targeting, m.gold, m.paused, m.ended].join("|")
+      ? [
+          t.id,
+          ...t.paths,
+          t.targeting,
+          m.paused,
+          m.ended,
+          this.upgradeOpen,
+        ].join("|")
       : [this.placing, m.paused, m.ended].join("|");
-    if (!force && this.lastPanel === panelKey) return;
+    const updateAffordability = () => {
+      if (t && this.upgradeOpen)
+        panel.querySelectorAll("[data-upgrade]").forEach((b) => {
+          const u = upgradeState(t, Number(b.dataset.upgrade));
+          b.disabled = !!u.locked || m.gold < u.cost || !!m.ended || m.paused;
+        });
+    };
+    if (!force && this.lastPanel === panelKey) {
+      updateAffordability();
+      return;
+    }
+    const sameTower = panel.dataset.towerId === String(t?.id);
+    const scroll = sameTower ? panel.scrollTop : 0;
+    const detailsOpen = sameTower && !!panel.querySelector(".properties")?.open;
     this.lastPanel = panelKey;
-    panel.classList.toggle("open", !!t || !!this.placing);
+    panel.dataset.towerId = t?.id || "";
+    const visible = (!!t && this.upgradeOpen) || !!this.placing;
+    panel.classList.toggle("open", visible);
+    panel.hidden = !visible;
     if (t) {
       const def = TOWERS[t.type],
         stats = towerStats(t);
@@ -375,7 +439,7 @@ export class UI {
           .join(
             "",
           )}</div><button id="sell" class="sell-button" ${m.ended || m.paused ? "disabled" : ""}>Sell tower · ${Math.floor(t.invested * 0.7)} gold</button>`;
-      $("close-panel").onclick = () => this.cancel();
+      $("close-panel").onclick = () => this.closeUpgrades();
       $("targeting").onchange = (e) => {
         m.setTargeting(t.id, e.target.value);
         this.refresh(true);
@@ -391,6 +455,8 @@ export class UI {
         m.sell(t.id);
         this.refresh(true);
       };
+      panel.querySelector(".properties").open = detailsOpen;
+      panel.scrollTop = scroll;
     } else if (this.placing) {
       const def = TOWERS[this.placing];
       panel.innerHTML = `<div class="empty-selection"><span style="color:${def.hex}">${def.icon}</span><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;

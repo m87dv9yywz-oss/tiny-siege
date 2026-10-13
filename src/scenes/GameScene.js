@@ -36,23 +36,32 @@ export class GameScene extends Phaser.Scene {
         this.ui.drag?.moving ||
         this.ui.inMenu ||
         this.ui.helpOpen ||
-        this.model.paused ||
         this.model.ended
       )
         return;
+      // Read the current canvas rectangle instead of cached input bounds: iOS
+      // browser chrome and standalone safe areas can move it without a resize.
+      const touch = Array.from(p.event?.changedTouches || []).find(
+        (t) => t.identifier === p.identifier,
+      );
+      const event = touch || p.event;
+      const point = Number.isFinite(event?.clientX)
+        ? this.ui.worldPoint(event.clientX, event.clientY)
+        : p;
+      if (!point || point.inside === false) return;
       if (this.ui.placing) {
-        const tower = this.model.place(this.ui.placing, p.x, p.y);
+        const tower = this.model.place(this.ui.placing, point.x, point.y);
         if (tower) {
           this.ui.placing = null;
           this.ui.selected = tower.id;
+          this.ui.upgradeOpen = true;
           this.ui.refresh(true);
         }
       } else {
-        const tower = this.model.towers.find(
-          (t) => Math.hypot(t.x - p.x, t.y - p.y) < 30,
-        );
-        this.ui.selected = tower?.id || null;
-        this.ui.refresh(true);
+        const tower = this.towerAt(point);
+        if (tower) this.ui.selectTower(tower);
+        else if (this.ui.upgradeOpen) this.ui.closeUpgrades();
+        else this.ui.cancel();
       }
     });
     this.input.keyboard.on("keydown", (e) => {
@@ -73,6 +82,52 @@ export class GameScene extends Phaser.Scene {
     this.ui.scene = this;
     this.ui.hydrateShop();
     this.ui.refresh(true);
+  }
+  towerAt(point) {
+    // Hit the illustrated building, including roofs and tall evolved weapons,
+    // rather than a tiny circle around its ground anchor. Opaque foreground
+    // artwork wins in clusters; padding makes empty-edge taps forgiving.
+    const candidates = this.model.towers
+      .map((t) => {
+        const sprite = this.towerSprites.get(t.id),
+          frame = this.textures.getFrame(towerTexture(t));
+        const x = sprite?.x ?? t.x,
+          y = sprite?.y ?? t.y - 13;
+        const width = sprite?.displayWidth || frame.width,
+          height = sprite?.displayHeight || frame.height;
+        const localX = ((point.x - x) / width) * frame.width + frame.width / 2;
+        const localY =
+          ((point.y - y) / height) * frame.height + frame.height / 2;
+        const inside =
+          Math.abs(point.x - x) <= width / 2 + 8 &&
+          Math.abs(point.y - y) <= height / 2 + 8;
+        const opaque =
+          inside &&
+          localX >= 0 &&
+          localY >= 0 &&
+          localX < frame.width &&
+          localY < frame.height &&
+          this.textures.getPixelAlpha(
+            Math.floor(localX),
+            Math.floor(localY),
+            towerTexture(t),
+          ) > 20;
+        return {
+          t,
+          inside,
+          opaque,
+          score: Math.hypot(point.x - x, point.y - y),
+        };
+      })
+      .filter((c) => c.inside);
+    const opaque = candidates
+      .filter((c) => c.opaque)
+      .sort((a, b) => b.t.y - a.t.y || b.t.id - a.t.id);
+    return (
+      opaque[0]?.t ||
+      candidates.sort((a, b) => a.score - b.score || a.t.id - b.t.id)[0]?.t ||
+      null
+    );
   }
   effect(event) {
     if (!this.dynamic) return;

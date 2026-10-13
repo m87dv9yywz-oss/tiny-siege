@@ -1579,3 +1579,53 @@ select {
     padding-top: 10px;
   }
 }
+#tower-inspector {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 95%;
+  background: #183137ed;
+  border: 1px solid #a4bd8d;
+  border-radius: 10px;
+  padding: 4px 5px 4px 12px;
+  box-shadow: 0 3px 12px #0004;
+}
+#range-tower-name {
+  font-size: 12px;
+  white-space: nowrap;
+  color: #f1e4bc;
+}
+#tower-inspector button {
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 7px;
+  background: #b8deb1;
+  color: #193b2a;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+#tower-inspector #clear-range {
+  min-width: 36px;
+  background: #344e51;
+  color: #e5eadb;
+  font-size: 22px;
+}
+@media (max-width: 850px) {
+  #range-tower-name {
+    font-size: 10px;
+  }
+  #tower-inspector {
+    gap: 4px;
+    padding-left: 8px;
+  }
+  #tower-inspector button {
+    min-height: 36px;
+    font-size: 10px;
+  }
+}
