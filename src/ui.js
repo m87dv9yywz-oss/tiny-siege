@@ -522,7 +522,7 @@ export class UI {
     $("restart").disabled = this.inMenu;
     $("pause").innerHTML = m.paused
       ? "▶ <span>Resume</span>"
-      : "Ⅱ <span>Pause</span>";
+      : "II <span>Pause</span>";
     $("speed").innerHTML = `${m.speed}× <span>Speed</span>`;
     $("pause-shade").hidden = !m.paused;
     $("start-wave").disabled = m.active || m.paused || !!m.ended || this.inMenu;
@@ -625,7 +625,7 @@ export class UI {
       panel.innerHTML = `<div class="panel-title"><b>${towerName(t)}</b><button id="close-panel" aria-label="Close tower panel">×</button></div>
         <div class="tower-summary"><img class="tower-portrait" alt="${towerName(t)}" src="${this.portrait(t)}"><div class="stats"><div><small>DAMAGE</small><b>${stats.damage}</b></div><div><small>RANGE</small><b>${stats.range}</b></div><div><small>SHOTS/S</small><b>${(1 / stats.cooldown).toFixed(1)}</b></div></div></div>
         <label class="target-label">Target <select id="targeting" aria-label="Target priority">${["FIRST", "LAST", "STRONG", "WEAK", ...(stats.supportTarget ? ["SUPPORT"] : [])].map((v) => `<option ${t.targeting === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>
-        <button id="full-tree" class="tree-link">Full upgrade tree ↗</button>
+        <button id="full-tree" class="tree-link">Full upgrade tree</button>
         <details class="properties"><summary>Armor & special attacks</summary><p>Damage ${stats.damage} · Range ${stats.range} · ${(1 / stats.cooldown).toFixed(1)} attacks/s · ${stats.damageType === "physical" ? "Physical" : "Magic"} · Armor damage ${stats.armorDamage || 0} · Bypass ${Math.round((stats.penetration || stats.bypass || 0) * 100)}%${stats.burn ? ` · Burn ${stats.burn}/s` : ""}${stats.slow ? ` · Slow ${Math.round((1 - stats.slow) * 100)}%` : ""}${stats.pierce ? ` · Pierce ${stats.pierce}` : ""}${stats.chains ? ` · Chain ${stats.chains}` : ""}</p></details>
         <div class="upgrade-paths">${def.paths
           .map((path, p) => {
@@ -633,7 +633,7 @@ export class UI {
             const description =
               u.tier?.description ||
               path.tiers[Math.max(0, t.paths[p] - 1)].description;
-            return `<div class="path path-${p}"><div class="path-heading"><button class="path-info" data-tree="${p}" aria-label="View ${path.name} full tree"><img class="path-icon" src="${this.portrait({ ...t, paths: [0, 0, 0].map((n, i) => (i === p ? 3 : 0)) })}" alt=""><span>${path.name} ⓘ</span></button><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small class="path-description">${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || !m.pathAvailable(t.type, p, t.paths[p] + 1) || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || (!m.pathAvailable(t.type, p, t.paths[p] + 1) ? `Unlock Tier ${t.paths[p] + 1} in Kingdom · XP` : `${u.tier.name} · ${u.cost} ◈`)}</button></div>`;
+            return `<div class="path path-${p}"><div class="path-heading"><button class="path-info" data-tree="${p}" aria-label="View ${path.name} full tree"><img class="path-icon" src="${this.portrait({ ...t, paths: [0, 0, 0].map((n, i) => (i === p ? 3 : 0)) })}" alt=""><span>${path.name} (i)</span></button><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small class="path-description">${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || !m.pathAvailable(t.type, p, t.paths[p] + 1) || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || (!m.pathAvailable(t.type, p, t.paths[p] + 1) ? `Unlock Tier ${t.paths[p] + 1} in Kingdom · XP` : `${u.tier.name} · ${u.cost} ◈`)}</button></div>`;
           })
           .join(
             "",
