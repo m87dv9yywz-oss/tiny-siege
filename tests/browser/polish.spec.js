@@ -41,6 +41,20 @@ for (const [width, height] of sizes)
         sheet = await page.locator("#selection-panel").boundingBox();
       expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.8);
     }
+    const fit = await page.evaluate(() => {
+      const board = document.querySelector("canvas").getBoundingClientRect(),
+        frame = document.querySelector(".map-frame"),
+        r = frame.getBoundingClientRect(),
+        css = getComputedStyle(frame);
+      return {
+        bottom: board.bottom,
+        edge: r.bottom - parseFloat(css.borderBottomWidth),
+        right: board.right,
+        rightEdge: r.right - parseFloat(css.borderRightWidth),
+      };
+    });
+    expect(fit.bottom).toBeLessThanOrEqual(fit.edge + 0.5);
+    expect(fit.right).toBeLessThanOrEqual(fit.rightEdge + 0.5);
     const top = await page.locator(".hud").boundingBox();
     expect(top.y).toBeGreaterThanOrEqual(8);
     expect(

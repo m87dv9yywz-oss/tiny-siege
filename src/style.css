@@ -2152,7 +2152,7 @@ main:has(#selection-panel.open:not(.placing)) aside {
     align-self: center;
     width: min(100%, calc((100cqh - var(--battle-chrome)) * 1.5));
     height: auto;
-    aspect-ratio: 3/2;
+    aspect-ratio: auto;
     margin: auto 0;
   }
   #game {
