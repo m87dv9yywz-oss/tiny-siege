@@ -502,8 +502,10 @@ export class UI {
     panel.classList.toggle("placing", !!this.placing);
     panel.hidden = !visible;
     if (sizeChanged && this.scene) {
+      // refresh() fits against Phaser’s stored parentSize; read the new DOM
+      // bounds first so closing/opening a panel never crops the battlefield.
+      this.scene.scale.getParentBounds();
       this.scene.scale.refresh();
-      requestAnimationFrame(() => this.scene?.scale.refresh());
     }
     if (t) {
       const def = TOWERS[t.type],

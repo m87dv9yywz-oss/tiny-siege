@@ -24,15 +24,15 @@ jobs:
           java-version: "21"
       - run: npm test
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
-        env:
-          CI: "true"
-          PLAYWRIGHT_USE_BUNDLED: "true"
       - name: Firestore rules, Google Auth emulator and multi-browser cloud saves
         run: npm run test:cloud
         env:
           CI: "true"
           FIREBASE_EMULATORS: "true"
+          PLAYWRIGHT_USE_BUNDLED: "true"
+      - run: npm run test:browser
+        env:
+          CI: "true"
           PLAYWRIGHT_USE_BUNDLED: "true"
       - run: node scripts/v3-balance-report.js
       - uses: actions/upload-artifact@v4
