@@ -149,3 +149,21 @@ test("two independently connected clients atomically converge without duplicate 
   );
   assert.equal((await getDoc(ref(first, "atomic"))).data().crowns, 25);
 });
+
+test("fully progressed profiles at schema bounds remain writable", async () => {
+  const db = database("parentA"),
+    p = payload();
+  p.crowns = 1000000000;
+  p.unlockedTowers = ["archer", "cannon", "frost", "fire", "lightning"];
+  p.completedMaps = ["emerald", "amber", "moon"];
+  p.mapStars = { emerald: 3, amber: 3, moon: 3 };
+  p.achievements = ["first-clear", "three-kingdoms", "evolution"];
+  for (const type of p.unlockedTowers) {
+    p.towerXP[type] = { earned: 1000000000, spent: 1000000000 };
+    p.unlockedUpgrades[type] = [3, 3, 3];
+  }
+  for (const k of ["revision", "wins", "waves", "damage", "armor", "kills"])
+    p.statistics[k] = 1000000000;
+  p.statistics.ledger = "|" + ("x".repeat(96) + "|").repeat(1980);
+  await assertSucceeds(setDoc(ref(db, "full-bounds"), p));
+});

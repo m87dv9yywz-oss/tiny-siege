@@ -99,7 +99,6 @@ test("Google emulator credential, guest migration, two browser sessions, offline
   expect(
     await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
   ).toBe(25);
-  await p.locator(".brand").click();
   await p.locator("#new-profile").click();
   await p.locator("#nickname").fill("Cloud Fox");
   await expect(p.locator("#profile-cloud")).toBeChecked();
