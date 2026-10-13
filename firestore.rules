@@ -16,10 +16,30 @@ service cloud.firestore {
       return x is map && x.keys().hasOnly(['earned','spent'])
         && earned is int && spent is int && spent >= 0 && spent <= earned && earned <= 1000000000;
     }
-    function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
+    function paths(x) {
+      let a=x[0]; let b=x[1]; let c=x[2];
+      return x is list && x.size() == 3 && a is int && b is int && c is int
+        && a >= 1 && a <= 3 && b >= 1 && b <= 3 && c >= 1 && c <= 3;
+    }
     function five(m) { return m is map && m.size() == 5 && m.keys().hasOnly(['archer','cannon','frost','fire','lightning']); }
-    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)); }
-    function stats(s) { return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
+    function stars(m) {
+      let e=m.get('emerald',0); let a=m.get('amber',0); let moon=m.get('moon',0);
+      return m is map && m.keys().hasOnly(['emerald','amber','moon'])
+        && e is int && e >= 0 && e <= 3 && a is int && a >= 0 && a <= 3
+        && moon is int && moon >= 0 && moon <= 3;
+    }
+    function stats(s) {
+      let r=s.revision; let w=s.wins; let waves=s.waves;
+      let d=s.damage; let a=s.armor; let k=s.kills; let ledger=s.ledger;
+      return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills'])
+        && r is int && r >= 0 && r <= 1000000000
+        && w is int && w >= 0 && w <= 1000000000
+        && waves is int && waves >= 0 && waves <= 1000000000
+        && d is int && d >= 0 && d <= 1000000000
+        && a is int && a >= 0 && a <= 1000000000
+        && k is int && k >= 0 && k <= 1000000000
+        && ledger is string && ledger.size() <= 194000 && ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$');
+    }
     function validProfile() {
       let d=request.resource.data;
       let fields=['schemaVersion','nickname','avatar','crowns','towerXP','unlockedTowers','unlockedUpgrades','completedMaps','mapStars','achievements','statistics','settings','updatedAt'];
@@ -50,7 +70,10 @@ service cloud.firestore {
     }
     match /users/{uid}/profiles/{profileId} {
       allow get, list: if owner(uid);
-      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      // One write clause avoids duplicate validation for unconstrained set writes.
+      // Delete remains a separate owner-only permission. Both creates and updates
+      // still run the complete validator with exactly the same field constraints.
+      allow write: if owner(uid) && request.method in ['create','update'] && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
       allow delete: if owner(uid);
     }
     match /{document=**} { allow read, write: if false; }
