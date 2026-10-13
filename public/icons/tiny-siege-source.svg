@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+ <radialGradient id="sky" cx=".4" cy=".28" r=".85"><stop stop-color="#99e5dd"/><stop offset=".5" stop-color="#3b908b"/><stop offset="1" stop-color="#183d68"/></radialGradient>
+ <linearGradient id="stone" x2=".9" y2="1"><stop stop-color="#fff0b9"/><stop offset=".5" stop-color="#e8b665"/><stop offset="1" stop-color="#ad6c40"/></linearGradient>
+ <linearGradient id="roof" x2="1" y2="1"><stop stop-color="#9fe28c"/><stop offset=".45" stop-color="#2eae74"/><stop offset="1" stop-color="#136459"/></linearGradient>
+ <linearGradient id="dragon" x2=".85" y2="1"><stop stop-color="#b8f1ff"/><stop offset=".5" stop-color="#53b9ee"/><stop offset="1" stop-color="#367aca"/></linearGradient>
+ <radialGradient id="magic"><stop stop-color="#f6c9ff"/><stop offset=".4" stop-color="#bd86fa" stop-opacity=".8"/><stop offset="1" stop-color="#9870ee" stop-opacity="0"/></radialGradient>
+ <linearGradient id="wing" x2="1" y2="1"><stop stop-color="#83d5ff"/><stop offset="1" stop-color="#5661ad"/></linearGradient>
+</defs>
+<rect width="1024" height="1024" fill="url(#sky)"/>
+<circle cx="217" cy="178" r="76" fill="#fff4c9" opacity=".55"/>
+<path d="M0 760Q160 570 350 730Q575 575 750 700Q920 577 1024 681V1024H0" fill="#2c6f65"/>
+<path d="M0 850Q180 710 385 821Q650 650 1024 815V1024H0" fill="#22584e"/>
+<ellipse cx="491" cy="868" rx="330" ry="82" fill="#0d374c" opacity=".4"/>
+<circle cx="777" cy="421" r="195" fill="url(#magic)"/>
+<!-- Golden gate tower -->
+<path d="M252 466H613V821Q448 874 252 821Z" fill="url(#stone)" stroke="#825738" stroke-width="13"/>
+<path d="M282 478H337V818H282Z" fill="#fff1b7" opacity=".6"/>
+<path d="M540 478H608V816H540Z" fill="#9e633e" opacity=".35"/>
+<path d="M239 762H626V832Q427 892 239 832Z" fill="#f4c678" stroke="#865d3c" stroke-width="12"/>
+<g stroke="#ba8a51" stroke-width="10" opacity=".75"><path d="M257 564H609M257 659H609M257 742H609M351 467V560M481 564V659M370 659V742M551 659V742"/></g>
+<path d="M367 798V679Q428 598 491 679V798Z" fill="#4a5a5c" stroke="#ffd48a" stroke-width="14"/>
+<path d="M390 797V686Q429 636 470 686V797" fill="#345353"/>
+<path d="M391 720H471M391 768H471M416 666V796M448 666V796" stroke="#d9ae66" stroke-width="9"/>
+<!-- Friendly high emerald roof -->
+<path d="M209 477L432 207L655 477Q434 518 209 477Z" fill="url(#roof)" stroke="#164f4e" stroke-width="16" stroke-linejoin="round"/>
+<path d="M432 210L655 477L466 490Z" fill="#186f57" opacity=".6"/>
+<path d="M244 461L426 234" stroke="#c3eda2" stroke-width="13" stroke-linecap="round" opacity=".8"/>
+<path d="M222 483Q431 521 646 483" fill="none" stroke="#ffdd8a" stroke-width="18" stroke-linecap="round"/>
+<path d="M419 220V145M419 150L517 171L419 190" fill="#ba8cef" stroke="#ffd985" stroke-width="10" stroke-linejoin="round"/>
+<!-- Original miniature blue dragon perched on the tower -->
+<path d="M616 695Q737 733 805 650Q836 612 809 571Q817 663 735 666L663 646" fill="url(#dragon)" stroke="#2b587d" stroke-width="12"/>
+<path d="M654 550Q704 469 758 496L790 400L826 493L891 449L865 557Q812 609 730 591Z" fill="url(#wing)" stroke="#345d94" stroke-width="12" stroke-linejoin="round"/>
+<path d="M705 570L790 407M750 575L827 494M785 581L883 456" fill="none" stroke="#a4dff7" stroke-width="7"/>
+<ellipse cx="664" cy="627" rx="93" ry="106" fill="url(#dragon)" stroke="#2c658e" stroke-width="12"/>
+<ellipse cx="636" cy="663" rx="54" ry="67" fill="#c7eaff"/>
+<path d="M581 645Q548 674 564 704Q586 720 614 690M668 690Q688 724 720 706Q736 689 714 671" fill="url(#dragon)" stroke="#2b658d" stroke-width="12" stroke-linecap="round"/>
+<path d="M585 729Q585 693 622 697Q650 707 645 735M657 737Q662 700 699 707Q726 719 708 741" fill="#8ed8fa" stroke="#2b658d" stroke-width="12"/>
+<!-- Head, soft horns, big curious eyes -->
+<path d="M568 492L536 433Q577 425 595 471M673 461L700 408Q724 433 710 491" fill="#f2d295" stroke="#436b8c" stroke-width="12" stroke-linejoin="round"/>
+<path d="M557 478Q637 422 712 482Q755 524 718 577Q681 619 595 583Q530 561 557 478Z" fill="url(#dragon)" stroke="#2a668e" stroke-width="13"/>
+<ellipse cx="583" cy="542" rx="43" ry="29" fill="#bcecff"/>
+<ellipse cx="622" cy="508" rx="24" ry="30" fill="#fffbea"/>
+<ellipse cx="693" cy="509" rx="21" ry="29" fill="#fffbea"/>
+<ellipse cx="627" cy="513" rx="12" ry="20" fill="#1d3f68"/><ellipse cx="697" cy="513" rx="11" ry="20" fill="#1d3f68"/>
+<circle cx="632" cy="503" r="6" fill="white"/><circle cx="701" cy="503" r="5" fill="white"/>
+<circle cx="572" cy="534" r="5" fill="#518bb2"/><path d="M573 562Q599 579 622 562" fill="none" stroke="#346b91" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="684" cy="549" rx="16" ry="8" fill="#c898d6" opacity=".6"/>
+<!-- Purple magic trail and readable stars -->
+<path d="M784 329Q855 327 848 391Q831 440 771 411" fill="none" stroke="#c996fa" stroke-width="18" stroke-linecap="round"/>
+<path d="M783 330Q851 330 841 388" fill="none" stroke="#f3d8ff" stroke-width="7" stroke-linecap="round"/>
+<g fill="#fff0b6"><path d="M790 257L799 280L823 289L799 297L790 322L781 297L757 289L781 280Z"/><path d="M156 437L163 455L181 462L163 469L156 487L149 469L131 462L149 455Z"/><path d="M880 742L887 760L905 767L887 774L880 792L873 774L855 767L873 760Z"/></g>
+<g fill="#def5e2" opacity=".65"><circle cx="128" cy="293" r="7"/><circle cx="867" cy="183" r="6"/><circle cx="723" cy="166" r="5"/><circle cx="190" cy="636" r="6"/></g>
+</svg>

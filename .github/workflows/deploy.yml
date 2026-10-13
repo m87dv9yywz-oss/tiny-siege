@@ -43,3 +43,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+  verify-live:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci --cache "$RUNNER_TEMP/npm-cache"
+      - run: npx playwright install --with-deps chromium
+      - name: Verify the deployed game through real browser interactions
+        run: node scripts/production-smoke.js https://m87dv9yywz-oss.github.io/tiny-siege/
+        env:
+          PLAYWRIGHT_USE_BUNDLED: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-game-verification
+          path: test-results/production-smoke.png
+          if-no-files-found: ignore

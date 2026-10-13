@@ -335,6 +335,8 @@ export function textures(scene) {
   g.fillStyle(0xffffff);
   g.fillCircle(4, 4, 3);
   g.generateTexture("spark", 8, 8);
+  evolutionArt(g);
+  specialEnemies(g);
   g.destroy();
 }
 export function battlefield(scene) {
@@ -538,6 +540,11 @@ export function battlefield(scene) {
     ],
     0x426d64,
   );
+  // Bake static illustration once: thousands of grass strokes need not be
+  // tessellated and redrawn on the GPU every frame.
+  g.generateTexture("emerald-trail", 960, 640);
+  scene.add.image(0, 0, "emerald-trail").setOrigin(0).setDepth(0);
+  g.destroy();
   scene.add
     .text(19, 195, "IN", {
       fontFamily: "sans-serif",
@@ -554,4 +561,510 @@ export function battlefield(scene) {
       fontStyle: "bold",
     })
     .setDepth(1);
+}
+// Original layered fantasy architecture. Each specialization has its own weapon
+// silhouette, materials and construction rather than a badge on the base sprite.
+function evolutionArt(g) {
+  const stone = (wide = 58) => {
+    g.fillStyle(0x183e32, 0.25);
+    g.fillEllipse(48, 86, wide + 18, 16);
+    g.fillStyle(0x4d6863);
+    g.fillRoundedRect(48 - wide / 2, 62, wide, 23, 5);
+    g.fillStyle(0xb8c2a5);
+    g.fillRoundedRect(48 - wide / 2, 60, wide, 12, 4);
+    g.lineStyle(1, 0x6b8276);
+    for (let x = 24; x < 78; x += 14) g.lineBetween(x, 73, x, 82);
+    g.lineStyle(3, 0xe1bd74);
+    g.lineBetween(48 - wide / 2, 64, 48 + wide / 2, 64);
+  };
+  const crystal = (x, y, size, color) => {
+    polygon(
+      g,
+      [
+        [x, y - size],
+        [x + size * 0.6, y],
+        [x, y + size],
+        [x - size * 0.6, y],
+      ],
+      color,
+    );
+    polygon(
+      g,
+      [
+        [x, y - size],
+        [x, y + size],
+        [x - size * 0.6, y],
+      ],
+      0xe4ffff,
+    );
+    g.lineStyle(1, 0xffffff, 0.7);
+    g.lineBetween(x, y - size, x + size * 0.5, y);
+  };
+  const barrel = (x, y, w, h) => {
+    g.fillStyle(0x344456);
+    g.fillRoundedRect(x, y, w, h, 5);
+    g.fillStyle(0x8795a0);
+    g.fillRect(x + 3, y + 3, w * 0.25, h - 6);
+    g.lineStyle(3, 0xdeb97b);
+    g.lineBetween(x, y + h * 0.25, x + w, y + h * 0.25);
+    g.fillStyle(0x1e303a);
+    g.fillEllipse(x + w / 2, y, w, 10);
+  };
+  const flame = (x, y, size) => {
+    polygon(
+      g,
+      [
+        [x, y - size],
+        [x + size * 0.2, y - size * 0.3],
+        [x + size * 0.7, y - size * 0.6],
+        [x + size * 0.5, y + size * 0.5],
+        [x - size * 0.5, y + size * 0.5],
+        [x - size * 0.65, y - size * 0.3],
+        [x - size * 0.2, y],
+      ],
+      0xf57c45,
+    );
+    polygon(
+      g,
+      [
+        [x, y - size * 0.7],
+        [x + size * 0.28, y + size * 0.3],
+        [x, y + size * 0.5],
+        [x - size * 0.25, y + size * 0.2],
+      ],
+      0xffda78,
+    );
+  };
+  for (const [type, def] of Object.entries(TOWERS))
+    for (let p = 0; p < 3; p++)
+      for (const tier of [2, 3]) {
+        g.clear();
+        const ultimate = tier === 3;
+        stone(ultimate ? 68 : 52);
+        if (type === "archer") {
+          if (p === 0) {
+            // Ballista: broad timber arms, metal limbs and central giant bolt.
+            g.fillStyle(0x845c3d);
+            g.fillRoundedRect(36, 40, 24, 25, 4);
+            g.lineStyle(ultimate ? 9 : 6, 0x805233);
+            g.lineBetween(13, 48, 48, 32);
+            g.lineBetween(48, 32, 83, 48);
+            g.lineStyle(3, 0xe0c58e);
+            g.lineBetween(13, 48, 48, 59);
+            g.lineBetween(48, 59, 83, 48);
+            g.lineStyle(ultimate ? 7 : 4, 0x526574);
+            g.lineBetween(48, 62, 48, 15);
+            polygon(
+              g,
+              [
+                [48, 8],
+                [40, 23],
+                [56, 23],
+              ],
+              0xffe3a1,
+            );
+            g.fillStyle(0xe5bc6a);
+            [17, 78].forEach((x) => g.fillCircle(x, 46, 4));
+          } else if (p === 1) {
+            // Arrowstorm: twin green roofs and a rotating bow rack.
+            for (const x of ultimate ? [25, 48, 71] : [32, 64]) {
+              g.fillStyle(0x947444);
+              g.fillRect(x - 7, 28, 14, 34);
+              polygon(
+                g,
+                [
+                  [x - 15, 30],
+                  [x, 12],
+                  [x + 15, 30],
+                ],
+                x === 48 ? 0xa2c877 : 0x5b995d,
+              );
+              g.lineStyle(3, 0xe8c47f);
+              g.beginPath();
+              g.arc(x, 44, 11, -1.2, 1.2);
+              g.strokePath();
+              g.lineStyle(1, 0xe8edba);
+              g.lineBetween(x + 4, 34, x + 4, 54);
+            }
+          } else {
+            // Sniper: tall watchtower and long gilded telescopic weapon.
+            g.fillStyle(0x758779);
+            g.fillRect(32, 29, 32, 35);
+            g.fillStyle(0xc5c6a4);
+            g.fillRect(33, 30, 8, 30);
+            polygon(
+              g,
+              [
+                [23, 30],
+                [48, 7],
+                [73, 30],
+              ],
+              0x32765d,
+            );
+            g.lineStyle(4, 0xe3c06e);
+            g.lineBetween(24, 29, 73, 29);
+            g.fillStyle(0x293d3a);
+            g.fillRoundedRect(40, 36, 15, 21, 3);
+            g.lineStyle(ultimate ? 7 : 4, 0xe2bd63);
+            g.lineBetween(43, 45, 82, 20);
+            g.fillStyle(0x80d9d4);
+            g.fillCircle(66, 30, 5);
+          }
+        } else if (type === "cannon") {
+          g.fillStyle(0x6b5240);
+          g.fillRect(23, 48, 50, 17);
+          g.fillStyle(0xd2b477);
+          [26, 70].forEach((x) => {
+            g.fillCircle(x, 62, 10);
+            g.fillStyle(0x53616a);
+            g.fillCircle(x, 62, 5);
+            g.fillStyle(0xd2b477);
+          });
+          if (p === 0) {
+            barrel(29, 22, 38, 39);
+            g.fillStyle(0xa2b5ae);
+            g.fillTriangle(18, 55, 24, 24, 31, 55);
+            g.fillTriangle(65, 55, 72, 24, 80, 55);
+            if (ultimate) {
+              g.lineStyle(5, 0xe9ca87);
+              g.strokeRoundedRect(29, 27, 38, 23, 4);
+            }
+          }
+          if (p === 1) {
+            for (const [x, y] of ultimate
+              ? [
+                  [26, 29],
+                  [47, 19],
+                  [66, 30],
+                ]
+              : [
+                  [34, 27],
+                  [57, 25],
+                ])
+              barrel(x - 8, y, 17, 30);
+            g.fillStyle(0xf0ae57);
+            g.fillCircle(47, 47, 7);
+          }
+          if (p === 2) {
+            barrel(31, ultimate ? 10 : 22, 34, 42);
+            g.fillStyle(0xbca984);
+            g.fillRect(20, 49, 8, 15);
+            g.fillRect(68, 49, 8, 15);
+            g.lineStyle(3, 0xf0d391);
+            g.lineBetween(21, 48, 14, 60);
+            g.lineBetween(76, 48, 83, 60);
+          }
+        } else if (type === "frost") {
+          if (p === 0) {
+            for (const [x, y, z] of [
+              [27, 48, 17],
+              [69, 48, 17],
+              [48, 32, ultimate ? 30 : 23],
+            ])
+              crystal(x, y, z, 0x72cced);
+            g.lineStyle(2, 0xa6f4f1);
+            g.strokeEllipse(48, 54, 68, 22);
+          }
+          if (p === 1) {
+            g.fillStyle(0x566e87);
+            g.fillRect(35, 36, 26, 27);
+            for (let i = 0; i < (ultimate ? 7 : 4); i++) {
+              const a = (i * Math.PI * 2) / (ultimate ? 7 : 4);
+              crystal(
+                48 + Math.cos(a) * 24,
+                34 + Math.sin(a) * 20,
+                11,
+                0x94cff4,
+              );
+            }
+            crystal(48, 37, 13, 0x7b9fea);
+          }
+          if (p === 2) {
+            g.fillStyle(0x739cac);
+            g.fillRoundedRect(27, 32, 42, 30, 4);
+            polygon(
+              g,
+              [
+                [19, 34],
+                [48, 12],
+                [77, 34],
+              ],
+              0xd8f6ef,
+            );
+            g.fillStyle(0x4e709a);
+            g.fillRect(41, 41, 14, 21);
+            crystal(48, 22, 12, 0x8ce4dc);
+            if (ultimate) {
+              g.lineStyle(3, 0xb8f3ed);
+              g.strokeEllipse(48, 57, 85, 30);
+              g.fillStyle(0xdef7ee);
+              g.fillCircle(14, 33, 5);
+              g.fillCircle(82, 33, 5);
+            }
+          }
+        } else if (type === "fire") {
+          if (p === 0) {
+            g.fillStyle(0x6d5260);
+            g.fillRect(35, 20, 26, 43);
+            g.fillStyle(0xcda16b);
+            g.fillRect(37, 23, 7, 38);
+            g.fillStyle(0xb4684d);
+            g.fillRect(29, 39, 38, 7);
+            flame(48, ultimate ? 15 : 28, ultimate ? 24 : 17);
+          }
+          if (p === 1) {
+            g.fillStyle(0x895947);
+            g.fillRoundedRect(23, 44, 50, 20, 6);
+            for (const [x, y] of [
+              [26, 32],
+              [48, 25],
+              [70, 32],
+            ]) {
+              g.fillStyle(0xc49466);
+              g.fillRect(x - 5, y, 10, 30);
+              flame(x, y, ultimate ? 18 : 12);
+            }
+            g.lineStyle(2, 0xffb75d);
+            g.strokeEllipse(48, 49, 74, 20);
+          }
+          if (p === 2) {
+            polygon(
+              g,
+              [
+                [15, 64],
+                [30, 23],
+                [64, 23],
+                [83, 64],
+              ],
+              0x5d4e57,
+            );
+            polygon(
+              g,
+              [
+                [30, 23],
+                [47, 36],
+                [64, 23],
+                [57, 45],
+                [40, 45],
+              ],
+              0xee8c4e,
+            );
+            g.fillStyle(0xffb948);
+            g.fillEllipse(47, 25, 35, 14);
+            g.lineStyle(4, 0xf89847);
+            g.lineBetween(46, 43, 37, 58);
+            g.lineBetween(61, 42, 64, 63);
+            if (ultimate) flame(48, 16, 18);
+          }
+        } else {
+          g.fillStyle(0x66678b);
+          g.fillRect(33, 36, 30, 27);
+          g.fillStyle(0xd9b67b);
+          g.fillRect(30, 55, 36, 6);
+          if (p === 0) {
+            for (const x of [21, 48, 75]) {
+              g.lineStyle(4, 0xa995c6);
+              g.lineBetween(x, 54, x, 21);
+              g.fillStyle(0xe4bc68);
+              g.fillCircle(x, 22, 7);
+            }
+            g.lineStyle(2, 0xc7b4ff);
+            g.lineBetween(21, 22, 48, 10);
+            g.lineBetween(48, 10, 75, 22);
+            crystal(48, 29, ultimate ? 19 : 13, 0xad8aeb);
+          }
+          if (p === 1) {
+            g.lineStyle(ultimate ? 6 : 4, 0xdab96e);
+            g.strokeCircle(48, 27, 24);
+            g.fillStyle(0x71619d);
+            g.fillCircle(48, 27, 17);
+            polygon(
+              g,
+              [
+                [52, 4],
+                [34, 31],
+                [46, 29],
+                [40, 52],
+                [64, 20],
+                [50, 24],
+              ],
+              0xffefb7,
+            );
+          }
+          if (p === 2) {
+            g.lineStyle(3, 0xaa92de);
+            g.strokeEllipse(48, 32, 72, 44);
+            for (let i = 0; i < (ultimate ? 5 : 3); i++) {
+              const a = (i * Math.PI * 2) / (ultimate ? 5 : 3);
+              crystal(
+                48 + Math.cos(a) * 30,
+                30 + Math.sin(a) * 20,
+                9,
+                0xc8a1f1,
+              );
+            }
+            g.fillStyle(0xeee0ff);
+            g.fillCircle(48, 31, 11);
+            g.fillStyle(0x9b7ddd);
+            g.fillCircle(48, 31, 7);
+          }
+        }
+        if (ultimate) {
+          g.fillStyle(0xffebae);
+          g.fillCircle(19, 70, 3);
+          g.fillCircle(77, 70, 3);
+        }
+        g.generateTexture(`evolution-${type}-${p}-${tier}`, 96, 100);
+      }
+}
+function specialEnemies(g) {
+  // Distinct silhouettes for every new enemy; armor states are actual textures.
+  for (const type of [
+    "sprout",
+    "shard",
+    "healer",
+    "warden",
+    "wraith",
+    "armored",
+  ])
+    for (const state of ["intact", "cracked", "broken"]) {
+      g.clear();
+      const def = ENEMIES[type],
+        x = 40,
+        y = 40,
+        r = def.radius;
+      g.fillStyle(0x234839, 0.25);
+      g.fillEllipse(x, 65, r * 2.8, 9);
+      if (type === "sprout") {
+        g.fillStyle(0x66994a);
+        g.fillEllipse(x, 50, 12, 15);
+        polygon(
+          g,
+          [
+            [40, 41],
+            [24, 28],
+            [39, 31],
+            [43, 18],
+            [50, 32],
+          ],
+          0xb8df79,
+        );
+      } else if (type === "shard") {
+        for (const [dx, dy, z] of [
+          [-10, 0, 15],
+          [9, 2, 17],
+          [0, -12, 22],
+        ]) {
+          polygon(
+            g,
+            [
+              [x + dx, y + dy - z],
+              [x + dx + 11, y + dy],
+              [x + dx, y + dy + 17],
+              [x + dx - 10, y + dy],
+            ],
+            0x70c6b5,
+          );
+          polygon(
+            g,
+            [
+              [x + dx, y + dy - z],
+              [x + dx, y + dy + 17],
+              [x + dx - 10, y + dy],
+            ],
+            0xd2efc3,
+          );
+        }
+      } else if (type === "healer") {
+        polygon(
+          g,
+          [
+            [27, 30],
+            [53, 30],
+            [60, 63],
+            [20, 63],
+          ],
+          0x34806c,
+        );
+        g.fillStyle(0xabe2a8);
+        g.fillCircle(x, 30, 13);
+        polygon(
+          g,
+          [
+            [22, 27],
+            [40, 9],
+            [58, 27],
+          ],
+          0x57b278,
+        );
+        g.lineStyle(4, 0x947045);
+        g.lineBetween(60, 32, 61, 65);
+        g.fillStyle(0xd1ed9f);
+        g.fillCircle(60, 27, 7);
+        g.lineStyle(2, 0xe9f4c4);
+        g.lineBetween(60, 22, 60, 32);
+        g.lineBetween(55, 27, 65, 27);
+      } else if (type === "wraith") {
+        polygon(
+          g,
+          [
+            [24, 36],
+            [28, 22],
+            [40, 12],
+            [52, 22],
+            [56, 36],
+            [62, 67],
+            [48, 59],
+            [39, 68],
+            [32, 58],
+            [20, 66],
+          ],
+          0x9a77c3,
+        );
+        g.fillStyle(0xe1d3f4, 0.6);
+        g.fillEllipse(36, 32, 18, 23);
+      } else {
+        g.fillStyle(type === "warden" ? 0x476a99 : 0x72828f);
+        g.fillRoundedRect(23, 27, 34, 31, 6);
+        g.fillStyle(0x78966f);
+        g.fillCircle(40, 28, 13);
+        g.fillStyle(0xd0d3ae);
+        g.fillRoundedRect(22, 53, 12, 10, 3);
+        g.fillRoundedRect(46, 53, 12, 10, 3);
+        if (state !== "broken") {
+          g.fillStyle(type === "warden" ? 0x83c5eb : 0xadbcc2);
+          g.fillRoundedRect(21, 13, 38, 18, 5);
+          polygon(
+            g,
+            [
+              [13, 34],
+              [33, 34],
+              [33, 52],
+              [23, 63],
+              [13, 52],
+            ],
+            type === "warden" ? 0x7ec4ed : 0x94a8b5,
+          );
+          g.lineStyle(2, 0xe4efcf);
+          g.lineBetween(16, 39, 30, 39);
+          if (state === "cracked") {
+            g.lineStyle(2, 0x34484f);
+            g.lineBetween(29, 15, 35, 22);
+            g.lineBetween(35, 22, 31, 29);
+            g.lineBetween(22, 35, 18, 45);
+            g.lineBetween(18, 45, 26, 52);
+          }
+        } else {
+          g.fillStyle(0xa4c67d);
+          g.fillCircle(40, 19, 5);
+        }
+      }
+      g.fillStyle(0x263848);
+      g.fillEllipse(x - 5, y - 3, 3, 5);
+      g.fillEllipse(x + 5, y - 3, 3, 5);
+      g.fillStyle(0xfff4d7);
+      g.fillCircle(x - 5, y - 4, 1);
+      g.fillCircle(x + 5, y - 4, 1);
+      g.generateTexture(`enemy-${type}-${state}`, 80, 85);
+    }
 }
