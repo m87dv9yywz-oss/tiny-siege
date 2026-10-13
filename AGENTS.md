@@ -34,8 +34,8 @@ npm run build
 npm run preview -- --port 4173 --strictPort
 ```
 
-- `npm test`: 58 checks covering economy, placement, armor/status effects, attacks, pause/speed, lifecycle, and all twenty waves including the boss, using earned gold.
-- Browser suite: 22 tests plus a separately gated cloud emulator test covering menu, placement, combat, upgrades, selling, pause, speed, sound controls, restart, end screens, and narrow-screen touch. The `CI=true` command starts its own server, so port 5173 must be free; plain `npm run test:browser` can reuse a task-owned development server. Clearing `PLAYWRIGHT_USE_BUNDLED` selects system Chromium. Screenshots/results are ignored under `test-results/`.
+- `npm test`: 67 checks covering economy, placement, armor/status effects, attacks, pause/speed, lifecycle, and all twenty waves including the boss, using earned gold.
+- Browser suite: 32 tests plus a separately gated cloud emulator test covering menu, placement, combat, upgrades, selling, pause, speed, sound controls, restart, end screens, and narrow-screen touch. The `CI=true` command starts its own server, so port 5173 must be free; plain `npm run test:browser` can reuse a task-owned development server. Clearing `PLAYWRIGHT_USE_BUNDLED` selects system Chromium. Screenshots/results are ignored under `test-results/`.
 - Victory/defeat browser tests manipulate local development state to check screens; the independent campaign simulation checks real wave progression. Keep these claims distinct.
 - Production output is `dist/`. Validate preview at `http://127.0.0.1:4173/tiny-siege/`: assets must load, campaign must open, and buying/placing a tower must deduct gold. The production bundle must not expose `window.__tinySiege`.
 - For changes affecting gameplay or rendering, run the relevant logic/browser checks and production build; investigate failures rather than weakening tests. Documentation-only edits need no new gameplay tests.
@@ -62,3 +62,9 @@ Tower selection and the upgrade sheet are independent: `selected` drives the vis
 Read `docs/V3.md` for schema, progression, sync and release constraints. `src/progression/` owns local profiles, Crown/XP operations and profile UI; `src/cloud/firebase.js` owns lazy SDK integration and transaction replay. The simulation takes a campaign/profile in `Game.configure` and a per-map shared trail. Keep Classic fully unlocked and preserve v2 tags. Never add permanent progress to Classic.
 
 Run `npm test`, `npm run test:browser`, `npm run test:cloud`, `node scripts/v3-balance-report.js`, and `npm run build` for a release. Cloud emulator tests require Java 21 and the official emulator download; use CI if local destination policy denies it. Emulator mode is dev-only and uses `demo-tiny-siege`, never production. Rules must validate the same schema on create and update; no public reads or writes. No real Google account or physical Safari test is implied by emulator coverage. Hardened rules must be deployed by an authenticated Firebase administrator before v3 release.
+
+## V3.1 polish and Grove
+
+Read `docs/V3.1.md`. Six towers and 18 ultimates now share the same data-driven paths. `attackVisual` controls path/tier shot recipes and tower ornaments; `upgradeGuide.js` computes exact legal path previews. The panel must stay open when using wave/pause/speed controls. Only empty battlefield/background taps dismiss it. An explicit Menu button confirms abandoning the run and saves earned progress first. Use per-map first appearances for enemy introductions, never an unconditional popup each wave.
+
+Profile schema 2 adds Grove XP/paths and Sunflower Gardens; legacy schema 1 reads migrate losslessly. Rules accept both versions but reject schema downgrades. New rules must be deployed and read-back verified before merging this feature release; the existing schema-1-only deployed rules cannot accept new saves. Keep Spark, the existing project and Pages. Balance covers 15 earned progression campaigns, including all three Grove ultimates. Core menus, upgrade panels, collection tabs and every full-tree path are checked for no scrolling on representative phones/tablets/desktops.

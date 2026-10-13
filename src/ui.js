@@ -1,4 +1,7 @@
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
+import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
+import { guideHTML } from "./upgradeGuide.js";
+import { UNLOCK_COSTS } from "./progression/profiles.js";
 import { WAVE_HINTS } from "./data/waves.js";
 const $ = (id) => document.getElementById(id);
 export class UI {
@@ -52,7 +55,7 @@ export class UI {
           .composedPath()
           .some((node) =>
             node.matches?.(
-              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal",
+              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal, .battle-controls, .map-footer, .topbar",
             ),
           )
       )
@@ -70,11 +73,12 @@ export class UI {
       this.model.speed = this.model.speed === 1 ? 2 : 1;
       this.refresh(true);
     };
+    $("leave-run").onclick = () => this.leaveRun();
     $("restart").onclick = () => this.restart();
     $("help-button").onclick = () => this.help();
     document.querySelector(".brand").onclick = (e) => {
       e.preventDefault();
-      this.menu();
+      this.leaveRun();
     };
     $("mute").onclick = () => {
       this.sound = !this.sound;
@@ -84,7 +88,12 @@ export class UI {
         : "♫ <span>Sound off</span>";
     };
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && this.helpOpen) this.closeHelp();
+      if (e.key === "Escape" && this.helpOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.overlayClose) this.overlayClose();
+        else this.closeHelp();
+      }
     });
     this.menu();
     this.refresh(true);
@@ -280,11 +289,110 @@ export class UI {
     this.upgradeOpen = false;
     this.refresh(true);
   }
-  beginWave() {
-    if (this.inMenu || this.helpOpen) return;
+  leaveRun() {
+    if (this.inMenu) return;
+    const paused = this.model.paused;
+    this.model.paused = true;
+    this.helpOpen = true;
+    this.modal(
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Leave this run?</h1><p>Your earned XP and hero progress stay saved. This battlefield will be cleared.</p><button id="confirm-leave" class="primary">Main menu</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+    );
+    $("keep-playing").onclick = () => {
+      this.helpOpen = false;
+      this.model.paused = paused;
+      $("modal").hidden = true;
+      $("app").inert = false;
+      this.refresh(true);
+    };
+    this.overlayClose = $("keep-playing").onclick;
+    $("confirm-leave").onclick = () => {
+      this.kingdom?.safe(() => this.kingdom.finishRun());
+      this.helpOpen = false;
+      this.cancel();
+      this.inMenu = true;
+      this.model.reset();
+      this.menu();
+    };
+  }
+  showTree(t, path = 0) {
+    const paused = this.model.paused;
+    this.model.paused = true;
+    this.helpOpen = true;
+    const draw = (p) => {
+      this.modal(
+        guideHTML(
+          t,
+          p,
+          this.portrait({
+            ...t,
+            paths: [0, 0, 0].map((n, i) => (i === p ? 3 : 0)),
+          }),
+        ),
+      );
+      $("modal").querySelector(".modal-card").classList.add("tree-card");
+      document
+        .querySelectorAll("[data-guide-path]")
+        .forEach((b) => (b.onclick = () => draw(Number(b.dataset.guidePath))));
+      $("close-guide").onclick = () => {
+        this.helpOpen = false;
+        this.model.paused = paused;
+        $("modal").hidden = true;
+        $("app").inert = false;
+        this.refresh(true);
+      };
+      this.overlayClose = $("close-guide").onclick;
+    };
+    draw(path);
+  }
+  beginWave(skipIntro = false) {
+    if (
+      this.inMenu ||
+      this.helpOpen ||
+      this.model.active ||
+      this.model.paused ||
+      this.model.ended
+    )
+      return;
+    const types = introductionsFor(
+      this.model.campaign,
+      this.model.wave + 1,
+    ).filter((t) => !this.seenEnemies?.has(t));
+    if (!skipIntro && types.length) {
+      this.helpOpen = true;
+      this.modal(
+        `<div class="eyebrow">NEXT WAVE · NEW VISITORS</div><h1 id="modal-title">Meet the newcomers</h1><div class="enemy-introductions">${types
+          .map((type) => {
+            const d = ENEMY_GUIDE[type];
+            return `<article><span>${d.icon}</span><div><h2>${d.name}</h2><b>${d.ability}</b><p>${d.tip}</p></div></article>`;
+          })
+          .join(
+            "",
+          )}</div><button id="intro-ready" class="primary">Ready · start wave ${this.model.wave + 1}</button><button id="intro-back" class="secondary">Prepare my defense</button>`,
+      );
+      $("modal").querySelector(".modal-card").classList.add("intro-card");
+      const close = () => {
+        this.helpOpen = false;
+        $("modal").hidden = true;
+        $("app").inert = false;
+      };
+      $("intro-back").onclick = () => {
+        close();
+        this.refresh(true);
+      };
+      this.overlayClose = $("intro-back").onclick;
+      $("intro-ready").onclick = () => {
+        this.seenEnemies ||= new Set();
+        types.forEach((t) => this.seenEnemies.add(t));
+        close();
+        this.beginWave(true);
+      };
+      return;
+    }
     if (this.model.startWave()) {
       this.resumeAudio();
-      this.toast((this.model.campaign.hints||WAVE_HINTS)[this.model.wave - 1]);
+      this.toast(
+        (this.model.campaign.hints || WAVE_HINTS)[this.model.wave - 1],
+      );
       this.refresh(true);
     }
   }
@@ -303,6 +411,7 @@ export class UI {
     this.placing = null;
     this.selected = null;
     this.upgradeOpen = false;
+    this.seenEnemies = new Set();
     this.kingdom?.beginRun();
     this.model.reset();
     $("modal").hidden = true;
@@ -311,6 +420,7 @@ export class UI {
     this.resumeAudio();
   }
   modal(html) {
+    this.overlayClose = null;
     $("app").inert = true;
     $("modal").innerHTML = `<div class="modal-card">${html}</div>`;
     $("modal").hidden = false;
@@ -329,7 +439,7 @@ export class UI {
     this.helpOpen = false;
     this.placing = null;
     this.modal(
-      `<img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="A friendly blue dragon on a golden castle"><div class="eyebrow">THE EVOLUTION UPDATE</div><h1 id="modal-title">Tiny <span>Siege</span></h1><p>Five towers. Fifteen evolutions. One little kingdom.<br>Build a mighty defense along the Emerald Trail.</p><button id="play" class="primary">PLAY CAMPAIGN <span>→</span></button><button id="menu-help" class="secondary">How to play</button><span class="modal-note">NO DOWNLOADS. JUST A LITTLE STRATEGY.</span>`,
+      `<img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="A friendly blue dragon on a golden castle"><div class="eyebrow">THE EVOLUTION UPDATE</div><h1 id="modal-title">Tiny <span>Siege</span></h1><p>Six towers. Eighteen evolutions. One little kingdom.<br>Build a mighty defense along the Emerald Trail.</p><button id="play" class="primary">PLAY CAMPAIGN <span>→</span></button><button id="menu-help" class="secondary">How to play</button><span class="modal-note">NO DOWNLOADS. JUST A LITTLE STRATEGY.</span>`,
     );
     $("play").onclick = () => this.restart();
     $("menu-help").onclick = () => this.help();
@@ -338,7 +448,7 @@ export class UI {
   help() {
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire and Lightning, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–5</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
+      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire, Lightning and Grove, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–6</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
     );
     $("close-help").onclick = () => this.closeHelp();
   }
@@ -357,7 +467,7 @@ export class UI {
     const win = result === "victory";
     const rewards = this.kingdom?.finishRun();
     this.modal(
-      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? (this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends.") : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
+      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
     );
     if (rewards)
       $("again").insertAdjacentHTML(
@@ -426,12 +536,14 @@ export class UI {
         ? "The little kingdom stands."
         : m.ended === "defeat"
           ? "Regroup. Rebuild. Return."
-          : (m.campaign.hints||WAVE_HINTS)[Math.min(m.active ? m.wave - 1 : m.wave, m.totalWaves-1)];
+          : (m.campaign.hints || WAVE_HINTS)[
+              Math.min(m.active ? m.wave - 1 : m.wave, m.totalWaves - 1)
+            ];
     document.querySelectorAll("[data-tower]").forEach((b) => {
       const type = b.dataset.tower,
         def = TOWERS[type],
         unlocked = m.available(type),
-        crowns = type === "fire" ? 75 : 130;
+        crowns = UNLOCK_COSTS[type];
       b.querySelector(".tower-cost").textContent = unlocked
         ? def.cost
         : `♛ ${crowns}`;
@@ -513,6 +625,7 @@ export class UI {
       panel.innerHTML = `<div class="panel-title"><b>${towerName(t)}</b><button id="close-panel" aria-label="Close tower panel">×</button></div>
         <div class="tower-summary"><img class="tower-portrait" alt="${towerName(t)}" src="${this.portrait(t)}"><div class="stats"><div><small>DAMAGE</small><b>${stats.damage}</b></div><div><small>RANGE</small><b>${stats.range}</b></div><div><small>SHOTS/S</small><b>${(1 / stats.cooldown).toFixed(1)}</b></div></div></div>
         <label class="target-label">Target <select id="targeting" aria-label="Target priority">${["FIRST", "LAST", "STRONG", "WEAK", ...(stats.supportTarget ? ["SUPPORT"] : [])].map((v) => `<option ${t.targeting === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+        <button id="full-tree" class="tree-link">Full upgrade tree ↗</button>
         <details class="properties"><summary>Armor & special attacks</summary><p>Damage ${stats.damage} · Range ${stats.range} · ${(1 / stats.cooldown).toFixed(1)} attacks/s · ${stats.damageType === "physical" ? "Physical" : "Magic"} · Armor damage ${stats.armorDamage || 0} · Bypass ${Math.round((stats.penetration || stats.bypass || 0) * 100)}%${stats.burn ? ` · Burn ${stats.burn}/s` : ""}${stats.slow ? ` · Slow ${Math.round((1 - stats.slow) * 100)}%` : ""}${stats.pierce ? ` · Pierce ${stats.pierce}` : ""}${stats.chains ? ` · Chain ${stats.chains}` : ""}</p></details>
         <div class="upgrade-paths">${def.paths
           .map((path, p) => {
@@ -520,11 +633,17 @@ export class UI {
             const description =
               u.tier?.description ||
               path.tiers[Math.max(0, t.paths[p] - 1)].description;
-            return `<div class="path path-${p}"><div class="path-heading"><b>${path.name}</b><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small>${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || !m.pathAvailable(t.type, p, t.paths[p] + 1) || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || (!m.pathAvailable(t.type, p, t.paths[p] + 1) ? `Unlock Tier ${t.paths[p] + 1} in Kingdom · XP` : `${u.tier.name} · ${u.cost} ◈`)}</button></div>`;
+            return `<div class="path path-${p}"><div class="path-heading"><button class="path-info" data-tree="${p}" aria-label="View ${path.name} full tree"><img class="path-icon" src="${this.portrait({ ...t, paths: [0, 0, 0].map((n, i) => (i === p ? 3 : 0)) })}" alt=""><span>${path.name} ⓘ</span></button><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small class="path-description">${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || !m.pathAvailable(t.type, p, t.paths[p] + 1) || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || (!m.pathAvailable(t.type, p, t.paths[p] + 1) ? `Unlock Tier ${t.paths[p] + 1} in Kingdom · XP` : `${u.tier.name} · ${u.cost} ◈`)}</button></div>`;
           })
           .join(
             "",
           )}</div><button id="sell" class="sell-button" ${m.ended || m.paused ? "disabled" : ""}>Sell tower · ${Math.floor(t.invested * 0.7)} gold</button>`;
+      $("full-tree").onclick = () => this.showTree(t);
+      panel
+        .querySelectorAll("[data-tree]")
+        .forEach(
+          (b) => (b.onclick = () => this.showTree(t, Number(b.dataset.tree))),
+        );
       $("close-panel").onclick = () => this.closeUpgrades();
       $("targeting").onchange = (e) => {
         m.setTargeting(t.id, e.target.value);

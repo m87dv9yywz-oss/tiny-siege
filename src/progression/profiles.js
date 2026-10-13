@@ -11,13 +11,15 @@ export const AVATAR_ART = {
   wizard: "🧙",
   unicorn: "🦄",
 };
-export const UNLOCK_COSTS = { fire: 75, lightning: 130 };
+export const UNLOCK_COSTS = { fire: 75, lightning: 130, grove: 90 };
+const LEGACY_TYPES = TYPES.filter((t) => t !== "grove");
+const MAP_IDS = ["emerald", "amber", "moon", "garden"];
 export const XP_COSTS = { 2: 180, 3: 500 };
 export const freshProfile = (
   nickname = "Little Knight",
   avatar = "dragon",
 ) => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
   nickname,
   avatar,
   crowns: 0,
@@ -43,11 +45,13 @@ const PROFILE_FIELDS = new Set(Object.keys(freshProfile()));
 const integer = (v, max = 1000000000) =>
   Number.isInteger(v) && v >= 0 && v <= max;
 export function validateProfile(p) {
+  const types = p?.schemaVersion === 1 ? LEGACY_TYPES : TYPES;
+  const maps = p?.schemaVersion === 1 ? MAP_IDS.slice(0, 3) : MAP_IDS;
   if (
     !p ||
     Object.keys(p).length !== PROFILE_FIELDS.size ||
     Object.keys(p).some((k) => !PROFILE_FIELDS.has(k)) ||
-    p.schemaVersion !== 1 ||
+    ![1, 2].includes(p.schemaVersion) ||
     typeof p.nickname !== "string" ||
     !p.nickname.trim() ||
     /[\u0000-\u001f\u007f]/.test(p.nickname) ||
@@ -59,11 +63,11 @@ export function validateProfile(p) {
   if (
     !Array.isArray(p.unlockedTowers) ||
     new Set(p.unlockedTowers).size !== p.unlockedTowers.length ||
-    !p.unlockedTowers.every((t) => TYPES.includes(t)) ||
+    !p.unlockedTowers.every((t) => types.includes(t)) ||
     !["archer", "cannon", "frost"].every((t) => p.unlockedTowers.includes(t))
   )
     return false;
-  for (const t of TYPES) {
+  for (const t of types) {
     const xp = p.towerXP?.[t],
       paths = p.unlockedUpgrades?.[t];
     if (
@@ -79,15 +83,15 @@ export function validateProfile(p) {
       return false;
   }
   if (
-    Object.keys(p.towerXP).length !== 5 ||
-    Object.keys(p.unlockedUpgrades).length !== 5
+    Object.keys(p.towerXP).length !== types.length ||
+    Object.keys(p.unlockedUpgrades).length !== types.length
   )
     return false;
   if (
     !Array.isArray(p.completedMaps) ||
-    p.completedMaps.length > 3 ||
+    p.completedMaps.length > maps.length ||
     new Set(p.completedMaps).size !== p.completedMaps.length ||
-    !p.completedMaps.every((m) => ["emerald", "amber", "moon"].includes(m))
+    !p.completedMaps.every((m) => maps.includes(m))
   )
     return false;
   if (
@@ -125,17 +129,18 @@ export function validateProfile(p) {
   );
 }
 export function migrateProfile(data) {
+  const types = data?.schemaVersion === 1 ? LEGACY_TYPES : TYPES;
   if (data?.towerXP && Object.hasOwn(data.towerXP, "archerEarned")) {
-    const keys = TYPES.flatMap((t) => [t + "Earned", t + "Spent"]);
+    const keys = types.flatMap((t) => [t + "Earned", t + "Spent"]);
     if (
-      Object.keys(data.towerXP).length !== 10 ||
+      Object.keys(data.towerXP).length !== types.length * 2 ||
       Object.keys(data.towerXP).some((k) => !keys.includes(k))
     )
       throw Error("Invalid cloud XP data.");
     data = {
       ...data,
       towerXP: Object.fromEntries(
-        TYPES.map((t) => [
+        types.map((t) => [
           t,
           {
             earned: data.towerXP[t + "Earned"],
@@ -147,11 +152,20 @@ export function migrateProfile(data) {
   }
   // The infrastructure prototype used schema 1 with empty nested maps.
   const p = freshProfile(data?.nickname, data?.avatar);
-  if (data?.schemaVersion && data.schemaVersion !== 1)
+  if (data?.schemaVersion && ![1, 2].includes(data.schemaVersion))
     throw Error("This save needs a newer Tiny Siege version.");
-  if (validateProfile(data)) return structuredClone(data);
+  if (validateProfile(data)) {
+    const copy = structuredClone(data);
+    if (copy.schemaVersion === 1) {
+      copy.schemaVersion = 2;
+      copy.towerXP.grove = { earned: 0, spent: 0 };
+      copy.unlockedUpgrades.grove = [1, 1, 1];
+    }
+    return copy;
+  }
   if (
     data &&
+    (!data.schemaVersion || data.schemaVersion === 1) &&
     Object.keys(data.towerXP || {}).length === 0 &&
     Object.keys(data.unlockedUpgrades || {}).length === 0 &&
     integer(data.crowns)
@@ -183,7 +197,7 @@ export function applyOperation(profile, op) {
       if (!p.achievements.includes("first-clear"))
         p.achievements.push("first-clear");
       if (
-        p.completedMaps.length === 3 &&
+        p.completedMaps.length >= 3 &&
         !p.achievements.includes("three-kingdoms")
       )
         p.achievements.push("three-kingdoms");

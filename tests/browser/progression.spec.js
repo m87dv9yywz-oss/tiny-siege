@@ -48,8 +48,10 @@ test("independent heroes, beginner map, locked purchases and durable guest saves
   );
   await page.locator("#main-menu").click();
   await page.locator("#collection").click();
+  await page.locator('[data-collection="fire"]').click();
   await page.locator('[data-unlock-tower="fire"]').click();
   await expect(page.locator("#modal-title")).toContainText("25 Crowns");
+  await page.locator('[data-collection="archer"]').click();
   await page.locator('[data-unlock-path="archer:0"]').click();
   await expect(page.locator(".collection-grid")).toContainText(
     "170 XP available",
@@ -58,6 +60,7 @@ test("independent heroes, beginner map, locked purchases and durable guest saves
   await page.locator("[data-profile]").filter({ hasText: "Fox" }).click();
   await page.locator("#collection").click();
   await expect(page.locator("#modal-title")).toContainText("0 Crowns");
+  await page.locator('[data-collection="fire"]').click();
   await expect(page.locator('[data-unlock-tower="fire"]')).toBeDisabled();
   await page.locator("#back").click();
   await page.reload();
@@ -107,7 +110,8 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
       );
     });
     await page.screenshot({ path: `test-results/v3-map-${map}.png` });
-    await page.locator(".brand").click();
+    await page.locator("#leave-run").click();
+    await page.locator("#confirm-leave").click();
   }
   await page.locator("#play").click();
   await page.evaluate(() => {

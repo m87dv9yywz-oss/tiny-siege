@@ -35,7 +35,7 @@ test("starting resources, prices, legal placement, collisions, and honest refund
   assert.equal(g.active, false);
   assert.deepEqual(
     Object.values(TOWERS).map((t) => t.cost),
-    [75, 160, 130, 150, 200],
+    [75, 160, 130, 150, 200, 115],
   );
   assert.equal(g.place("archer", 150, 170), null);
   assert.equal(g.place("archer", -4, 100), null);

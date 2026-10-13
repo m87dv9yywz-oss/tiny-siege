@@ -1,8 +1,8 @@
 rules_version = '2';
-// Parent-owned profiles: users/{uid}/profiles/{profileId}, schema 1.
+// Parent-owned profiles: users/{uid}/profiles/{profileId}, schemas 1 (v3) and 2 (Grove update).
 // No parent document, nested collection, public read or user-assigned role.
 // nickname: 1..32 characters; avatar: predefined fantasy ID; crowns: bounded int.
-// towerXP: ten class Earned/Spent integer fields; unlockedUpgrades: five 3-tier lists.
+// towerXP: ten/twelve class Earned/Spent integer fields; unlockedUpgrades: five/six 3-tier lists.
 // completedMaps/mapStars/achievements: fixed known IDs; settings: two booleans.
 // statistics: bounded counters/revision and bounded delimiter-encoded reward IDs.
 // updatedAt must be a server timestamp on every create AND update.
@@ -11,14 +11,14 @@ service cloud.firestore {
     function owner(uid) { return request.auth != null && request.auth.uid == uid; }
     function number(n) { return n is int && n >= 0 && n <= 1000000000; }
     function xp(e,s) { return e is int && s is int && s >= 0 && s <= e && e <= 1000000000; }
-    function allXP(x) {
-      return x is map && x.size() == 10 && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent'])
+    function allXP(x, v) {
+      return x is map && x.size() == (v == 1 ? 10 : 12) && x.keys().hasOnly(v == 1 ? ['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent'] : ['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent','groveEarned','groveSpent'])
         && xp(x.archerEarned,x.archerSpent) && xp(x.cannonEarned,x.cannonSpent)
-        && xp(x.frostEarned,x.frostSpent) && xp(x.fireEarned,x.fireSpent) && xp(x.lightningEarned,x.lightningSpent);
+        && xp(x.frostEarned,x.frostSpent) && xp(x.fireEarned,x.fireSpent) && xp(x.lightningEarned,x.lightningSpent) && (v == 1 || xp(x.groveEarned,x.groveSpent));
     }
     function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
-    function five(m) { return m is map && m.size() == 5 && m.keys().hasOnly(['archer','cannon','frost','fire','lightning']); }
-    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)); }
+    function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6) && m.keys().hasOnly(v == 1 ? ['archer','cannon','frost','fire','lightning'] : ['archer','cannon','frost','fire','lightning','grove']); }
+    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon','garden']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)) && (!('garden' in m) || (number(m.garden) && m.garden <= 3)); }
     function stats(s) { return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
     function validProfile() {
       let d=request.resource.data;
@@ -34,14 +34,14 @@ service cloud.firestore {
       let statistics=d.statistics;
       let settings=d.settings;
       return d.size() == 13 && d.keys().hasOnly(fields)
-        && d.schemaVersion == 1 && d.schemaVersion is int
+        && d.schemaVersion in [1,2] && d.schemaVersion is int
         && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 32
         && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn']
         && number(d.crowns)
-        && allXP(x)
-        && five(u) && paths(u.archer) && paths(u.cannon) && paths(u.frost) && paths(u.fire) && paths(u.lightning)
-        && towers is list && towers.size() <= 5 && towers.hasAll(['archer','cannon','frost']) && towers.hasOnly(['archer','cannon','frost','fire','lightning']) && towers.toSet().size() == towers.size()
-        && maps is list && maps.size() <= 3 && maps.hasOnly(['emerald','amber','moon']) && maps.toSet().size() == maps.size()
+        && allXP(x,d.schemaVersion)
+        && classes(u,d.schemaVersion) && paths(u.archer) && paths(u.cannon) && paths(u.frost) && paths(u.fire) && paths(u.lightning) && (d.schemaVersion == 1 || paths(u.grove))
+        && towers is list && towers.size() <= (d.schemaVersion == 1 ? 5 : 6) && towers.hasAll(['archer','cannon','frost']) && towers.hasOnly(d.schemaVersion == 1 ? ['archer','cannon','frost','fire','lightning'] : ['archer','cannon','frost','fire','lightning','grove']) && towers.toSet().size() == towers.size()
+        && maps is list && maps.size() <= (d.schemaVersion == 1 ? 3 : 4) && maps.hasOnly(d.schemaVersion == 1 ? ['emerald','amber','moon'] : ['emerald','amber','moon','garden']) && maps.toSet().size() == maps.size()
         && stars(mapStars) && mapStars.keys().hasOnly(maps)
         && achievements is list && achievements.size() <= 3 && achievements.hasOnly(['first-clear','three-kingdoms','evolution']) && achievements.toSet().size() == achievements.size()
         && stats(statistics)
@@ -50,7 +50,9 @@ service cloud.firestore {
     }
     match /users/{uid}/profiles/{profileId} {
       allow get, list: if owner(uid);
-      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      allow create: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      // Older cached clients must not erase Grove progress after migration.
+      allow update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && request.resource.data.schemaVersion >= resource.data.schemaVersion && validProfile();
       allow delete: if owner(uid);
     }
     match /{document=**} { allow read, write: if false; }

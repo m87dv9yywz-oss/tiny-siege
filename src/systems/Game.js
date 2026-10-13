@@ -1,4 +1,9 @@
-import { TOWERS, towerStats, upgradeState } from "../data/towers.js";
+import {
+  TOWERS,
+  towerStats,
+  upgradeState,
+  attackVisual,
+} from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
 import { waveQueue, CAMPAIGNS } from "../data/waves.js";
 import { MAP, TRAILS } from "../data/map.js";
@@ -373,10 +378,10 @@ export class Game {
     if (!e.alive) return;
     this.damage(e, p.stats.damage, p.stats);
     if (!e.alive) return;
-    if (p.type === "frost") {
+    if (p.type === "frost" || p.stats.slow) {
       this.chill(
         e,
-        p.stats.slow,
+        p.stats.slow || 0.75,
         p.stats.duration,
         p.freeze ? p.stats.freeze : 0,
       );
@@ -434,6 +439,38 @@ export class Game {
       attack: p.type,
       radius: p.stats.splash || 16,
     });
+    if (p.stats.bounces && !p.bounced) {
+      // One bounded chain per shot, with distinct victims; no recursive impact.
+      const visited = new Set(victims);
+      let previous = p.target;
+      for (let i = 1; i < p.stats.bounces; i++) {
+        const next = this.enemies
+          .filter(
+            (e) =>
+              e.alive &&
+              !visited.has(e) &&
+              distance(e, previous) <= p.stats.bounceRange,
+          )
+          .sort(
+            (a, b) =>
+              distance(a, previous) - distance(b, previous) || a.id - b.id,
+          )[0];
+        if (!next) break;
+        this.emit("seedBounce", {
+          from: { x: previous.x, y: previous.y },
+          to: { x: next.x, y: next.y },
+        });
+        visited.add(next);
+        this.applyHit(
+          {
+            ...p,
+            stats: { ...p.stats, damage: p.stats.damage * Math.pow(0.8, i) },
+          },
+          next,
+        );
+        previous = next;
+      }
+    }
     if (p.stats.clusters)
       for (let i = 0; i < p.stats.clusters; i++) {
         const a = (i * Math.PI * 2) / p.stats.clusters;
@@ -452,7 +489,10 @@ export class Game {
         radius: p.stats.pool,
         left: 3,
         damage: p.stats.poolDamage,
-        melt: p.stats.melt,
+        melt: p.stats.melt || 0,
+        type: p.type,
+        source: p.type,
+        slow: p.stats.rootSlow || 0,
       });
       if (this.zones.length > 32) this.zones.shift();
     }
@@ -510,6 +550,7 @@ export class Game {
           origin: { x: t.x, y: t.y },
           target,
           stats: hitStats,
+          visual: attackVisual(t),
           freeze: stats.freeze && t.shots % 3 === 0,
           speed: stats.arc
             ? 210
@@ -534,7 +575,7 @@ export class Game {
         (e) => e.alive && distance(e, t) <= stats.pulse,
       )) {
         this.damage(e, stats.damage, stats);
-        if (t.type === "frost")
+        if (t.type === "frost" || stats.slow)
           this.chill(e, stats.slow, stats.duration, stats.freeze || 0.4);
       }
       this.emit("impact", {
@@ -655,7 +696,9 @@ export class Game {
           damageType: "magic",
           bypass: 0.65,
           tick: true,
+          source: z.source || "fire",
         });
+        if (z.slow) this.chill(e, z.slow, 0.15);
         this.breakArmor(e, z.melt * dt);
       }
       return z.left > 0;
@@ -668,8 +711,8 @@ export class Game {
         ))
           this.chill(e, aura.auraSlow, 0.1);
       this.participation[t.type].time += dt;
-      if (t.type === "frost")
-        this.participation.frost.control +=
+      if (t.type === "frost" || t.type === "grove")
+        this.participation[t.type].control +=
           this.enemies.filter(
             (e) => e.alive && distance(e, t) <= aura.range && e.slow < 1,
           ).length * dt;

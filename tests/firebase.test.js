@@ -94,7 +94,7 @@ test("create and update use the same strict nested validation", async () => {
     (p) => (p.statistics.ledger = "x".repeat(194001)),
     (p) => (p.statistics.kills = -1),
     (p) => (p.updatedAt = new Date(0)),
-    (p) => (p.schemaVersion = 2),
+    (p) => (p.schemaVersion = 3),
   ];
   for (let i = 0; i < mutations.length; i++) {
     const create = payload();
@@ -162,9 +162,16 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
   const db = database("parentA"),
     p = payload();
   p.crowns = 1000000000;
-  p.unlockedTowers = ["archer", "cannon", "frost", "fire", "lightning"];
-  p.completedMaps = ["emerald", "amber", "moon"];
-  p.mapStars = { emerald: 3, amber: 3, moon: 3 };
+  p.unlockedTowers = [
+    "archer",
+    "cannon",
+    "frost",
+    "fire",
+    "lightning",
+    "grove",
+  ];
+  p.completedMaps = ["emerald", "amber", "moon", "garden"];
+  p.mapStars = { emerald: 3, amber: 3, moon: 3, garden: 3 };
   p.achievements = ["first-clear", "three-kingdoms", "evolution"];
   for (const type of p.unlockedTowers) {
     p.towerXP[type + "Earned"] = 1000000000;
@@ -175,4 +182,54 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
     p.statistics[k] = 1000000000;
   p.statistics.ledger = "|" + ("x".repeat(96) + "|").repeat(1980);
   await assertSucceeds(setDoc(ref(db, "full-bounds"), p));
+  const legacy = {
+    ...p,
+    schemaVersion: 1,
+    towerXP: { ...p.towerXP },
+    unlockedUpgrades: { ...p.unlockedUpgrades },
+    completedMaps: ["emerald", "amber", "moon"],
+    mapStars: { emerald: 3, amber: 3, moon: 3 },
+    unlockedTowers: p.unlockedTowers.filter((t) => t !== "grove"),
+  };
+  delete legacy.towerXP.groveEarned;
+  delete legacy.towerXP.groveSpent;
+  delete legacy.unlockedUpgrades.grove;
+  await assertSucceeds(setDoc(ref(db, "legacy-full-bounds"), legacy));
+  await assertSucceeds(
+    updateDoc(ref(db, "legacy-full-bounds"), {
+      nickname: "Legacy still playable",
+      updatedAt: serverTimestamp(),
+    }),
+  );
+});
+
+test("legacy v3 profiles migrate to schema 2 with Grove and garden, but older clients cannot downgrade them", async () => {
+  const db = database("parentA");
+  const legacy = payload();
+  legacy.schemaVersion = 1;
+  delete legacy.towerXP.groveEarned;
+  delete legacy.towerXP.groveSpent;
+  delete legacy.unlockedUpgrades.grove;
+  const target = ref(db, "legacy-migration");
+  await assertSucceeds(setDoc(target, legacy));
+  const upgraded = migrateProfile((await getDoc(target)).data());
+  upgraded.unlockedTowers.push("grove");
+  upgraded.completedMaps.push("garden");
+  upgraded.mapStars.garden = 3;
+  await assertSucceeds(
+    setDoc(target, cloudProfile({ ...upgraded, updatedAt: serverTimestamp() })),
+  );
+  await assertFails(setDoc(target, legacy));
+  for (const mutate of [
+    (p) => (p.towerXP.groveSpent = 1),
+    (p) => (p.unlockedUpgrades.grove = [1, 4, 1]),
+    (p) => (p.mapStars.garden = 4),
+    (p) => (p.towerXP.groveEarned = "99"),
+    (p) => delete p.towerXP.groveSpent,
+  ]) {
+    const data = payload();
+    mutate(data);
+    await assertFails(setDoc(ref(db, "bad-grove"), data));
+    await assertFails(setDoc(target, data));
+  }
 });

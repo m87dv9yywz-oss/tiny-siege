@@ -70,7 +70,7 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
     path: "test-results/battlefield.png",
     fullPage: true,
   });
-  await page.locator("#show-upgrades").click();
+  await expect(page.locator("#selection-panel")).toBeVisible();
   await page.locator("#sell").click();
   expect(
     await page.evaluate(() => window.__tinySiege.model.towers.length),

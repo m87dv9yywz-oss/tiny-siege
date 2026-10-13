@@ -1,6 +1,11 @@
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
-import { TOWERS, towerStats, towerTexture } from "../data/towers.js";
+import {
+  TOWERS,
+  towerStats,
+  towerTexture,
+  attackVisual,
+} from "../data/towers.js";
 export class GameScene extends Phaser.Scene {
   constructor(model, ui) {
     super("Game");
@@ -74,6 +79,7 @@ export class GameScene extends Phaser.Scene {
       this.game.canvas.removeEventListener("pointerdown", pointerDown),
     );
     this.input.keyboard.on("keydown", (e) => {
+      if (!document.getElementById("modal").hidden) return;
       if (e.code === "Escape") {
         this.ui.cancel();
         return;
@@ -86,7 +92,8 @@ export class GameScene extends Phaser.Scene {
         else this.ui.beginWave();
       }
       const index = Number(e.key) - 1;
-      if (index >= 0 && index < 5) this.ui.choose(Object.keys(TOWERS)[index]);
+      if (index >= 0 && index < Object.keys(TOWERS).length)
+        this.ui.choose(Object.keys(TOWERS)[index]);
     });
     this.ui.scene = this;
     this.ui.hydrateShop();
@@ -279,13 +286,22 @@ export class GameScene extends Phaser.Scene {
         age: 0,
         life: 0.45,
       });
+    if (type === "seedBounce")
+      this.effects.push({
+        type: "seedBounce",
+        points: [event.from, event.to],
+        age: 0,
+        life: 0.28,
+        color: 0xffd66d,
+      });
     if (type === "bolt")
       this.effects.push({
         type: "bolt",
         points: [{ x: tower.x, y: tower.y - 20 }, ...event.points],
         age: 0,
         life: 0.18,
-        color: TOWERS.lightning.color,
+        color: attackVisual(tower).color,
+        tier: attackVisual(tower).tier,
         heavy: event.heavy,
       });
     if (type === "hit") {
@@ -354,6 +370,29 @@ export class GameScene extends Phaser.Scene {
       sprite.setTexture(towerTexture(t)).setDepth(t.y + 40);
       if (!this.model.paused)
         sprite.y = t.y - 13 + Math.sin(time * 0.002 + t.id) * 0.7;
+      // Individual path ornaments change on every purchase, including crosspaths.
+      for (let path = 0; path < 3; path++)
+        if (t.paths[path]) {
+          const v = attackVisual({
+            ...t,
+            paths: [0, 0, 0].map((n, p) => (p === path ? t.paths[path] : 0)),
+          });
+          const x = t.x - 20 + path * 20,
+            y = t.y - 42;
+          g.lineStyle(2, v.color, 0.9);
+          g.lineBetween(x, t.y - 18, x, y);
+          g.fillStyle(v.color, 0.95);
+          g.fillTriangle(
+            x,
+            y - 4 - t.paths[path] * 2,
+            x - 4,
+            y + 3,
+            x + 4,
+            y + 3,
+          );
+          g.fillStyle(0xfff5d8, 0.9);
+          g.fillCircle(x, y, 1.5);
+        }
       if (t.paths.some((n) => n === 3)) {
         const stats = towerStats(t);
         g.lineStyle(1, TOWERS[t.type].color, 0.2);
@@ -492,59 +531,99 @@ export class GameScene extends Phaser.Scene {
       }
     }
     for (const z of this.model.zones) {
-      g.fillStyle(0xed6d35, 0.22);
+      g.fillStyle(z.type === "grove" ? 0x4ba875 : 0xed6d35, 0.22);
       g.fillEllipse(z.x, z.y, z.radius * 2, z.radius * 1.35);
-      g.lineStyle(2, 0xffc061, 0.4);
+      g.lineStyle(2, z.type === "grove" ? 0xb0efa1 : 0xffc061, 0.4);
       g.strokeEllipse(z.x, z.y, z.radius * 1.65, z.radius);
     }
     for (const p of this.model.projectiles) {
-      const c = TOWERS[p.type].color,
-        a = Math.atan2(p.target.y - p.y, p.target.x - p.x);
-      g.lineStyle(p.type === "archer" ? 2 : 4, c, 0.32);
-      g.lineBetween(p.x, p.y, p.x - Math.cos(a) * 20, p.y - Math.sin(a) * 20);
-      g.fillStyle(c, 0.18);
-      g.fillCircle(p.x, p.y, p.type === "cannon" ? 11 : 8);
-      g.fillStyle(c);
-      g.fillCircle(
-        p.x,
-        p.y,
-        p.type === "cannon" ? 6 : p.type === "archer" ? 2 : 4,
-      );
-      if (p.stats.arc) {
-        g.lineStyle(2, 0xffeac0, 0.4);
-        g.lineBetween(p.x, p.y, p.x - 10, p.y - 15);
-        g.fillStyle(0xffd7a3);
-        g.fillCircle(
-          p.x,
-          p.y -
-            Math.sin(
-              Math.min(
-                1,
-                Math.hypot(p.x - p.origin.x, p.y - p.origin.y) / 300,
-              ) * Math.PI,
-            ) *
-              22,
-          5,
+      const v = p.visual || {
+          color: TOWERS[p.type].color,
+          tier: 0,
+          size: 1,
+          trail: 16,
+        },
+        c = v.color,
+        a = Math.atan2(p.target.y - p.y, p.target.x - p.x),
+        dx = Math.cos(a),
+        dy = Math.sin(a);
+      g.lineStyle((p.type === "archer" ? 2 : 4) * v.size, c, 0.35);
+      g.lineBetween(p.x, p.y, p.x - dx * v.trail, p.y - dy * v.trail);
+      g.fillStyle(c, 0.15);
+      g.fillCircle(p.x, p.y, 7 * v.size);
+      if (
+        p.type === "archer" ||
+        (p.type === "grove" && !p.stats.splash && !p.stats.slow)
+      ) {
+        const length = (p.stats.pierce ? 17 : 10) * v.size,
+          tip = 5 * v.size;
+        g.lineStyle(p.stats.pierce ? 4 : 2, 0xffedbf);
+        g.lineBetween(p.x - dx * length, p.y - dy * length, p.x, p.y);
+        g.fillStyle(c);
+        g.fillTriangle(
+          p.x + dx * tip,
+          p.y + dy * tip,
+          p.x - dy * tip,
+          p.y + dx * tip,
+          p.x + dy * tip,
+          p.y - dx * tip,
         );
-      }
-      if (p.type === "archer") {
-        g.lineStyle(
-          p.stats.pierce ? 5 : 2,
-          p.stats.critical ? 0xffd56e : 0xffecb1,
-        );
+        g.lineStyle(2, c);
         g.lineBetween(
-          p.x - 8 * Math.cos(a),
-          p.y - 8 * Math.sin(a),
-          p.x + 3 * Math.cos(a),
-          p.y + 3 * Math.sin(a),
+          p.x - dx * length,
+          p.y - dy * length,
+          p.x - dx * (length - 4) + dy * 4,
+          p.y - dy * (length - 4) - dx * 4,
         );
+      } else if (p.type === "frost") {
+        g.lineStyle(2, c);
+        for (let n = 0; n < 3 + v.tier; n++) {
+          const angle = a + (n * Math.PI) / (3 + v.tier),
+            r = 5 * v.size;
+          g.lineBetween(
+            p.x - Math.cos(angle) * r,
+            p.y - Math.sin(angle) * r,
+            p.x + Math.cos(angle) * r,
+            p.y + Math.sin(angle) * r,
+          );
+        }
+        g.fillStyle(0xf0ffff);
+        g.fillCircle(p.x, p.y, 2 + v.tier);
+      } else if (p.type === "fire") {
+        g.fillStyle(c, 0.8);
+        g.fillTriangle(
+          p.x - dx * v.trail,
+          p.y - dy * v.trail,
+          p.x - dy * 7 * v.size,
+          p.y + dx * 7 * v.size,
+          p.x + dy * 7 * v.size,
+          p.y - dx * 7 * v.size,
+        );
+        g.fillStyle(0xffc96f);
+        g.fillCircle(p.x, p.y, 5 * v.size);
+        g.fillStyle(0xfff0c5);
+        g.fillCircle(p.x + dx * 2, p.y + dy * 2, 3 * v.size);
+      } else if (p.type === "grove") {
+        g.fillStyle(c);
+        g.fillEllipse(p.x, p.y, 10 * v.size, 7 * v.size);
+        g.lineStyle(2, 0xfff4bd);
+        g.lineBetween(p.x - 4 * v.size, p.y, p.x + 4 * v.size, p.y);
+      } else {
+        g.fillStyle(0x465c64);
+        g.fillCircle(p.x, p.y, 5 * v.size);
+        g.lineStyle(2, c);
+        g.strokeCircle(p.x, p.y, 5 * v.size);
+        for (let n = 0; n < v.tier; n++) {
+          g.fillStyle(c);
+          g.fillCircle(p.x - dx * (n + 1) * 8, p.y - dy * (n + 1) * 8, 2);
+        }
       }
-      if (p.type === "frost") {
-        g.lineStyle(1, 0xecffff);
-        g.lineBetween(p.x - 5, p.y, p.x + 5, p.y);
-        g.lineBetween(p.x, p.y - 5, p.x, p.y + 5);
+      if (p.stats.arc) {
+        g.lineStyle(2, 0xffeac0, 0.5);
+        g.lineBetween(p.x, p.y, p.x - 10, p.y - 15);
       }
     }
+
     this.effects = this.effects.filter((e) => {
       e.age += dt;
       const alpha = 1 - e.age / e.life;
@@ -586,13 +665,32 @@ export class GameScene extends Phaser.Scene {
         g.lineStyle(2, 0xffe4a1, alpha);
         g.lineBetween(a.x, a.y, b.x, b.y);
       }
+      if (e.type === "seedBounce") {
+        const [a, b] = e.points;
+        g.lineStyle(3, e.color, alpha * 0.8);
+        g.lineBetween(a.x, a.y, b.x, b.y);
+        g.fillStyle(0xfff2a2, alpha);
+        g.fillCircle(
+          a.x + (b.x - a.x) * (1 - alpha),
+          a.y + (b.y - a.y) * (1 - alpha),
+          5,
+        );
+      }
       if (e.type === "bolt") {
         for (let i = 1; i < e.points.length; i++) {
           const a = e.points[i - 1],
             b = e.points[i];
-          g.lineStyle(e.heavy ? 10 : 5, e.color, alpha * 0.25);
+          g.lineStyle(
+            e.heavy ? 12 : 4 + (e.tier || 0) * 2,
+            e.color,
+            alpha * 0.25,
+          );
           g.lineBetween(a.x, a.y, b.x, b.y);
-          g.lineStyle(2, 0xf2e6ff, alpha);
+          g.lineStyle(
+            2 + (e.tier || 0) * 0.5,
+            e.tier >= 2 ? 0xfff0ad : 0xf2e6ff,
+            alpha,
+          );
           g.beginPath();
           g.moveTo(a.x, a.y);
           for (let j = 1; j <= 6; j++)

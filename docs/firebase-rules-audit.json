@@ -1,6 +1,6 @@
 {
   "score": 5,
-  "summary": "Prototype rules audited and verified by GitHub CI: owner-only UID paths, identical complete create/update validation, exact schemas, bounded primitive XP and path tiers, bounded reward ledger/counters, server timestamps, default-denied other paths. Owner CRUD, malformed create/update cases, concurrent rewards/purchases, and fully progressed profiles at maximum bounds passed. Client-side economy remains casual and is not anticheat.",
+  "summary": "Prototype static review: strict parent UID ownership, shared exact validation on create/update, bounded schema 1/2 XP and paths, four enumerated maps, server timestamps and default deny. Added schema downgrade protection and legacy/new maximum-bound and malformed Grove tests. Current emulator validation is required in CI; client economy remains casual, not anticheat.",
   "findings": [],
-  "validationRun": "https://github.com/m87dv9yywz-oss/tiny-siege/actions/runs/38457176104"
+  "validationStatus": "Current PR CI pending"
 }

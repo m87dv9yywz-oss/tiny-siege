@@ -110,7 +110,7 @@ test("combat earnings preserve the open upgrade panel, scroll, expanded details 
     };
     return p.scrollTop;
   });
-  expect(before).toBeGreaterThan(0);
+  expect(before).toBe(0); // All actions now fit; earnings must preserve native controls.
   await page.evaluate(() => {
     const g = window.__tinySiege.model;
     for (let i = 0; i < 20; i++) {
@@ -140,7 +140,7 @@ test("combat earnings preserve the open upgrade panel, scroll, expanded details 
     await page.evaluate(() => window.__tinySiege.model.towers[0].targeting),
   ).toBe("STRONG");
 });
-test("range inspection works while paused and outside controls dismiss without swallowing their action", async ({
+test("range inspection works while paused and battle controls preserve upgrades", async ({
   page,
 }) => {
   await open(page);
@@ -148,7 +148,8 @@ test("range inspection works while paused and outside controls dismiss without s
   await tapWorld(page, 145, 105);
   await page.locator("#pause").tap();
   await expect(page.locator("#pause")).toContainText("Resume");
-  await expect(page.locator("#selection-panel")).toBeHidden();
+  await expect(page.locator("#selection-panel")).toBeVisible();
+  await page.locator("#close-panel").tap();
   await page.locator("#clear-range").tap();
   await tapWorld(page, 145, 60);
   await expect(page.locator("#tower-inspector")).toBeVisible();
@@ -156,8 +157,8 @@ test("range inspection works while paused and outside controls dismiss without s
   await expect(page.locator('[data-upgrade="0"]')).toBeDisabled();
   await page.locator("#pause").tap();
   await expect(page.locator("#pause")).toContainText("Pause");
-  await page.locator("#show-upgrades").tap();
+  await expect(page.locator("#selection-panel")).toBeVisible();
   await page.locator("#start-wave").tap();
-  await expect(page.locator("#selection-panel")).toBeHidden();
+  await expect(page.locator("#selection-panel")).toBeVisible();
   await expect(page.locator("#wave")).toHaveText("1");
 });
