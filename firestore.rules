@@ -14,7 +14,6 @@ service cloud.firestore {
     // field lookup repeatedly and exceeded the 1000-expression rule budget.
     function allXP(x,v) {
       return x is map && x.size() == (v == 1 ? 10 : 12)
-        && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent','groveEarned','groveSpent'])
         && (x.archerEarned is int && x.archerSpent is int && x.archerSpent >= 0 && x.archerSpent <= x.archerEarned && x.archerEarned <= 1000000000)
         && (x.cannonEarned is int && x.cannonSpent is int && x.cannonSpent >= 0 && x.cannonSpent <= x.cannonEarned && x.cannonEarned <= 1000000000)
         && (x.frostEarned is int && x.frostSpent is int && x.frostSpent >= 0 && x.frostSpent <= x.frostEarned && x.frostEarned <= 1000000000)
@@ -23,16 +22,18 @@ service cloud.firestore {
         && (v == 1 || (x.groveEarned is int && x.groveSpent is int && x.groveSpent >= 0 && x.groveSpent <= x.groveEarned && x.groveEarned <= 1000000000));
     }
     function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
-    function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6) && m.keys().hasOnly(['archer','cannon','frost','fire','lightning','grove']); }
+    function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6); }
     function star(n) { return n is int && n >= 0 && n <= 3; }
     // mapStars.keys().hasOnly(completedMaps) below supplies the key/size bound.
     function stars(m) { return m is map && (!('emerald' in m) || star(m.emerald)) && (!('amber' in m) || star(m.amber)) && (!('moon' in m) || star(m.moon)) && (!('garden' in m) || star(m.garden)); }
     function nickname(n) { return n is string && n.size() >= 1 && n.size() <= 32; }
-    function stats(s) { return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
+    function stats(s) { return s is map && s.size() == 7 && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
     function validProfile() {
       let d=request.resource.data;
       let v=d.schemaVersion;
-      // Allowed keys + exact size are equivalent to requiring every field.
+      // Exact map sizes + reads/type checks of EVERY named required field
+      // enforce the complete allowlist without re-enumerating it. A missing
+      // required lookup denies the write, including same-size replacement attacks.
       // Cache nested maps to stay within Firestore's 1000-expression budget.
       let x=d.towerXP;
       let u=d.unlockedUpgrades;
@@ -42,7 +43,7 @@ service cloud.firestore {
       let achievements=d.achievements;
       let statistics=d.statistics;
       let settings=d.settings;
-      return d.size() == 13 && d.keys().hasOnly(['schemaVersion','nickname','avatar','crowns','towerXP','unlockedTowers','unlockedUpgrades','completedMaps','mapStars','achievements','statistics','settings','updatedAt'])
+      return d.size() == 13
         && v in [1,2] && v is int
         && nickname(d.nickname)
         && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn']
@@ -54,7 +55,7 @@ service cloud.firestore {
         && stars(mapStars) && mapStars.keys().hasOnly(maps)
         && achievements is list && achievements.size() <= 3 && achievements.hasOnly(['first-clear','three-kingdoms','evolution']) && achievements.toSet().size() == achievements.size()
         && stats(statistics)
-        && settings is map && settings.size() == 2 && settings.keys().hasOnly(['sound','reducedEffects']) && settings.sound is bool && settings.reducedEffects is bool
+        && settings is map && settings.size() == 2 && settings.sound is bool && settings.reducedEffects is bool
         && d.updatedAt is timestamp && d.updatedAt == request.time;
     }
     match /users/{uid}/profiles/{profileId} {

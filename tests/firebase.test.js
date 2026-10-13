@@ -1,5 +1,5 @@
 import { cloudProfile } from "../src/cloud/schema.js";
-import { readFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile } from "node:fs/promises";
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -34,7 +34,33 @@ before(async () => {
     },
   });
 });
-after(async () => env?.cleanup());
+after(async () => {
+  try {
+    const coverage = await fetch(
+      "http://127.0.0.1:8080/emulator/v1/projects/demo-tiny-siege:ruleCoverage",
+    ).then((r) => r.json());
+    const positions = [];
+    function walk(o) {
+      if (!o || typeof o !== "object") return;
+      if (o.sourcePosition)
+        positions.push({
+          position: o.sourcePosition,
+          count: (o.values || []).reduce((n, v) => n + (v.count || 0), 0),
+        });
+      for (const v of Object.values(o)) if (typeof v === "object") walk(v);
+    }
+    walk(coverage);
+    await mkdir("test-results", { recursive: true });
+    await writeFile(
+      "test-results/rule-coverage-positions.json",
+      JSON.stringify(positions, null, 2),
+    );
+    console.log("Rule coverage positions captured:", positions.length);
+  } catch (error) {
+    console.log("Rule coverage unavailable:", error.message);
+  }
+  await env?.cleanup();
+});
 const database = (uid) =>
   uid
     ? env.authenticatedContext(uid).firestore()
@@ -95,6 +121,26 @@ test("create and update use the same strict nested validation", async () => {
     (p) => (p.statistics.kills = -1),
     (p) => (p.updatedAt = new Date(0)),
     (p) => (p.schemaVersion = 3),
+    (p) => {
+      delete p.avatar;
+      p.role = "admin";
+    },
+    (p) => {
+      delete p.towerXP.cannonSpent;
+      p.towerXP.role = 0;
+    },
+    (p) => {
+      delete p.unlockedUpgrades.frost;
+      p.unlockedUpgrades.hacked = [1, 1, 1];
+    },
+    (p) => {
+      delete p.statistics.kills;
+      p.statistics.role = 0;
+    },
+    (p) => {
+      delete p.settings.sound;
+      p.settings.extra = false;
+    },
   ];
   for (let i = 0; i < mutations.length; i++) {
     const create = payload();
