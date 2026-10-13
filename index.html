@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111f2b" />
+    <meta
+      name="description"
+      content="Defend the little kingdom. A colorful, free fantasy tower defense game with five towers and twenty waves."
+    />
+    <title>Tiny Siege · Defend the little kingdom</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111f2b'/%3E%3Cpath d='M15 50V24h8v7h6V16h7v15h6v-7h8v26Z' fill='%23eaca7b'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Tiny Siege main menu"
+          ><span class="brand-mark">♜</span
+          ><span
+            >TINY <b>SIEGE</b><small>DEFEND THE LITTLE KINGDOM</small></span
+          ></a
+        >
+        <div class="campaign-label">
+          <i></i> THE EMERALD TRAIL <span>CAMPAIGN 01</span>
+        </div>
+        <button id="help-button" class="icon-button" aria-label="How to play">
+          ?
+        </button>
+      </header>
+      <main>
+        <section class="battle-column" aria-label="Battlefield">
+          <div class="hud">
+            <div class="resource gold">
+              <span>◈</span>
+              <div><small>YOUR GOLD</small><b id="gold">300</b></div>
+            </div>
+            <div class="resource lives">
+              <span>♥</span>
+              <div><small>KINGDOM LIVES</small><b id="lives">20</b></div>
+            </div>
+            <div class="wave-counter">
+              <small>WAVE</small><b><span id="wave">0</span><em> / 20</em></b>
+            </div>
+            <div class="remaining">
+              <span id="remaining">0</span><small>ENEMIES LEFT</small>
+            </div>
+          </div>
+          <div class="map-frame">
+            <div
+              id="game"
+              aria-label="Place towers beside the winding path"
+              tabindex="0"
+            ></div>
+            <div class="map-label"><span>✦</span> THE EMERALD TRAIL</div>
+            <div id="boss-bar" hidden>
+              <span>THE THORN KING</span>
+              <div><i></i></div>
+            </div>
+            <div id="toast" role="status"></div>
+            <div id="pause-shade" hidden>
+              <b>Kingdom at rest</b><span>Resume when you're ready.</span>
+            </div>
+          </div>
+          <div class="battle-controls">
+            <div>
+              <button id="pause" class="secondary" disabled>
+                Ⅱ <span>Pause</span></button
+              ><button id="speed" class="secondary" disabled>
+                1× <span>Speed</span></button
+              ><button id="mute" class="secondary" aria-label="Toggle sound">
+                ♫ <span>Sound off</span>
+              </button>
+            </div>
+            <button id="start-wave" class="primary" disabled>
+              START WAVE <span>→</span>
+            </button>
+          </div>
+          <div class="map-footer">
+            <span
+              ><i></i>
+              <span id="wave-hint"
+                >A quiet kingdom. An approaching storm.</span
+              ></span
+            ><button id="restart" class="text-button" disabled>
+              ↻ Restart
+            </button>
+          </div>
+        </section>
+        <aside>
+          <div class="arsenal-heading">
+            <div>
+              <small>BUILD YOUR DEFENSE</small>
+              <h2>The arsenal</h2>
+            </div>
+            <span>5 TOWERS</span>
+          </div>
+          <div id="tower-shop" aria-label="Tower shop"></div>
+          <div id="selection-panel"></div>
+          <div class="tip">
+            <span>✧</span>
+            <p>
+              <b>A little strategy goes a long way.</b>Build near bends to cover
+              more of the trail. Mix damage and slowing towers.
+            </p>
+          </div>
+        </aside>
+      </main>
+      <footer>
+        <span>A SMALL KINGDOM. A MIGHTY DEFENSE.</span
+        ><span>20 waves · 5 towers · Endless possibilities</span>
+      </footer>
+    </div>
+    <div
+      id="modal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    ></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
