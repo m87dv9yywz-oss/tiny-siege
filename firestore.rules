@@ -10,11 +10,17 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function owner(uid) { return request.auth != null && request.auth.uid == uid; }
     function number(n) { return n is int && n >= 0 && n <= 1000000000; }
-    function xp(e,s) { return e is int && s is int && s >= 0 && s <= e && e <= 1000000000; }
-    function allXP(x, v) {
-      return x is map && x.size() == (v == 1 ? 10 : 12) && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent','groveEarned','groveSpent'])
-        && xp(x.archerEarned,x.archerSpent) && xp(x.cannonEarned,x.cannonSpent)
-        && xp(x.frostEarned,x.frostSpent) && xp(x.fireEarned,x.fireSpent) && xp(x.lightningEarned,x.lightningSpent) && (v == 1 || xp(x.groveEarned,x.groveSpent));
+    // Validate flat fields directly. Scalar helper arguments expand the same
+    // field lookup repeatedly and exceeded the 1000-expression rule budget.
+    function allXP(x,v) {
+      return x is map && x.size() == (v == 1 ? 10 : 12)
+        && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent','groveEarned','groveSpent'])
+        && (x.archerEarned is int && x.archerSpent is int && x.archerSpent >= 0 && x.archerSpent <= x.archerEarned && x.archerEarned <= 1000000000)
+        && (x.cannonEarned is int && x.cannonSpent is int && x.cannonSpent >= 0 && x.cannonSpent <= x.cannonEarned && x.cannonEarned <= 1000000000)
+        && (x.frostEarned is int && x.frostSpent is int && x.frostSpent >= 0 && x.frostSpent <= x.frostEarned && x.frostEarned <= 1000000000)
+        && (x.fireEarned is int && x.fireSpent is int && x.fireSpent >= 0 && x.fireSpent <= x.fireEarned && x.fireEarned <= 1000000000)
+        && (x.lightningEarned is int && x.lightningSpent is int && x.lightningSpent >= 0 && x.lightningSpent <= x.lightningEarned && x.lightningEarned <= 1000000000)
+        && (v == 1 || (x.groveEarned is int && x.groveSpent is int && x.groveSpent >= 0 && x.groveSpent <= x.groveEarned && x.groveEarned <= 1000000000));
     }
     function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
     function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6) && m.keys().hasOnly(['archer','cannon','frost','fire','lightning','grove']); }
