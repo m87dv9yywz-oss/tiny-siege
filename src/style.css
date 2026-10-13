@@ -2170,3 +2170,9 @@ main:has(#selection-panel.open:not(.placing)) aside {
     }
   }
 }
+@media (max-width: 850px) and (orientation: portrait) {
+  main:has(#selection-panel.open:not(.placing)) .map-frame {
+    margin-top: 5px;
+    margin-bottom: auto;
+  }
+}

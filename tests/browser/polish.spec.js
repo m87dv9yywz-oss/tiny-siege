@@ -36,6 +36,11 @@ for (const [width, height] of sizes)
       ui.selectTower(t);
       ui.openUpgrades();
     });
+    if (width < height) {
+      const board = await page.locator("canvas").boundingBox(),
+        sheet = await page.locator("#selection-panel").boundingBox();
+      expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.8);
+    }
     const top = await page.locator(".hud").boundingBox();
     expect(top.y).toBeGreaterThanOrEqual(8);
     expect(
