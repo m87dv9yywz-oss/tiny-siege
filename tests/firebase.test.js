@@ -117,10 +117,13 @@ test("two independently connected clients atomically converge without duplicate 
   const first = database("parentA"),
     second = database("parentA"),
     initial = freshProfile("Cloud hero");
-  await setDoc(ref(first, "atomic"), {
-    ...initial,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    ref(first, "atomic"),
+    cloudProfile({
+      ...initial,
+      updatedAt: serverTimestamp(),
+    }),
+  );
   const grant = {
     id: "run-clear",
     type: "reward",

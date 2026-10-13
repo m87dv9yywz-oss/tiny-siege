@@ -285,3 +285,18 @@ test("stale local tabs cannot silently overwrite another hero’s saved progress
   assert.equal(Object.keys(JSON.parse(disk.value).profiles).length, 2);
   assert.equal(JSON.parse(a.export()).profiles[hero].crowns, 100);
 });
+
+test("cloud XP codec round-trips readable profiles and rejects extra wire fields", async () => {
+  const { cloudProfile } = await import("../src/cloud/schema.js");
+  const { migrateProfile } = await import("../src/progression/profiles.js");
+  const p = applyOperation(
+    freshProfile(),
+    reward("codec", "emerald", { archer: 350 }),
+  );
+  const wire = cloudProfile(p);
+  assert.equal(wire.towerXP.archerEarned, 350);
+  assert.equal(wire.towerXP.archerSpent, 0);
+  assert.deepEqual(migrateProfile(wire), p);
+  wire.towerXP.role = "admin";
+  assert.throws(() => migrateProfile(wire));
+});
