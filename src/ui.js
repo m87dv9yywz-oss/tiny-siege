@@ -232,6 +232,7 @@ export class UI {
     this.refresh(true);
   }
   restart() {
+    this.drag = null;
     clearTimeout(this.toastTimer);
     $("toast").classList.remove("visible");
     $("toast").textContent = "";
