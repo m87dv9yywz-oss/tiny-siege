@@ -227,6 +227,12 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
   for (const k of ["revision", "wins", "waves", "damage", "armor", "kills"])
     p.statistics[k] = 1000000000;
   p.statistics.ledger = "|" + ("x".repeat(96) + "|").repeat(1980);
+  await assertSucceeds(
+    setDoc(ref(db, "full-bounds-short-history"), {
+      ...p,
+      statistics: { ...p.statistics, ledger: "" },
+    }),
+  );
   await assertSucceeds(setDoc(ref(db, "full-bounds"), p));
   const legacy = {
     ...p,

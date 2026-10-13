@@ -23,9 +23,16 @@ service cloud.firestore {
     }
     function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
     function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6); }
-    function star(n) { return n is int && n >= 0 && n <= 3; }
-    // mapStars.keys().hasOnly(completedMaps) below supplies the key/size bound.
-    function stars(m) { return m is map && (!('emerald' in m) || star(m.emerald)) && (!('amber' in m) || star(m.amber)) && (!('moon' in m) || star(m.moon)) && (!('garden' in m) || star(m.garden)); }
+    // Known optional star keys are enforced against completedMaps below.
+    // One bounded value-set check replaces four repeated scalar range calls;
+    // explicit per-key integer checks still reject doubles such as 1.0.
+    function stars(m) {
+      return m is map && m.values().hasOnly([0,1,2,3])
+        && (!('emerald' in m) || m.emerald is int)
+        && (!('amber' in m) || m.amber is int)
+        && (!('moon' in m) || m.moon is int)
+        && (!('garden' in m) || m.garden is int);
+    }
     function nickname(n) { return n is string && n.size() >= 1 && n.size() <= 32; }
     function stats(s) { return s is map && s.size() == 7 && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
     function validProfile() {
