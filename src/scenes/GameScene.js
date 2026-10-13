@@ -349,9 +349,12 @@ export class GameScene extends Phaser.Scene {
       if (t.id === this.ui.selected) {
         g.lineStyle(2, 0xe8deaa, 0.85);
         g.strokeEllipse(t.x, t.y + 8, 54, 23);
-        g.lineStyle(1, TOWERS[t.type].color, 0.45);
+        const stroke = Math.max(2, 1920 / this.scale.displaySize.width);
+        g.lineStyle(stroke + 2, 0x274c3e, 0.65);
         g.strokeCircle(t.x, t.y, towerStats(t).range);
-        g.fillStyle(TOWERS[t.type].color, 0.05);
+        g.lineStyle(stroke, 0xffebb7, 0.9);
+        g.strokeCircle(t.x, t.y, towerStats(t).range);
+        g.fillStyle(TOWERS[t.type].color, 0.07);
         g.fillCircle(t.x, t.y, towerStats(t).range);
       }
     }
