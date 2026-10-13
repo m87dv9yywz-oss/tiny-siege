@@ -1,3 +1,4 @@
+import { cloudProfile } from "../src/cloud/schema.js";
 import { readFile } from "node:fs/promises";
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -17,7 +18,11 @@ import {
   serverTimestamp,
   runTransaction,
 } from "firebase/firestore";
-import { freshProfile, applyOperation } from "../src/progression/profiles.js";
+import {
+  freshProfile,
+  applyOperation,
+  migrateProfile,
+} from "../src/progression/profiles.js";
 let env;
 before(async () => {
   env = await initializeTestEnvironment({
@@ -36,7 +41,7 @@ const database = (uid) =>
     : env.unauthenticatedContext().firestore();
 const ref = (db, id = "hero") => doc(db, "users", "parentA", "profiles", id);
 const payload = () => ({
-  ...freshProfile("Hero"),
+  ...cloudProfile(freshProfile("Hero")),
   updatedAt: serverTimestamp(),
 });
 test("owner CRUD/list allowed; guest, other parent, parent docs and deeper paths denied", async () => {
@@ -75,9 +80,9 @@ test("create and update use the same strict nested validation", async () => {
     (p) => delete p.settings,
     (p) => (p.settings.sound = "yes"),
     (p) => (p.settings.extra = true),
-    (p) => (p.towerXP.archer.spent = 1),
-    (p) => (p.towerXP.archer.earned = "99"),
-    (p) => (p.towerXP.archer.role = "admin"),
+    (p) => (p.towerXP.archerSpent = 1),
+    (p) => (p.towerXP.archerEarned = "99"),
+    (p) => (p.towerXP.role = "admin"),
     (p) => (p.unlockedUpgrades.fire = [1, 2, 9]),
     (p) => (p.unlockedTowers = ["archer", "cannon", "frost", "hacked"]),
     (p) => (p.unlockedTowers = ["archer", "cannon", "frost", "frost"]),
@@ -129,19 +134,19 @@ test("two independently connected clients atomically converge without duplicate 
     runTransaction(db, async (tx) => {
       const target = ref(db, "atomic");
       const snap = await tx.get(target);
-      const p = applyOperation(snap.data(), op);
-      tx.set(target, { ...p, updatedAt: serverTimestamp() });
+      const p = applyOperation(migrateProfile(snap.data()), op);
+      tx.set(target, cloudProfile({ ...p, updatedAt: serverTimestamp() }));
       return p;
     });
   await Promise.all([commit(first, grant), commit(second, grant)]);
-  let p = (await getDoc(ref(first, "atomic"))).data();
+  let p = migrateProfile((await getDoc(ref(first, "atomic"))).data());
   assert.equal(p.crowns, 100);
   assert.equal(p.towerXP.archer.earned, 800);
   await Promise.all([
     commit(first, { id: "fire-A", type: "tower", tower: "fire" }),
     commit(second, { id: "fire-B", type: "tower", tower: "fire" }),
   ]);
-  p = (await getDoc(ref(second, "atomic"))).data();
+  p = migrateProfile((await getDoc(ref(second, "atomic"))).data());
   assert.equal(p.crowns, 25);
   assert(p.unlockedTowers.includes("fire"));
   await assert.rejects(
@@ -159,7 +164,8 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
   p.mapStars = { emerald: 3, amber: 3, moon: 3 };
   p.achievements = ["first-clear", "three-kingdoms", "evolution"];
   for (const type of p.unlockedTowers) {
-    p.towerXP[type] = { earned: 1000000000, spent: 1000000000 };
+    p.towerXP[type + "Earned"] = 1000000000;
+    p.towerXP[type + "Spent"] = 1000000000;
     p.unlockedUpgrades[type] = [3, 3, 3];
   }
   for (const k of ["revision", "wins", "waves", "damage", "armor", "kills"])

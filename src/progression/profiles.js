@@ -125,6 +125,26 @@ export function validateProfile(p) {
   );
 }
 export function migrateProfile(data) {
+  if (data?.towerXP && Object.hasOwn(data.towerXP, "archerEarned")) {
+    const keys = TYPES.flatMap((t) => [t + "Earned", t + "Spent"]);
+    if (
+      Object.keys(data.towerXP).length !== 10 ||
+      Object.keys(data.towerXP).some((k) => !keys.includes(k))
+    )
+      throw Error("Invalid cloud XP data.");
+    data = {
+      ...data,
+      towerXP: Object.fromEntries(
+        TYPES.map((t) => [
+          t,
+          {
+            earned: data.towerXP[t + "Earned"],
+            spent: data.towerXP[t + "Spent"],
+          },
+        ]),
+      ),
+    };
+  }
   // The infrastructure prototype used schema 1 with empty nested maps.
   const p = freshProfile(data?.nickname, data?.avatar);
   if (data?.schemaVersion && data.schemaVersion !== 1)

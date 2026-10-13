@@ -1,3 +1,4 @@
+import { cloudProfile } from "./schema.js";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -179,7 +180,10 @@ export class FirebaseAdapter {
         for (const op of operations) p = applyOperation(p, op);
       }
       if (!validateProfile(p)) throw Error("Invalid cloud profile.");
-      transaction.set(ref, { ...p, updatedAt: serverTimestamp() });
+      transaction.set(
+        ref,
+        cloudProfile({ ...p, updatedAt: serverTimestamp() }),
+      );
       return p;
     });
   }
