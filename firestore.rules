@@ -50,9 +50,12 @@ service cloud.firestore {
     }
     match /users/{uid}/profiles/{profileId} {
       allow get, list: if owner(uid);
-      allow create: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
-      // Older cached clients must not erase Grove progress after migration.
-      allow update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && request.resource.data.schemaVersion >= resource.data.schemaVersion && validProfile();
+      // Keep one validator for both methods: Firestore may evaluate both while
+      // resolving writes. Never duplicate the complete schema evaluation.
+      // On create resource is null; old cached clients cannot downgrade updates.
+      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$')
+        && (resource == null || request.resource.data.schemaVersion >= resource.data.schemaVersion)
+        && validProfile();
       allow delete: if owner(uid);
     }
     match /{document=**} { allow read, write: if false; }
