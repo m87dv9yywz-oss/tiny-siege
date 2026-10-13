@@ -7,6 +7,7 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:5173/tiny-siege/",
     viewport: { width: 1440, height: 1000 },
     hasTouch: true,
+    screenshot: "only-on-failure",
     launchOptions: process.env.PLAYWRIGHT_USE_BUNDLED
       ? {}
       : { executablePath: "/usr/bin/chromium", args: ["--no-sandbox"] },

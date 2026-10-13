@@ -2,12 +2,12 @@
   "id": "/tiny-siege/",
   "name": "Tiny Siege",
   "short_name": "Tiny Siege",
-  "description": "The Evolution Update — a little kingdom, a mighty defense.",
+  "description": "Kingdom Adventure \u2014 three fantasy trails, family heroes and mighty tower evolutions.",
   "start_url": "/tiny-siege/",
   "scope": "/tiny-siege/",
   "display": "standalone",
-  "background_color": "#183d35",
-  "theme_color": "#183d35",
+  "background_color": "#e4f4d5",
+  "theme_color": "#c6e9d4",
   "icons": [
     {
       "src": "icons/icon-192.png",

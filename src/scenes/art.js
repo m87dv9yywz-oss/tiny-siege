@@ -339,9 +339,37 @@ export function textures(scene) {
   specialEnemies(g);
   g.destroy();
 }
-export function battlefield(scene) {
+export function battlefield(
+  scene,
+  trail = { PATH, distanceToPath },
+  biome = "emerald",
+) {
+  const { PATH, distanceToPath } = trail;
+  const palette =
+    biome === "amber"
+      ? {
+          0x76a77a: 0xdcb876,
+          0x6b9c70: 0xb99261,
+          0x8ab787: 0xe6cf8e,
+          0x355e45: 0x956d42,
+          0x477d52: 0xb78343,
+          0x619558: 0xdca14c,
+          0x89b46c: 0xf4c969,
+        }
+      : biome === "moon"
+        ? {
+            0x76a77a: 0x778aa1,
+            0x6b9c70: 0x61778b,
+            0x8ab787: 0x93a6ac,
+            0x355e45: 0x3e526c,
+            0x477d52: 0x5c7188,
+            0x619558: 0x82959b,
+            0x89b46c: 0xb9cbd0,
+          }
+        : {};
+  const childrenBefore = new Set(scene.children.list);
   const g = scene.add.graphics().setDepth(0);
-  g.fillStyle(0x76a77a);
+  g.fillStyle(palette[0x76a77a] || 0x76a77a);
   g.fillRect(0, 0, 960, 640);
   let seed = 722;
   const random = () => {
@@ -376,7 +404,7 @@ export function battlefield(scene) {
   line(33, 0xe0c892);
   for (let i = 5; i < PATH.length; i += 4) {
     const p = PATH[i];
-    g.fillStyle(0xb2a078, 0.4);
+    g.fillStyle(palette[0xb2a078] || 0xb2a078, 0.4);
     g.fillEllipse(
       p.x + (random() - 0.5) * 22,
       p.y + (random() - 0.5) * 22,
@@ -385,18 +413,18 @@ export function battlefield(scene) {
     );
   }
   const tree = (x, y, s = 1) => {
-    g.fillStyle(0x426a47, 0.25);
+    g.fillStyle(palette[0x426a47] || 0x426a47, 0.25);
     g.fillEllipse(x + 5, y + 9, 48 * s, 20 * s);
-    g.fillStyle(0x806646);
+    g.fillStyle(palette[0x806646] || 0x806646);
     g.fillRoundedRect(x - 5 * s, y - 30 * s, 10 * s, 38 * s, 3);
-    g.fillStyle(0x355e45);
+    g.fillStyle(palette[0x355e45] || 0x355e45);
     g.fillCircle(x, y - 36 * s, 26 * s);
-    g.fillStyle(0x477d52);
+    g.fillStyle(palette[0x477d52] || 0x477d52);
     g.fillCircle(x - 10 * s, y - 44 * s, 20 * s);
     g.fillCircle(x + 14 * s, y - 44 * s, 21 * s);
-    g.fillStyle(0x619558);
+    g.fillStyle(palette[0x619558] || 0x619558);
     g.fillCircle(x - 2 * s, y - 57 * s, 22 * s);
-    g.fillStyle(0x89b46c, 0.7);
+    g.fillStyle(palette[0x89b46c] || 0x89b46c, 0.7);
     g.fillEllipse(x - 8 * s, y - 64 * s, 20 * s, 13 * s);
   };
   [
@@ -430,25 +458,25 @@ export function battlefield(scene) {
       y = 65 + random() * 530;
     if (distanceToPath(x, y) < 48) continue;
     if (i % 5 === 0) {
-      g.fillStyle(0x496e4f, 0.25);
+      g.fillStyle(palette[0x496e4f] || 0x496e4f, 0.25);
       g.fillEllipse(x, y + 4, 25, 10);
-      g.fillStyle(0x80998b);
+      g.fillStyle(palette[0x80998b] || 0x80998b);
       g.fillRoundedRect(x - 11, y - 5, 22, 13, 5);
-      g.fillStyle(0xa9b8a0);
+      g.fillStyle(palette[0xa9b8a0] || 0xa9b8a0);
       g.fillEllipse(x - 2, y - 4, 16, 7);
     } else if (i % 5 === 1) {
-      g.fillStyle(0xdacf9e);
+      g.fillStyle(palette[0xdacf9e] || 0xdacf9e);
       g.fillRect(x - 1, y, 3, 7);
-      g.fillStyle(0xd7836a);
+      g.fillStyle(palette[0xd7836a] || 0xd7836a);
       g.fillEllipse(x, y, 12, 7);
-      g.fillStyle(0xf5e5bd);
+      g.fillStyle(palette[0xf5e5bd] || 0xf5e5bd);
       g.fillCircle(x - 3, y - 1, 1.5);
       g.fillCircle(x + 3, y, 1);
     } else if (i % 5 === 2) {
-      g.fillStyle(0x548450);
+      g.fillStyle(palette[0x548450] || 0x548450);
       g.fillCircle(x, y, 9);
       g.fillCircle(x + 7, y + 3, 7);
-      g.fillStyle(0x82ad65);
+      g.fillStyle(palette[0x82ad65] || 0x82ad65);
       g.fillCircle(x - 3, y - 3, 5);
     } else {
       g.lineStyle(1, 0x548459);
@@ -460,11 +488,11 @@ export function battlefield(scene) {
     }
   }
   // Pond, stepping stones, and tiny magical crystals.
-  g.fillStyle(0x558a72);
+  g.fillStyle(palette[0x558a72] || 0x558a72);
   g.fillEllipse(732, 298, 96, 75);
-  g.fillStyle(0x72b6b0);
+  g.fillStyle(palette[0x72b6b0] || 0x72b6b0);
   g.fillEllipse(732, 294, 84, 61);
-  g.fillStyle(0x9ed0bd, 0.5);
+  g.fillStyle(palette[0x9ed0bd] || 0x9ed0bd, 0.5);
   g.fillEllipse(725, 285, 55, 23);
   g.lineStyle(2, 0xb8e0c1, 0.5);
   g.lineBetween(709, 297, 731, 297);
@@ -475,7 +503,7 @@ export function battlefield(scene) {
     [772, 205],
     [66, 437],
   ].forEach(([x, y]) => {
-    g.fillStyle(0x2f795e, 0.22);
+    g.fillStyle(palette[0x2f795e] || 0x2f795e, 0.22);
     g.fillEllipse(x, y + 6, 35, 17);
     polygon(
       g,
@@ -499,7 +527,7 @@ export function battlefield(scene) {
     );
   });
   // Entrance banner and the kingdom's gate.
-  g.fillStyle(0x715f45);
+  g.fillStyle(palette[0x715f45] || 0x715f45);
   g.fillRect(33, 112, 5, 45);
   polygon(
     g,
@@ -512,14 +540,14 @@ export function battlefield(scene) {
     ],
     0xa2584e,
   );
-  g.fillStyle(0xede0ab);
+  g.fillStyle(palette[0xede0ab] || 0xede0ab);
   g.fillCircle(49, 122, 3);
-  g.fillStyle(0x647a72);
+  g.fillStyle(palette[0x647a72] || 0x647a72);
   g.fillRoundedRect(910, 209, 35, 33, 4);
-  g.fillStyle(0xa1afa0);
+  g.fillStyle(palette[0xa1afa0] || 0xa1afa0);
   g.fillRect(904, 203, 14, 39);
   g.fillRect(941, 203, 14, 39);
-  g.fillStyle(0xc4c5ab);
+  g.fillStyle(palette[0xc4c5ab] || 0xc4c5ab);
   g.fillRect(904, 201, 14, 8);
   g.fillRect(941, 201, 14, 8);
   polygon(
@@ -542,6 +570,8 @@ export function battlefield(scene) {
   );
   // Bake static illustration once: thousands of grass strokes need not be
   // tessellated and redrawn on the GPU every frame.
+  if (scene.textures.exists("emerald-trail"))
+    scene.textures.remove("emerald-trail");
   g.generateTexture("emerald-trail", 960, 640);
   scene.add.image(0, 0, "emerald-trail").setOrigin(0).setDepth(0);
   g.destroy();
@@ -561,6 +591,7 @@ export function battlefield(scene) {
       fontStyle: "bold",
     })
     .setDepth(1);
+  return scene.children.list.filter((child) => !childrenBefore.has(child));
 }
 // Original layered fantasy architecture. Each specialization has its own weapon
 // silhouette, materials and construction rather than a badge on the base sprite.

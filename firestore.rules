@@ -1,0 +1,58 @@
+rules_version = '2';
+// Parent-owned profiles: users/{uid}/profiles/{profileId}, schema 1.
+// No parent document, nested collection, public read or user-assigned role.
+// nickname: 1..32 characters; avatar: predefined fantasy ID; crowns: bounded int.
+// towerXP: ten class Earned/Spent integer fields; unlockedUpgrades: five 3-tier lists.
+// completedMaps/mapStars/achievements: fixed known IDs; settings: two booleans.
+// statistics: bounded counters/revision and bounded delimiter-encoded reward IDs.
+// updatedAt must be a server timestamp on every create AND update.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function number(n) { return n is int && n >= 0 && n <= 1000000000; }
+    function xp(e,s) { return e is int && s is int && s >= 0 && s <= e && e <= 1000000000; }
+    function allXP(x) {
+      return x is map && x.size() == 10 && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent'])
+        && xp(x.archerEarned,x.archerSpent) && xp(x.cannonEarned,x.cannonSpent)
+        && xp(x.frostEarned,x.frostSpent) && xp(x.fireEarned,x.fireSpent) && xp(x.lightningEarned,x.lightningSpent);
+    }
+    function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
+    function five(m) { return m is map && m.size() == 5 && m.keys().hasOnly(['archer','cannon','frost','fire','lightning']); }
+    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)); }
+    function stats(s) { return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
+    function validProfile() {
+      let d=request.resource.data;
+      let fields=['schemaVersion','nickname','avatar','crowns','towerXP','unlockedTowers','unlockedUpgrades','completedMaps','mapStars','achievements','statistics','settings','updatedAt'];
+      // Allowed keys + exact size are equivalent to requiring every field.
+      // Cache nested maps to stay within Firestore's 1000-expression budget.
+      let x=d.towerXP;
+      let u=d.unlockedUpgrades;
+      let towers=d.unlockedTowers;
+      let maps=d.completedMaps;
+      let mapStars=d.mapStars;
+      let achievements=d.achievements;
+      let statistics=d.statistics;
+      let settings=d.settings;
+      return d.size() == 13 && d.keys().hasOnly(fields)
+        && d.schemaVersion == 1 && d.schemaVersion is int
+        && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 32
+        && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn']
+        && number(d.crowns)
+        && allXP(x)
+        && five(u) && paths(u.archer) && paths(u.cannon) && paths(u.frost) && paths(u.fire) && paths(u.lightning)
+        && towers is list && towers.size() <= 5 && towers.hasAll(['archer','cannon','frost']) && towers.hasOnly(['archer','cannon','frost','fire','lightning']) && towers.toSet().size() == towers.size()
+        && maps is list && maps.size() <= 3 && maps.hasOnly(['emerald','amber','moon']) && maps.toSet().size() == maps.size()
+        && stars(mapStars) && mapStars.keys().hasOnly(maps)
+        && achievements is list && achievements.size() <= 3 && achievements.hasOnly(['first-clear','three-kingdoms','evolution']) && achievements.toSet().size() == achievements.size()
+        && stats(statistics)
+        && settings is map && settings.size() == 2 && settings.keys().hasOnly(['sound','reducedEffects']) && settings.sound is bool && settings.reducedEffects is bool
+        && d.updatedAt is timestamp && d.updatedAt == request.time;
+    }
+    match /users/{uid}/profiles/{profileId} {
+      allow get, list: if owner(uid);
+      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      allow delete: if owner(uid);
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

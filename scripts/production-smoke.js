@@ -16,7 +16,7 @@ try {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const target = new URL(url);
-  target.searchParams.set("verify", process.env.GITHUB_SHA || "local-v2");
+  target.searchParams.set("verify", process.env.GITHUB_SHA || "local-v3");
   const response = await page.goto(target.href);
   assert.equal(response.status(), 200);
   await page.waitForFunction(
@@ -87,11 +87,51 @@ try {
   await page.locator("#pause").tap();
   assert.match(await page.locator("#pause").textContent(), /Resume/);
   await page.locator("#pause").tap();
+  // Guest progression is tested through the production DOM, never dev hooks.
+  await page.locator(".brand").tap();
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Preview Knight");
+  await page.locator("#profile-form button").tap();
+  await page.locator('[data-map="emerald"]').tap();
+  assert.equal(await page.locator('[data-tower="fire"]').isDisabled(), true);
+  assert.equal(await page.locator(".wave-counter em").textContent(), " / 14");
+  await page.locator('[data-tower="archer"]').tap();
+  const beginner = await page.locator("canvas").boundingBox();
+  await page.touchscreen.tap(
+    beginner.x + (beginner.width * 145) / 960,
+    beginner.y + (beginner.height * 105) / 640,
+  );
+  await page.locator("#close-panel").tap();
+  await page.locator("#speed").tap();
+  await page.locator("#start-wave").tap();
+  await page.waitForFunction(() =>
+    document.querySelector("#start-wave").textContent.includes("START WAVE 2"),
+  );
+  await page.locator(".brand").tap();
+  await page.reload();
+  await page.waitForFunction(() =>
+    document.querySelector(".profile-choice.chosen"),
+  );
+  assert.match(
+    await page.locator(".profile-choice.chosen").textContent(),
+    /Preview Knight/,
+  );
+  await page.locator("#collection").tap();
+  const xp = await page
+    .locator(".collection-grid section")
+    .first()
+    .textContent();
+  assert.ok(
+    Number(xp.match(/(\d+) XP available/)[1]) > 0,
+    "Earned XP must survive reload",
+  );
+  await page.locator("#back").tap();
+  await page.locator('[data-map="emerald"]').tap();
   assert.deepEqual(errors, []);
   mkdirSync("test-results", { recursive: true });
   await page.screenshot({ path: "test-results/production-smoke.png" });
   console.log(
-    `Verified Tiny Siege v2 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
+    `Verified Tiny Siege v3 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
   );
 } finally {
   await browser.close();

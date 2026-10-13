@@ -67,6 +67,16 @@ for (const [width, height] of viewports)
     expect(Math.abs(pos.y - 105)).toBeLessThan(1);
     await page.locator('[data-upgrade="0"]').tap();
     await expect(page.locator("#gold")).toHaveText("125");
+    const canvasOpen = await page.locator("canvas").boundingBox(),
+      fieldOpen = await page.locator("#game").boundingBox();
+    expect(canvasOpen.x).toBeGreaterThanOrEqual(fieldOpen.x - 0.5);
+    expect(canvasOpen.y).toBeGreaterThanOrEqual(fieldOpen.y - 0.5);
+    expect(canvasOpen.x + canvasOpen.width).toBeLessThanOrEqual(
+      fieldOpen.x + fieldOpen.width + 0.5,
+    );
+    expect(canvasOpen.y + canvasOpen.height).toBeLessThanOrEqual(
+      fieldOpen.y + fieldOpen.height + 0.5,
+    );
     await page.locator("#targeting").selectOption("STRONG");
     expect(
       await page.evaluate(() => window.__tinySiege.model.towers[0].targeting),

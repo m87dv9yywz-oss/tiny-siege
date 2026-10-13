@@ -2,7 +2,9 @@ import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
 import { WAVE_HINTS } from "./data/waves.js";
 const $ = (id) => document.getElementById(id);
 export class UI {
-  constructor(model) {
+  constructor(model, kingdom = null) {
+    this.kingdom = kingdom;
+    if (kingdom) kingdom.ui = this;
     this.model = model;
     this.inMenu = true;
     this.helpOpen = false;
@@ -28,14 +30,31 @@ export class UI {
     this.bindDrag();
     $("show-upgrades").onclick = () => this.openUpgrades();
     $("clear-range").onclick = () => this.cancel();
-    document.addEventListener("pointerdown", (e) => {
+    document.addEventListener(
+      "pointerdown",
+      (e) => {
+        this.canvasPointerDown = e
+          .composedPath()
+          .some((node) => node.matches?.("#game canvas"));
+      },
+      true,
+    );
+    document.addEventListener("click", (e) => {
+      if (this.canvasPointerDown && e.detail) {
+        this.canvasPointerDown = false;
+        return;
+      }
       if (
         this.upgradeOpen &&
         !this.inMenu &&
         !this.helpOpen &&
-        !e.target.closest(
-          "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal",
-        )
+        !e
+          .composedPath()
+          .some((node) =>
+            node.matches?.(
+              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal",
+            ),
+          )
       )
         this.closeUpgrades();
     });
@@ -76,6 +95,7 @@ export class UI {
         `<img src="${this.portrait({ type: key, paths: [0, 0, 0] })}" alt="">`;
   }
   portrait(t) {
+    if (this.kingdom) return this.kingdom.portrait(t);
     const p = t.paths.findIndex((n) => n >= 2);
     const key =
       p < 0
@@ -199,6 +219,8 @@ export class UI {
     this.tone(event);
     if (event.type === "invalid") this.toast(event.message);
     if (event.type === "clear")
+      this.kingdom?.safe(() => this.kingdom.checkpoint());
+    if (event.type === "clear")
       this.toast(`Wave ${this.model.wave} cleared · +${event.bonus} gold`);
     if (event.type === "escape")
       this.toast(
@@ -226,6 +248,10 @@ export class UI {
   choose(type) {
     if (this.inMenu || this.model.ended || this.model.paused || this.helpOpen)
       return;
+    if (!this.model.available(type)) {
+      this.toast("Unlock this tower with Kingdom Crowns.");
+      return;
+    }
     this.placing = this.placing === type ? null : type;
     this.selected = null;
     this.upgradeOpen = false;
@@ -258,7 +284,7 @@ export class UI {
     if (this.inMenu || this.helpOpen) return;
     if (this.model.startWave()) {
       this.resumeAudio();
-      this.toast(WAVE_HINTS[this.model.wave - 1]);
+      this.toast((this.model.campaign.hints||WAVE_HINTS)[this.model.wave - 1]);
       this.refresh(true);
     }
   }
@@ -277,6 +303,7 @@ export class UI {
     this.placing = null;
     this.selected = null;
     this.upgradeOpen = false;
+    this.kingdom?.beginRun();
     this.model.reset();
     $("modal").hidden = true;
     $("app").inert = false;
@@ -290,6 +317,14 @@ export class UI {
     requestAnimationFrame(() => $("modal").querySelector("button")?.focus());
   }
   menu() {
+    if (this.kingdom) {
+      this.inMenu = true;
+      this.helpOpen = false;
+      this.placing = null;
+      this.kingdom.menu();
+      this.refresh(true);
+      return;
+    }
     this.inMenu = true;
     this.helpOpen = false;
     this.placing = null;
@@ -303,7 +338,7 @@ export class UI {
   help() {
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Mix splash damage, fire, and lightning with Frost to slow the march. Cannons break armor, fire melts it, and piercing arrows punch through. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Protect your 20 lives through wave 20 and defeat the Thorn King.</li><li>Keys <b>1–5</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
+      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire and Lightning, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–5</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
     );
     $("close-help").onclick = () => this.closeHelp();
   }
@@ -320,9 +355,15 @@ export class UI {
   }
   result(result) {
     const win = result === "victory";
+    const rewards = this.kingdom?.finishRun();
     this.modal(
-      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
+      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? (this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends.") : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
     );
+    if (rewards)
+      $("again").insertAdjacentHTML(
+        "beforebegin",
+        `<div class="reward-summary">${rewards}</div>`,
+      );
     $("again").onclick = () => this.restart();
     $("main-menu").onclick = () => this.menu();
     this.refresh(true);
@@ -342,6 +383,10 @@ export class UI {
         this.upgradeOpen,
         this.placing,
         this.inMenu,
+        m.profile?.unlockedTowers.join(","),
+        m.profile
+          ? Object.values(m.profile.unlockedUpgrades).flat().join(",")
+          : "",
       ].join("|");
     // Boss health changes even when no counters change.
     const boss = m.enemies.find((e) => e.type === "boss" && e.alive);
@@ -357,6 +402,10 @@ export class UI {
     $("gold").textContent = m.gold;
     $("lives").textContent = m.lives;
     $("wave").textContent = m.wave;
+    document.querySelector(".wave-counter em").textContent =
+      ` / ${m.totalWaves}`;
+    document.querySelector(".map-label").textContent = m.campaign.name;
+    if (this.kingdom) this.kingdom.hud();
     $("remaining").textContent = m.remaining;
     $("pause").disabled = this.inMenu || !!m.ended;
     $("speed").disabled = this.inMenu || !!m.ended;
@@ -377,9 +426,26 @@ export class UI {
         ? "The little kingdom stands."
         : m.ended === "defeat"
           ? "Regroup. Rebuild. Return."
-          : WAVE_HINTS[Math.min(m.active ? m.wave - 1 : m.wave, 19)];
+          : (m.campaign.hints||WAVE_HINTS)[Math.min(m.active ? m.wave - 1 : m.wave, m.totalWaves-1)];
     document.querySelectorAll("[data-tower]").forEach((b) => {
+      const type = b.dataset.tower,
+        def = TOWERS[type],
+        unlocked = m.available(type),
+        crowns = type === "fire" ? 75 : 130;
+      b.querySelector(".tower-cost").textContent = unlocked
+        ? def.cost
+        : `♛ ${crowns}`;
+      b.title = unlocked
+        ? `${def.name}: ${def.subtitle}`
+        : `Unlock ${def.name} in Kingdom for ${crowns} Crowns`;
+      b.setAttribute(
+        "aria-label",
+        unlocked
+          ? `Buy ${def.name}, ${def.cost} gold`
+          : `${def.name}, locked · ${crowns} Kingdom Crowns`,
+      );
       b.disabled =
+        !m.available(b.dataset.tower) ||
         this.inMenu ||
         m.paused ||
         !!m.ended ||
@@ -396,6 +462,7 @@ export class UI {
       ? [
           t.id,
           ...t.paths,
+          ...(m.profile?.unlockedUpgrades[t.type] || []),
           t.targeting,
           m.paused,
           m.ended,
@@ -406,7 +473,16 @@ export class UI {
       if (t && this.upgradeOpen)
         panel.querySelectorAll("[data-upgrade]").forEach((b) => {
           const u = upgradeState(t, Number(b.dataset.upgrade));
-          b.disabled = !!u.locked || m.gold < u.cost || !!m.ended || m.paused;
+          b.disabled =
+            !m.pathAvailable(
+              t.type,
+              Number(b.dataset.upgrade),
+              t.paths[Number(b.dataset.upgrade)] + 1,
+            ) ||
+            !!u.locked ||
+            m.gold < u.cost ||
+            !!m.ended ||
+            m.paused;
         });
     };
     if (!force && this.lastPanel === panelKey) {
@@ -419,8 +495,18 @@ export class UI {
     this.lastPanel = panelKey;
     panel.dataset.towerId = t?.id || "";
     const visible = (!!t && this.upgradeOpen) || !!this.placing;
+    const sizeChanged =
+      panel.classList.contains("open") !== visible ||
+      panel.classList.contains("placing") !== !!this.placing;
     panel.classList.toggle("open", visible);
+    panel.classList.toggle("placing", !!this.placing);
     panel.hidden = !visible;
+    if (sizeChanged && this.scene) {
+      // refresh() fits against Phaser’s stored parentSize; read the new DOM
+      // bounds first so closing/opening a panel never crops the battlefield.
+      this.scene.scale.getParentBounds();
+      this.scene.scale.refresh();
+    }
     if (t) {
       const def = TOWERS[t.type],
         stats = towerStats(t);
@@ -434,7 +520,7 @@ export class UI {
             const description =
               u.tier?.description ||
               path.tiers[Math.max(0, t.paths[p] - 1)].description;
-            return `<div class="path path-${p}"><div class="path-heading"><b>${path.name}</b><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small>${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || `${u.tier.name} · ${u.cost} ◈`}</button></div>`;
+            return `<div class="path path-${p}"><div class="path-heading"><b>${path.name}</b><span aria-label="${t.paths[p]} tiers purchased">${[1, 2, 3].map((n) => `<i class="${t.paths[p] >= n ? "bought" : ""}">${n}</i>`).join("")}</span></div><small>${description}</small><button data-upgrade="${p}" class="upgrade-button" ${u.locked || !m.pathAvailable(t.type, p, t.paths[p] + 1) || m.gold < u.cost || m.ended || m.paused ? "disabled" : ""} aria-label="${u.tier?.name || path.name} · ${u.cost || 0} gold">${u.locked || (!m.pathAvailable(t.type, p, t.paths[p] + 1) ? `Unlock Tier ${t.paths[p] + 1} in Kingdom · XP` : `${u.tier.name} · ${u.cost} ◈`)}</button></div>`;
           })
           .join(
             "",
