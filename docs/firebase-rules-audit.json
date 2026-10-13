@@ -1,5 +1,6 @@
 {
   "score": 5,
-  "summary": "Prototype code audit: owner-only UID paths, identical complete validators on create/update, exact nested schemas, bounded fields and reward ledger, server timestamps, and default-denied other paths. Emulator execution is required in CI before acceptance. Client-side economy remains casual and is not anticheat.",
-  "findings": []
+  "summary": "Prototype rules audited and verified by GitHub CI: owner-only UID paths, identical complete create/update validation, exact schemas, bounded primitive XP and path tiers, bounded reward ledger/counters, server timestamps, default-denied other paths. Owner CRUD, malformed create/update cases, concurrent rewards/purchases, and fully progressed profiles at maximum bounds passed. Client-side economy remains casual and is not anticheat.",
+  "findings": [],
+  "validationRun": "https://github.com/m87dv9yywz-oss/tiny-siege/actions/runs/38457176104"
 }
