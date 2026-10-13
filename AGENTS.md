@@ -35,7 +35,7 @@ npm run preview -- --port 4173 --strictPort
 ```
 
 - `npm test`: 45 checks covering economy, placement, armor/status effects, attacks, pause/speed, lifecycle, and all twenty waves including the boss, using earned gold.
-- Browser suite: 14 tests covering menu, placement, combat, upgrades, selling, pause, speed, sound controls, restart, end screens, and narrow-screen touch. The `CI=true` command starts its own server, so port 5173 must be free; plain `npm run test:browser` can reuse a task-owned development server. Clearing `PLAYWRIGHT_USE_BUNDLED` selects system Chromium. Screenshots/results are ignored under `test-results/`.
+- Browser suite: 19 tests covering menu, placement, combat, upgrades, selling, pause, speed, sound controls, restart, end screens, and narrow-screen touch. The `CI=true` command starts its own server, so port 5173 must be free; plain `npm run test:browser` can reuse a task-owned development server. Clearing `PLAYWRIGHT_USE_BUNDLED` selects system Chromium. Screenshots/results are ignored under `test-results/`.
 - Victory/defeat browser tests manipulate local development state to check screens; the independent campaign simulation checks real wave progression. Keep these claims distinct.
 - Production output is `dist/`. Validate preview at `http://127.0.0.1:4173/tiny-siege/`: assets must load, campaign must open, and buying/placing a tower must deduct gold. The production bundle must not expose `window.__tinySiege`.
 - For changes affecting gameplay or rendering, run the relevant logic/browser checks and production build; investigate failures rather than weakening tests. Documentation-only edits need no new gameplay tests.
@@ -54,3 +54,5 @@ npm run preview -- --port 4173 --strictPort
 V2 uses Phaser's Canvas renderer with a baked static battlefield. Preserve that choice unless a measured renderer comparison justifies a change. `towerStats`, `upgradeState`, `towerName` and `towerTexture` are the shared data helpers; towers store three independent path tiers. Damage packets specify damage type, armor damage and penetration/bypass. Do not reintroduce the old linear-level rules or percent-only armor.
 
 `node scripts/balance-report.js` writes detailed funded campaign results to `docs/balance-results.json`. `node scripts/production-smoke.js <url>` validates the production UI without development hooks. The Pages workflow now runs the latter against the real live URL after deployment. Icon sources and committed exports are in `public/icons/`; ordinary builds do not need CairoSVG.
+
+Tower selection and the upgrade sheet are independent: `selected` drives the visible range, while `upgradeOpen` drives the sheet. Closing upgrades preserves selection. Resolve canvas taps from the current DOM rectangle, and hit the visible tower artwork rather than only its ground anchor. Do not rebuild upgrade controls on gold-only updates; preserve scroll and expanded details across real upgrades.

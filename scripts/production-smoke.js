@@ -68,6 +68,17 @@ try {
     size: 180,
   });
   await page.locator("#close-panel").tap();
+  await page.locator("#show-upgrades").tap();
+  assert.equal(await page.locator("#selection-panel").isVisible(), true);
+  await page.locator(".orientation-hint").tap();
+  assert.equal(await page.locator("#selection-panel").isVisible(), false);
+  const roof = await page.locator("canvas").boundingBox();
+  await page.touchscreen.tap(
+    roof.x + (roof.width * 145) / 960,
+    roof.y + (roof.height * 60) / 640,
+  );
+  assert.equal(await page.locator("#selection-panel").isVisible(), true);
+  await page.locator("#close-panel").tap();
   await page.locator("#speed").tap();
   await page.locator("#start-wave").tap();
   await page.waitForFunction(
