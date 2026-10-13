@@ -127,12 +127,12 @@ test("explicit merge retains originals and never adds balances or duplicates fir
     b = structuredClone(a);
   a = applyOperation(a, { id: "unlock", type: "tower", tower: "fire" });
   const merged = mergeProfiles(a, b);
-  assert.equal(merged.crowns, 100);
+  assert.equal(merged.crowns, 25);
   assert(merged.unlockedTowers.includes("fire"));
   assert.equal(merged.completedMaps.length, 1);
   assert.equal(a.crowns, 25);
   const after = applyOperation(merged, reward("clear"));
-  assert.equal(after.crowns, 100);
+  assert.equal(after.crowns, 25);
 });
 test("strict local validation rejects malformed nested saves", () => {
   const p = freshProfile();
@@ -247,4 +247,41 @@ test("queued actions arriving during cloud sync survive and concurrent unlocks s
   assert.equal(store.data.selected, null);
   globalThis.window = previousWindow;
   delete navigator.onLine;
+});
+
+test("repeated guest merges cannot replenish spent Crowns or XP", () => {
+  let guest = applyOperation(
+    freshProfile(),
+    reward("guest-clear", "emerald", { archer: 800 }),
+  );
+  let cloud = applyOperation(guest, {
+    id: "spent-fire",
+    type: "tower",
+    tower: "fire",
+  });
+  cloud = applyOperation(cloud, {
+    id: "spent-xp",
+    type: "path",
+    tower: "archer",
+    path: 0,
+    tier: 2,
+  });
+  for (let i = 0; i < 5; i++) {
+    cloud = mergeProfiles(cloud, guest);
+    assert.equal(cloud.crowns, 25);
+    assert.equal(cloud.towerXP.archer.spent, 180);
+  }
+});
+
+test("stale local tabs cannot silently overwrite another hero’s saved progress", () => {
+  const disk = memory(),
+    a = new ProfileStore(disk);
+  const hero = a.create("A");
+  const b = new ProfileStore(disk);
+  b.create("B");
+  const latest = disk.value;
+  assert.throws(() => a.commit(reward("stale-tab")), /Another Tiny Siege tab/);
+  assert.equal(disk.value, latest);
+  assert.equal(Object.keys(JSON.parse(disk.value).profiles).length, 2);
+  assert.equal(JSON.parse(a.export()).profiles[hero].crowns, 100);
 });

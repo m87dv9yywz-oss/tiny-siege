@@ -36,7 +36,12 @@ export class GameScene extends Phaser.Scene {
           gravityY: 50,
         })
         .setDepth(950);
-    this.input.on("pointerdown", (p) => {
+    const pointerDown = (event) => {
+      if (
+        event.isPrimary === false ||
+        (event.pointerType === "mouse" && event.button !== 0)
+      )
+        return;
       if (
         this.ui.drag?.moving ||
         this.ui.inMenu ||
@@ -44,15 +49,10 @@ export class GameScene extends Phaser.Scene {
         this.model.ended
       )
         return;
-      // Read the current canvas rectangle instead of cached input bounds: iOS
-      // browser chrome and standalone safe areas can move it without a resize.
-      const touch = Array.from(p.event?.changedTouches || []).find(
-        (t) => t.identifier === p.identifier,
-      );
-      const event = touch || p.event;
-      const point = Number.isFinite(event?.clientX)
-        ? this.ui.worldPoint(event.clientX, event.clientY)
-        : p;
+      // Native pointer events avoid Phaser's cached transform immediately after
+      // the DOM panel changes the canvas size. Both touch and mouse use the same
+      // world coordinates and simulation placement validator, once per gesture.
+      const point = this.ui.worldPoint(event.clientX, event.clientY);
       if (!point || point.inside === false) return;
       if (this.ui.placing) {
         const tower = this.model.place(this.ui.placing, point.x, point.y);
@@ -68,7 +68,11 @@ export class GameScene extends Phaser.Scene {
         else if (this.ui.upgradeOpen) this.ui.closeUpgrades();
         else this.ui.cancel();
       }
-    });
+    };
+    this.game.canvas.addEventListener("pointerdown", pointerDown);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.game.canvas.removeEventListener("pointerdown", pointerDown),
+    );
     this.input.keyboard.on("keydown", (e) => {
       if (e.code === "Escape") {
         this.ui.cancel();

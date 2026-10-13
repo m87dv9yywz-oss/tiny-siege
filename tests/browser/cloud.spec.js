@@ -27,7 +27,7 @@ test("Google emulator credential, guest migration, two browser sessions, offline
   const p = await a.newPage(),
     q = await b.newPage();
   await login(p, "parent-one");
-  await p.evaluate(async () => {
+  const guestId = await p.evaluate(async () => {
     const { profiles, kingdom } = window.__tinySiege;
     const id = profiles.create("Cloud Dragon");
     profiles.commit({
@@ -40,6 +40,7 @@ test("Google emulator credential, guest migration, two browser sessions, offline
       stats: {},
     });
     await kingdom.cloud.importGuest(id);
+    return id;
   });
   await login(q, "parent-one");
   await q.evaluate(async () => {
@@ -86,6 +87,15 @@ test("Google emulator credential, guest migration, two browser sessions, offline
   );
   await q.evaluate(() => window.__tinySiege.kingdom.cloud.sync());
   await p.evaluate(() => window.__tinySiege.kingdom.cloud.refresh());
+  expect(
+    await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
+  ).toBe(25);
+  await p.evaluate(async (id) => {
+    const { kingdom, profiles } = window.__tinySiege;
+    const revision =
+      profiles.data.profiles[profiles.data.selected].remoteRevision;
+    await kingdom.cloud.importGuest(id, id, "merge", revision);
+  }, guestId);
   expect(
     await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
   ).toBe(25);

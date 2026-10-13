@@ -23,6 +23,7 @@ import {
   migrateProfile,
   validateProfile,
   TYPES,
+  UNLOCK_COSTS,
 } from "../progression/profiles.js";
 
 // Public web-app identifiers from the verified issue #2 Firebase handoff.
@@ -41,10 +42,16 @@ export function mergeProfiles(cloud, guest) {
   const p = structuredClone(cloud);
   // Conservative explicit merge: balances are never added, preventing duplicate
   // first-clear/import awards. Both originals remain exportable on this device.
-  p.crowns = Math.max(cloud.crowns, guest.crowns);
+  const spent = (p) =>
+    p.unlockedTowers.reduce((n, t) => n + (UNLOCK_COSTS[t] || 0), 0);
+  const earnedCrowns = Math.max(
+    cloud.crowns + spent(cloud),
+    guest.crowns + spent(guest),
+  );
   p.unlockedTowers = [
     ...new Set([...cloud.unlockedTowers, ...guest.unlockedTowers]),
   ];
+  p.crowns = earnedCrowns - spent(p);
   p.completedMaps = [
     ...new Set([...cloud.completedMaps, ...guest.completedMaps]),
   ];
@@ -298,15 +305,34 @@ export class CloudSaves {
     }
     if (entry.pending.length && !this.conflict) await this.sync();
   }
-  async importGuest(guestId, targetId = null, resolution = "new") {
+  async importGuest(
+    guestId,
+    targetId = null,
+    resolution = "new",
+    reviewedRevision = null,
+  ) {
     if (!this.uid) throw Error("A parent must sign in first.");
     const guest = this.store.data.profiles[guestId];
     if (!guest || guest.owner) throw Error("Choose a guest profile.");
     const id = targetId || guestId;
+    const targetEntry = this.store.data.profiles[`${this.uid}:${id}`];
+    if (targetEntry?.pending.length)
+      throw Error(
+        "Sync the target hero's queued actions before importing. Your local progress has been kept.",
+      );
     const remote = (await this.adapter.list(this.uid)).find((r) => r.id === id);
     if (remote && !targetId)
       throw Error(
         "This guest profile is already in the cloud. Choose Merge or Replace explicitly.",
+      );
+    if (
+      remote &&
+      targetId &&
+      reviewedRevision !== null &&
+      remote.profile.statistics.revision !== reviewedRevision
+    )
+      throw Error(
+        "The cloud hero changed since this review. Refresh cloud saves and review the latest version.",
       );
     const result = await this.adapter.sync(
       this.uid,

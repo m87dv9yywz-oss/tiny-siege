@@ -400,8 +400,11 @@ export class KingdomUI {
     }
     const guests = this.visibleProfiles().filter(([, e]) => !e.owner),
       cloud = this.visibleProfiles().filter(([, e]) => e.owner);
+    const reviewedVersions = Object.fromEntries(
+      cloud.map(([, e]) => [e.cloudId, e.remoteRevision]),
+    );
     this.ui.modal(
-      `<h1 id="modal-title">Review import</h1><p>Import as a new cloud hero, or choose an existing hero. Merge keeps the higher balance (never adds currency), combines unlocks and stars, and retains both originals. Replace uses the guest save after a backup. Nothing happens until you choose below.</p><label>Guest hero<select id="guest-source">${guests.map(([id, e]) => `<option value="${escape(id)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><label>Cloud hero<select id="cloud-target"><option value="">Create separate cloud hero</option>${cloud.map(([, e]) => `<option value="${escape(e.cloudId)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><button id="merge-guest" class="primary">Import new / merge reviewed heroes</button><button id="replace-guest" class="danger">Back up and replace chosen cloud hero</button><button id="back" class="secondary">Cancel</button><p id="save-message" role="status"></p>`,
+      `<h1 id="modal-title">Review import</h1><p>Import as a new cloud hero, or choose an existing hero. Merge keeps the larger lifetime Crown total, subtracts the cost of combined tower unlocks, and combines XP and stars. Balances are never added; both originals are kept. Replace uses the guest save after a backup. Nothing happens until you choose below.</p><label>Guest hero<select id="guest-source">${guests.map(([id, e]) => `<option value="${escape(id)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><label>Cloud hero<select id="cloud-target"><option value="">Create separate cloud hero</option>${cloud.map(([, e]) => `<option value="${escape(e.cloudId)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><button id="merge-guest" class="primary">Import new / merge reviewed heroes</button><button id="replace-guest" class="danger">Back up and replace chosen cloud hero</button><button id="back" class="secondary">Cancel</button><p id="save-message" role="status"></p>`,
     );
     const apply = (mode) =>
       this.safe(async () => {
@@ -411,7 +414,8 @@ export class KingdomUI {
         if (mode === "replace" && !target)
           throw Error("Choose the cloud hero to replace.");
         if (mode === "replace") this.export();
-        await this.cloud.importGuest(guest, target || null, mode);
+        const reviewed = target ? reviewedVersions[target] : null;
+        await this.cloud.importGuest(guest, target || null, mode, reviewed);
         this.menu();
       });
     $("merge-guest").onclick = () => apply("merge");

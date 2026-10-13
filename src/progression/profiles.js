@@ -262,6 +262,7 @@ export class ProfileStore {
     this.data = { version: 1, selected: null, profiles: {}, cloud: {} };
     try {
       const raw = storage.getItem(key);
+      this.snapshot = raw;
       if (raw) {
         const data = JSON.parse(raw);
         if (data.version !== 1 || !data.profiles || !data.cloud)
@@ -278,8 +279,16 @@ export class ProfileStore {
   }
   persist() {
     if (this.readOnly) throw Error(this.warning);
+    const disk = this.storage.getItem(this.key);
+    if (disk !== this.snapshot) {
+      this.warning =
+        "Another Tiny Siege tab changed these saves. Export this tab’s progress, then reload to review the latest heroes.";
+      throw Error(this.warning);
+    }
     try {
-      this.storage.setItem(this.key, JSON.stringify(this.data));
+      const next = JSON.stringify(this.data);
+      this.storage.setItem(this.key, next);
+      this.snapshot = next;
     } catch {
       this.warning =
         "Device storage is full or unavailable. Export a backup now.";
