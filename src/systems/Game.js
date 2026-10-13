@@ -418,6 +418,7 @@ export class Game {
           (e) => e.alive && distance(e, center) <= p.stats.splash,
         )
       : [p.target];
+    const blastVictims = p.stats.splash ? victims : [];
     if (p.stats.pierce) {
       const dx = center.x - p.origin.x,
         dy = center.y - p.origin.y,
@@ -432,6 +433,9 @@ export class Game {
         })
         .sort((a, b) => distance(a, p.origin) - distance(b, p.origin))
         .slice(0, p.stats.pierce);
+      // A legal Seed crosspath keeps its small impact blast alongside thorns.
+      // Each enemy receives one hit even when it lies inside both areas.
+      victims = [...new Set([...victims, ...blastVictims])];
     }
     for (const e of victims) this.applyHit(p, e);
     this.emit("impact", {

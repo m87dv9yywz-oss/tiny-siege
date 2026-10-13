@@ -137,6 +137,10 @@ test("enemy card previews armor before spawning; preparation, ready and next-wav
   });
   await page.locator("#start-wave").tap();
   await expect(page.locator(".enemy-introductions")).toContainText("Ironbound");
+  await expect(page.locator(".enemy-portrait")).toBeVisible();
+  await expect
+    .poll(() => page.locator(".enemy-portrait").evaluate((e) => e.naturalWidth))
+    .toBe(80);
   expect(await page.evaluate(() => window.__tinySiege.model.active)).toBe(
     false,
   );

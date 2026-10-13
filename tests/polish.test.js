@@ -188,3 +188,21 @@ test("locked-path blueprints never preview illegal 3-1-1 builds", () => {
     towerStats({ ...t, paths: [1, 0, 3] }),
   );
 });
+
+test("piercing Grove crosspaths keep their impact splash without double hits", () => {
+  const g = new Game();
+  const t = g.place("grove", 145, 105);
+  t.paths = [2, 1, 0];
+  const foes = Array.from({ length: 4 }, () => g.spawn("brute"));
+  [
+    [200, 105],
+    [195, 132],
+    [175, 105],
+    [200, 155],
+  ].forEach(([x, y], i) => Object.assign(foes[i], { x, y }));
+  const stats = towerStats(t);
+  g.impact({ type: "grove", towerId: t.id, target: foes[0], origin: t, stats });
+  for (const e of foes.slice(0, 3))
+    assert.equal(e.maxHealth - e.health, stats.damage);
+  assert.equal(foes[3].health, foes[3].maxHealth);
+});
