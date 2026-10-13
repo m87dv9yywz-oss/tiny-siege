@@ -71,9 +71,9 @@ export const WAVES = [
     group("warden", 10, 0.6),
   ],
 ];
-export function waveQueue(number) {
+export function waveQueue(number, campaign = WAVES) {
   let sequentialAt = 0.5;
-  return WAVES[number - 1]
+  return campaign[number - 1]
     .flatMap((g, index) => {
       // Late mixed formations overlap: healers and shields march alongside the
       // enemies they protect instead of appearing in unrelated isolated blocks.
@@ -110,3 +110,67 @@ export const WAVE_HINTS = [
   "The last march before the king.",
   "The Thorn King summons allies, grows thorn armor, then charges! Mix armor breaking, damage and control.",
 ];
+
+export const CAMPAIGNS = {
+  classic: {
+    id: "classic",
+    name: "Emerald Trail · Classic",
+    biome: "emerald",
+    waves: WAVES,
+    first: 0,
+    repeat: 0,
+    description:
+      "The complete v2 campaign. All towers and evolutions unlocked. No permanent rewards.",
+  },
+  emerald: {
+    id: "emerald",
+    name: "Emerald Trail · Beginner",
+    biome: "emerald",
+    first: 100,
+    repeat: 35,
+    description:
+      "14 gentle waves. Learn with Archer, Cannon and Frost. First clear: 100 Crowns.",
+    waves: [
+      ...WAVES.slice(0, 9),
+      [group("shard", 8), group("armored", 8)],
+      [group("brute", 4, 1.3), group("basic", 18)],
+      [group("runner", 16), group("sprout", 32, 0.3)],
+      [group("armored", 14), group("shard", 10)],
+      [
+        group("armored", 1, 1, { elite: true }),
+        group("brute", 8, 1),
+        group("runner", 15),
+      ],
+    ],
+  },
+  amber: {
+    id: "amber",
+    name: "Amber Pass",
+    biome: "amber",
+    first: 120,
+    repeat: 45,
+    description:
+      "20 autumn waves. Break armor and stop splitters. First clear: 120 Crowns.",
+    waves: WAVES.map((groups, i) =>
+      i === 19
+        ? [
+            group("armored", 18, 0.4),
+            group("brute", 30, 0.6),
+            group("shard", 24, 0.5),
+            group("warden", 8),
+            group("armored", 3, 1, { elite: true }),
+          ]
+        : groups,
+    ),
+  },
+  moon: {
+    id: "moon",
+    name: "Moonlit Marsh",
+    biome: "moon",
+    first: 150,
+    repeat: 55,
+    description:
+      "20 mystical waves. Healers, wraiths and the Thorn King. First clear: 150 Crowns.",
+    waves: WAVES,
+  },
+};

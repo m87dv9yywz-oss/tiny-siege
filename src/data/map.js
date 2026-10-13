@@ -25,57 +25,70 @@ const knots = [
   [920, 270],
   [990, 270],
 ];
-export const PATH = [];
-for (let i = 0; i < knots.length - 1; i++) {
-  const p0 = knots[Math.max(0, i - 1)],
-    p1 = knots[i],
-    p2 = knots[i + 1],
-    p3 = knots[Math.min(knots.length - 1, i + 2)];
-  for (let j = 0; j < 12; j++) {
-    const t = j / 12;
-    const coordinate = (k) =>
-      0.5 *
-      (2 * p1[k] +
-        (-p0[k] + p2[k]) * t +
-        (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t +
-        (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t * t * t);
-    PATH.push({ x: coordinate(0), y: coordinate(1) });
-  }
-}
-PATH.push({ x: 990, y: 270 });
-export const SEGMENTS = PATH.slice(1).map((b, i) => ({
-  a: PATH[i],
-  b,
-  length: Math.hypot(b.x - PATH[i].x, b.y - PATH[i].y),
-}));
-export const PATH_LENGTH = SEGMENTS.reduce((n, s) => n + s.length, 0);
-export function onPath(distance) {
-  let d = Math.max(0, distance);
-  for (const s of SEGMENTS) {
-    if (d <= s.length) {
-      const t = d / s.length;
-      return {
-        x: s.a.x + (s.b.x - s.a.x) * t,
-        y: s.a.y + (s.b.y - s.a.y) * t,
-        angle: Math.atan2(s.b.y - s.a.y, s.b.x - s.a.x),
-      };
+export function createTrail(points = knots) {
+  const PATH = [];
+  const knots = points;
+  for (let i = 0; i < knots.length - 1; i++) {
+    const p0 = knots[Math.max(0, i - 1)],
+      p1 = knots[i],
+      p2 = knots[i + 1],
+      p3 = knots[Math.min(knots.length - 1, i + 2)];
+    for (let j = 0; j < 12; j++) {
+      const t = j / 12;
+      const coordinate = (k) =>
+        0.5 *
+        (2 * p1[k] +
+          (-p0[k] + p2[k]) * t +
+          (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t +
+          (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t * t * t);
+      PATH.push({ x: coordinate(0), y: coordinate(1) });
     }
-    d -= s.length;
   }
-  return { ...PATH.at(-1), angle: 0 };
+  PATH.push({ x: 990, y: 270 });
+  const SEGMENTS = PATH.slice(1).map((b, i) => ({
+    a: PATH[i],
+    b,
+    length: Math.hypot(b.x - PATH[i].x, b.y - PATH[i].y),
+  }));
+  const PATH_LENGTH = SEGMENTS.reduce((n, s) => n + s.length, 0);
+  function onPath(distance) {
+    let d = Math.max(0, distance);
+    for (const s of SEGMENTS) {
+      if (d <= s.length) {
+        const t = d / s.length;
+        return {
+          x: s.a.x + (s.b.x - s.a.x) * t,
+          y: s.a.y + (s.b.y - s.a.y) * t,
+          angle: Math.atan2(s.b.y - s.a.y, s.b.x - s.a.x),
+        };
+      }
+      d -= s.length;
+    }
+    return { ...PATH.at(-1), angle: 0 };
+  }
+  function distanceToPath(x, y) {
+    return Math.min(
+      ...SEGMENTS.map(({ a, b, length }) => {
+        const t = Math.max(
+          0,
+          Math.min(
+            1,
+            ((x - a.x) * (b.x - a.x) + (y - a.y) * (b.y - a.y)) /
+              (length * length),
+          ),
+        );
+        return Math.hypot(x - a.x - t * (b.x - a.x), y - a.y - t * (b.y - a.y));
+      }),
+    );
+  }
+
+  return { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath };
 }
-export function distanceToPath(x, y) {
-  return Math.min(
-    ...SEGMENTS.map(({ a, b, length }) => {
-      const t = Math.max(
-        0,
-        Math.min(
-          1,
-          ((x - a.x) * (b.x - a.x) + (y - a.y) * (b.y - a.y)) /
-            (length * length),
-        ),
-      );
-      return Math.hypot(x - a.x - t * (b.x - a.x), y - a.y - t * (b.y - a.y));
-    }),
-  );
-}
+export const TRAILS = {
+  classic: createTrail(),
+  emerald: createTrail(),
+  amber: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 140) * 32])),
+  moon: createTrail(knots.map(([x, y]) => [x, 640 - y])),
+};
+export const { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath } =
+  TRAILS.classic;

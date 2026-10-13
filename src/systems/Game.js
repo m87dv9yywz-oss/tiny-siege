@@ -1,15 +1,44 @@
 import { TOWERS, towerStats, upgradeState } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
-import { waveQueue } from "../data/waves.js";
-import { MAP, PATH_LENGTH, onPath, distanceToPath } from "../data/map.js";
+import { waveQueue, CAMPAIGNS } from "../data/waves.js";
+import { MAP, TRAILS } from "../data/map.js";
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export class Game {
-  constructor(onEvent = () => {}) {
+  constructor(onEvent = () => {}, options = {}) {
+    this.configure(options);
     this.onEvent = onEvent;
     this.reset();
   }
+  configure({ map = "classic", profile = null } = {}) {
+    this.campaign = CAMPAIGNS[map] || CAMPAIGNS.classic;
+    this.trail = TRAILS[this.campaign.id];
+    this.profile = profile;
+  }
+  get totalWaves() {
+    return this.campaign.waves.length;
+  }
+  available(type) {
+    return (
+      this.campaign.id === "classic" ||
+      !this.profile ||
+      this.profile.unlockedTowers.includes(type)
+    );
+  }
+  pathAvailable(type, path, tier) {
+    return (
+      this.campaign.id === "classic" ||
+      !this.profile ||
+      this.profile.unlockedUpgrades[type][path] >= tier
+    );
+  }
   reset() {
     Object.assign(this, {
+      participation: Object.fromEntries(
+        Object.keys(TOWERS).map((k) => [
+          k,
+          { time: 0, damage: 0, armor: 0, control: 0, kills: 0 },
+        ]),
+      ),
       gold: 300,
       lives: 20,
       wave: 0,
@@ -38,10 +67,12 @@ export class Game {
     if (!Number.isFinite(x) || !Number.isFinite(y))
       return "Choose a spot inside the battlefield.";
     if (!TOWERS[type]) return "Choose a tower first.";
+    if (!this.available(type))
+      return "Unlock this tower in your Kingdom first.";
     if (this.gold < TOWERS[type].cost) return "Not enough gold for this tower.";
     if (x < 30 || x > MAP.width - 30 || y < 60 || y > MAP.height - 30)
       return "Stay inside the battlefield.";
-    if (distanceToPath(x, y) < MAP.pathWidth / 2 + MAP.towerRadius)
+    if (this.trail.distanceToPath(x, y) < MAP.pathWidth / 2 + MAP.towerRadius)
       return "Keep the trail clear.";
     if (this.towers.some((t) => Math.hypot(t.x - x, t.y - y) < 52))
       return "Give your towers a little room.";
@@ -84,6 +115,9 @@ export class Game {
     const state = upgradeState(t, path);
     const message =
       state.locked ||
+      (!this.pathAvailable(t.type, path, t.paths[path] + 1)
+        ? "Unlock this path with tower XP in your Kingdom."
+        : null) ||
       (this.gold < state.cost ? "Save a little more gold to upgrade." : null);
     if (message) {
       this.emit("invalid", { message });
@@ -142,10 +176,15 @@ export class Game {
     return true;
   }
   startWave() {
-    if (this.active || this.ended || this.paused || this.wave >= 20)
+    if (
+      this.active ||
+      this.ended ||
+      this.paused ||
+      this.wave >= this.totalWaves
+    )
       return false;
     this.wave++;
-    this.queue = waveQueue(this.wave);
+    this.queue = waveQueue(this.wave, this.campaign.waves);
     this.waveTime = 0;
     this.active = true;
     this.emit("wave");
@@ -188,7 +227,7 @@ export class Game {
       slow: 1,
       slowLeft: 0,
       frozen: 0,
-      ...onPath(0),
+      ...this.trail.onPath(0),
     };
     if (traits.elite) {
       e.elite = true;
@@ -215,6 +254,8 @@ export class Game {
         damageType: packet ? "magic" : "physical",
         bypass: packet ? 1 : 0,
       };
+    const beforeHealth = e.health,
+      beforeArmor = e.armor;
     const magic = packet.damageType === "magic";
     let healthDamage = amount * (magic ? 1 - (e.magicResistance || 0) : 1);
     if (
@@ -260,6 +301,12 @@ export class Game {
       if (radius) shatterBurst = { radius, bonus };
     }
     e.health -= healthDamage;
+    if (packet.source && this.participation[packet.source]) {
+      const metrics = this.participation[packet.source];
+      metrics.damage += Math.max(0, Math.min(beforeHealth, healthDamage));
+      metrics.armor += Math.max(0, beforeArmor - e.armor);
+      if (e.health <= 0) metrics.kills++;
+    }
     if (e.health <= 0) {
       e.alive = false;
       this.gold += e.reward;
@@ -273,7 +320,7 @@ export class Game {
           child.speed *= 1.25;
           child.reward = 3;
           child.split = 0;
-          Object.assign(child, onPath(child.progress));
+          Object.assign(child, this.trail.onPath(child.progress));
         }
     } else if (healthDamage > 2) this.emit("hit", { enemy: e });
     if (e.alive && e.type === "boss") this.bossPhase(e);
@@ -344,6 +391,7 @@ export class Game {
     }
     if (p.type === "fire") {
       // Strongest burn wins. Repeated hits refresh rather than infinitely stack.
+      if (p.stats.burn >= e.burn) e.burnSource = p.type;
       e.burn = Math.max(e.burn, p.stats.burn);
       e.burnLeft = Math.max(e.burnLeft, p.stats.duration);
       e.melt = Math.max(e.melt, p.stats.melt || 0);
@@ -411,7 +459,7 @@ export class Game {
   }
   attack(t, targets, stats) {
     t.shots++;
-    const hitStats = { ...stats };
+    const hitStats = { ...stats, source: t.type };
     if (stats.critical && t.shots % stats.critEvery === 0)
       hitStats.damage *= stats.critical;
     if (stats.beam) {
@@ -525,7 +573,7 @@ export class Game {
       ]) {
         const ally = this.spawn(type);
         ally.progress = Math.max(0, e.progress - 30);
-        Object.assign(ally, onPath(ally.progress));
+        Object.assign(ally, this.trail.onPath(ally.progress));
         // Finite summons grant small bounties; the boss cannot farm a stalled wave.
         ally.reward = Math.min(ally.reward, 6);
       }
@@ -556,6 +604,7 @@ export class Game {
         this.damage(e, e.burn * burnTime, {
           damageType: "magic",
           bypass: 0.65,
+          source: e.burnSource,
           tick: true,
         });
         this.breakArmor(e, e.melt * burnTime);
@@ -565,6 +614,7 @@ export class Game {
           for (const other of this.enemies
             .filter((a) => a !== e && a.alive && distance(a, e) <= e.spread)
             .slice(0, 2)) {
+            if (e.burn * 0.6 >= other.burn) other.burnSource = e.burnSource;
             other.burn = Math.max(other.burn, e.burn * 0.6);
             other.burnLeft = Math.max(other.burnLeft, 2);
           }
@@ -584,8 +634,8 @@ export class Game {
       const stopped = Math.min(dt, e.frozen);
       e.frozen = Math.max(0, e.frozen - dt);
       e.progress += e.speed * e.slow * (dt - stopped);
-      Object.assign(e, onPath(e.progress));
-      if (e.progress >= PATH_LENGTH) {
+      Object.assign(e, this.trail.onPath(e.progress));
+      if (e.progress >= this.trail.PATH_LENGTH) {
         e.alive = false;
         this.lives = Math.max(0, this.lives - e.lives);
         this.emit("escape", { enemy: e });
@@ -617,6 +667,12 @@ export class Game {
           (e) => e.alive && distance(e, t) <= aura.aura,
         ))
           this.chill(e, aura.auraSlow, 0.1);
+      this.participation[t.type].time += dt;
+      if (t.type === "frost")
+        this.participation.frost.control +=
+          this.enemies.filter(
+            (e) => e.alive && distance(e, t) <= aura.range && e.slow < 1,
+          ).length * dt;
       t.cooldown -= dt;
       if (t.cooldown > 0) continue;
       const stats = towerStats(t);
@@ -647,7 +703,7 @@ export class Game {
       this.gold += bonus;
       this.earned += bonus;
       this.emit("clear", { bonus });
-      if (this.wave === 20) this.finish("victory");
+      if (this.wave === this.totalWaves) this.finish("victory");
     }
   }
   finish(result) {

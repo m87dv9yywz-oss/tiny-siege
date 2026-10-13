@@ -12,7 +12,12 @@ export class GameScene extends Phaser.Scene {
   }
   create() {
     textures(this);
-    battlefield(this);
+    this.battlefieldObjects = battlefield(
+      this,
+      this.model.trail,
+      this.model.campaign.biome,
+    );
+    this.currentMap = this.model.campaign.id;
     this.dynamic = this.add.graphics().setDepth(900);
     this.preview = this.add.graphics().setDepth(1000);
     this.particles = {};
@@ -130,6 +135,15 @@ export class GameScene extends Phaser.Scene {
     );
   }
   effect(event) {
+    if (event.type === "reset" && this.currentMap !== this.model.campaign.id) {
+      this.battlefieldObjects?.forEach((o) => o.destroy());
+      this.battlefieldObjects = battlefield(
+        this,
+        this.model.trail,
+        this.model.campaign.biome,
+      );
+      this.currentMap = this.model.campaign.id;
+    }
     if (!this.dynamic) return;
     const { type, tower, enemy } = event;
     if (type === "reset") {

@@ -67,13 +67,13 @@ export const STRATEGIES = {
 };
 // No free gold or altered combat. Buy at legal positions using trail coverage,
 // then specialize between waves; every decision and escape is recorded.
-export function runCampaign(strategy = "mixed") {
+export function runCampaign(strategy = "mixed", options = {}) {
   const events = [],
     model = new Game((e) => {
       if (e.type === "escape") events.push(e.enemy.type);
-    }),
+    }, options),
     report = [];
-  const roster = STRATEGIES[strategy];
+  const roster = options.roster || STRATEGIES[strategy];
   function bestSpot(type) {
     let best = null;
     for (let x = 70; x < 900; x += 32)
@@ -81,7 +81,7 @@ export function runCampaign(strategy = "mixed") {
         if (model.canPlace(type, x, y)) continue;
         const r = TOWERS[type].base.range;
         const score =
-          PATH.reduce(
+          model.trail.PATH.reduce(
             (n, p) => n + (Math.hypot(p.x - x, p.y - y) < r ? 1 : 0),
             0,
           ) -
@@ -94,7 +94,7 @@ export function runCampaign(strategy = "mixed") {
       }
     return best;
   }
-  for (let wave = 1; wave <= 20 && !model.ended; wave++) {
+  for (let wave = 1; wave <= model.totalWaves && !model.ended; wave++) {
     const before = model.gold,
       earned = model.earned,
       escapes = events.length;
@@ -104,7 +104,9 @@ export function runCampaign(strategy = "mixed") {
         .map((t, i) => ({ t, p: roster[i][1] }))
         .filter(
           ({ t, p }) =>
-            !upgradeState(t, p).locked && upgradeState(t, p).cost <= model.gold,
+            model.pathAvailable(t.type, p, t.paths[p] + 1) &&
+            !upgradeState(t, p).locked &&
+            upgradeState(t, p).cost <= model.gold,
         );
       const candidate = candidates.sort(
         (a, b) =>

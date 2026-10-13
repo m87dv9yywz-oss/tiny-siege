@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#183d35" />
+    <meta name="theme-color" content="#c6e9d4" />
     <meta
       name="description"
       content="Defend the little kingdom. A colorful, free fantasy tower defense game with five towers and twenty waves."
@@ -22,10 +22,7 @@
     <meta name="application-name" content="Tiny Siege" />
     <meta name="apple-mobile-web-app-title" content="Tiny Siege" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   </head>
   <body>
     <div id="app">
@@ -36,6 +33,9 @@
             >TINY <b>SIEGE</b><small>DEFEND THE LITTLE KINGDOM</small></span
           ></a
         >
+        <button id="kingdom-button" class="secondary">
+          ♛ <span id="kingdom-crowns">0</span> Crowns · Kingdom</button
+        ><span id="sync-status" role="status">Saved locally</span>
         <div class="campaign-label">
           <i></i> THE EMERALD TRAIL <span>CAMPAIGN 01</span>
         </div>
@@ -44,6 +44,7 @@
         </button>
       </header>
       <main>
+        <div id="selection-panel"></div>
         <section class="battle-column" aria-label="Battlefield">
           <div class="hud">
             <div class="resource gold">
@@ -132,7 +133,7 @@
             <span>5 TOWERS</span>
           </div>
           <div id="tower-shop" aria-label="Tower shop"></div>
-          <div id="selection-panel"></div>
+
           <div class="tip">
             <span>✧</span>
             <p>

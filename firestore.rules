@@ -1,0 +1,43 @@
+rules_version = '2';
+// Parent-owned profiles: users/{uid}/profiles/{profileId}, schema 1.
+// No parent document, nested collection, public read or user-assigned role.
+// nickname: 1..32 characters; avatar: predefined fantasy ID; crowns: bounded int.
+// towerXP: exactly five {earned,spent} maps; unlockedUpgrades: five 3-tier lists.
+// completedMaps/mapStars/achievements: fixed known IDs; settings: two booleans.
+// statistics: bounded counters/revision and bounded delimiter-encoded reward IDs.
+// updatedAt must be a server timestamp on every create AND update.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function number(n) { return n is int && n >= 0 && n <= 1000000000; }
+    function xp(x) { return x is map && x.keys().hasAll(['earned','spent']) && x.keys().hasOnly(['earned','spent']) && number(x.earned) && number(x.spent) && x.spent <= x.earned; }
+    function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[0] >= 1 && x[0] <= 3 && x[1] is int && x[1] >= 1 && x[1] <= 3 && x[2] is int && x[2] >= 1 && x[2] <= 3; }
+    function five(m) { return m is map && m.keys().hasAll(['archer','cannon','frost','fire','lightning']) && m.keys().hasOnly(['archer','cannon','frost','fire','lightning']); }
+    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)); }
+    function stats(s) { return s is map && s.keys().hasAll(['revision','ledger','wins','waves','damage','armor','kills']) && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
+    function validProfile() {
+      let d=request.resource.data;
+      let fields=['schemaVersion','nickname','avatar','crowns','towerXP','unlockedTowers','unlockedUpgrades','completedMaps','mapStars','achievements','statistics','settings','updatedAt'];
+      return d.keys().hasAll(fields) && d.keys().hasOnly(fields)
+        && d.schemaVersion == 1 && d.schemaVersion is int
+        && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 32
+        && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn']
+        && number(d.crowns)
+        && five(d.towerXP) && xp(d.towerXP.archer) && xp(d.towerXP.cannon) && xp(d.towerXP.frost) && xp(d.towerXP.fire) && xp(d.towerXP.lightning)
+        && five(d.unlockedUpgrades) && paths(d.unlockedUpgrades.archer) && paths(d.unlockedUpgrades.cannon) && paths(d.unlockedUpgrades.frost) && paths(d.unlockedUpgrades.fire) && paths(d.unlockedUpgrades.lightning)
+        && d.unlockedTowers is list && d.unlockedTowers.size() <= 5 && d.unlockedTowers.hasAll(['archer','cannon','frost']) && d.unlockedTowers.hasOnly(['archer','cannon','frost','fire','lightning']) && d.unlockedTowers.toSet().size() == d.unlockedTowers.size()
+        && d.completedMaps is list && d.completedMaps.size() <= 3 && d.completedMaps.hasOnly(['emerald','amber','moon']) && d.completedMaps.toSet().size() == d.completedMaps.size()
+        && stars(d.mapStars) && d.mapStars.keys().hasOnly(d.completedMaps)
+        && d.achievements is list && d.achievements.size() <= 3 && d.achievements.hasOnly(['first-clear','three-kingdoms','evolution']) && d.achievements.toSet().size() == d.achievements.size()
+        && stats(d.statistics)
+        && d.settings is map && d.settings.keys().hasAll(['sound','reducedEffects']) && d.settings.keys().hasOnly(['sound','reducedEffects']) && d.settings.sound is bool && d.settings.reducedEffects is bool
+        && d.updatedAt is timestamp && d.updatedAt == request.time;
+    }
+    match /users/{uid}/profiles/{profileId} {
+      allow get, list: if owner(uid);
+      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      allow delete: if owner(uid);
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
