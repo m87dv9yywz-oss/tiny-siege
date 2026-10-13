@@ -126,6 +126,8 @@ export const CAMPAIGNS = {
     id: "emerald",
     name: "Emerald Trail · Beginner",
     biome: "emerald",
+    hints:[...WAVE_HINTS.slice(0,12), "Armor and splitters together! Mix Cannons with Frost and Archers.", "The Ironbound Captain leads the final march. Break its armor and protect your little kingdom!"],
+    victoryText:"The Emerald Trail is safe. Your first kingdom adventure is complete!",
     first: 100,
     repeat: 35,
     description:
@@ -147,6 +149,8 @@ export const CAMPAIGNS = {
     id: "amber",
     name: "Amber Pass",
     biome: "amber",
+    hints:[...WAVE_HINTS.slice(0,19), "Ironbound Captains lead the last autumn march. Break armor, slow the swarms and hold the bends!"],
+    victoryText:"Amber Pass is safe. Your heroes protected the autumn road!",
     first: 120,
     repeat: 45,
     description:

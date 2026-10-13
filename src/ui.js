@@ -284,7 +284,7 @@ export class UI {
     if (this.inMenu || this.helpOpen) return;
     if (this.model.startWave()) {
       this.resumeAudio();
-      this.toast(WAVE_HINTS[this.model.wave - 1]);
+      this.toast((this.model.campaign.hints||WAVE_HINTS)[this.model.wave - 1]);
       this.refresh(true);
     }
   }
@@ -357,7 +357,7 @@ export class UI {
     const win = result === "victory";
     const rewards = this.kingdom?.finishRun();
     this.modal(
-      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
+      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? (this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends.") : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
     );
     if (rewards)
       $("again").insertAdjacentHTML(
@@ -426,7 +426,7 @@ export class UI {
         ? "The little kingdom stands."
         : m.ended === "defeat"
           ? "Regroup. Rebuild. Return."
-          : WAVE_HINTS[Math.min(m.active ? m.wave - 1 : m.wave, 19)];
+          : (m.campaign.hints||WAVE_HINTS)[Math.min(m.active ? m.wave - 1 : m.wave, m.totalWaves-1)];
     document.querySelectorAll("[data-tower]").forEach((b) => {
       const type = b.dataset.tower,
         def = TOWERS[type],
