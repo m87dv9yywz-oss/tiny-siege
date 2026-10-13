@@ -7,7 +7,10 @@ let ui;
 const model = new Game((event) => ui?.event(event));
 ui = new UI(model);
 const game = new Phaser.Game({
-  type: Phaser.AUTO,
+  // The illustrated scene uses Canvas-supported primitives and particles.
+  // Canvas avoids slow/blank software WebGL frames and keeps touch rendering
+  // consistent without changing Phaser or the simulation.
+  type: Phaser.CANVAS,
   parent: "game",
   width: 960,
   height: 640,

@@ -1,4 +1,4 @@
-import { TOWERS } from "../data/towers.js";
+import { TOWERS, towerStats, upgradeState } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
 import { waveQueue } from "../data/waves.js";
 import { MAP, PATH_LENGTH, onPath, distanceToPath } from "../data/map.js";
@@ -18,6 +18,7 @@ export class Game {
       towers: [],
       enemies: [],
       projectiles: [],
+      zones: [],
       queue: [],
       waveTime: 0,
       active: false,
@@ -33,6 +34,9 @@ export class Game {
   }
   canPlace(type, x, y) {
     if (this.ended) return "The battle is over.";
+    if (this.paused) return "Resume before placing a tower.";
+    if (!Number.isFinite(x) || !Number.isFinite(y))
+      return "Choose a spot inside the battlefield.";
     if (!TOWERS[type]) return "Choose a tower first.";
     if (this.gold < TOWERS[type].cost) return "Not enough gold for this tower.";
     if (x < 30 || x > MAP.width - 30 || y < 60 || y > MAP.height - 30)
@@ -55,6 +59,8 @@ export class Game {
       x,
       y,
       level: 1,
+      paths: [0, 0, 0],
+      targeting: "FIRST",
       invested: TOWERS[type].cost,
       cooldown: 0.1,
       shots: 0,
@@ -64,27 +70,74 @@ export class Game {
     this.emit("build", { tower });
     return tower;
   }
-  upgrade(id) {
+  upgrade(id, path = 0) {
     const t = this.towers.find((t) => t.id === id);
-    if (!t || this.ended || t.level === 3) return false;
-    const cost = TOWERS[t.type].upgrades[t.level - 1];
-    if (this.gold < cost) {
-      this.emit("invalid", { message: "Save a little more gold to upgrade." });
+    if (
+      !t ||
+      this.ended ||
+      this.paused ||
+      !Number.isInteger(path) ||
+      path < 0 ||
+      path > 2
+    )
+      return false;
+    const state = upgradeState(t, path);
+    const message =
+      state.locked ||
+      (this.gold < state.cost ? "Save a little more gold to upgrade." : null);
+    if (message) {
+      this.emit("invalid", { message });
       return false;
     }
-    this.gold -= cost;
-    t.invested += cost;
-    t.level++;
+    this.gold -= state.cost;
+    t.invested += state.cost;
+    t.paths[path]++;
+    t.level = Math.min(3, 1 + Math.max(...t.paths));
     this.emit("upgrade", { tower: t });
     return true;
   }
+  setTargeting(id, priority) {
+    const t = this.towers.find((t) => t.id === id);
+    if (
+      !t ||
+      this.ended ||
+      ![
+        "FIRST",
+        "LAST",
+        "STRONG",
+        "WEAK",
+        ...(towerStats(t).supportTarget ? ["SUPPORT"] : []),
+      ].includes(priority)
+    )
+      return false;
+    t.targeting = priority;
+    this.emit("targeting", { tower: t });
+    return true;
+  }
+  targets(t, stats = towerStats(t)) {
+    const relevant = (e) => e.health + e.armor + (e.shield || 0);
+    const compare = {
+      FIRST: (a, b) => b.progress - a.progress,
+      LAST: (a, b) => a.progress - b.progress,
+      STRONG: (a, b) => relevant(b) - relevant(a),
+      WEAK: (a, b) => relevant(a) - relevant(b),
+      SUPPORT: (a, b) =>
+        Number(["healer", "warden"].includes(b.type)) -
+          Number(["healer", "warden"].includes(a.type)) ||
+        b.progress - a.progress,
+    };
+    return this.enemies
+      .filter((e) => e.alive && distance(e, t) <= stats.range)
+      .sort((a, b) => compare[t.targeting || "FIRST"](a, b) || a.id - b.id);
+  }
   sell(id) {
     const t = this.towers.find((t) => t.id === id);
-    if (!t || this.ended) return false;
+    if (!t || this.ended || this.paused) return false;
     const value = Math.floor(t.invested * 0.7);
     this.gold += value;
     this.towers = this.towers.filter((a) => a !== t);
     this.projectiles = this.projectiles.filter((p) => p.towerId !== id);
+    this.zones = this.zones.filter((z) => z.towerId !== id);
     this.emit("sell", { tower: t, value });
     return true;
   }
@@ -101,21 +154,33 @@ export class Game {
   get remaining() {
     return this.queue.length + this.enemies.filter((e) => e.alive).length;
   }
-  spawn(type) {
+  spawn(type, traits = {}) {
     const config = ENEMIES[type],
-      scale =
-        type === "boss"
-          ? 1
-          : 1 +
-            Math.max(0, this.wave - 1) * 0.09 +
-            Math.pow(Math.max(0, this.wave - 10), 2) * 0.035;
+      scale = type === "boss" ? 1 : 1 + Math.max(0, this.wave - 1) * 0.055;
     const e = {
       id: ++this.id,
       type,
       ...config,
       health: config.health * scale,
+      armor: config.armor * scale,
+      maxArmor: config.armor * scale,
+      shield: config.shield || 0,
+      maxShield: config.shield || 0,
+      abilityTime: config.abilityPeriod || 1,
+      phase: 1,
+      summons: 0,
+      freezeImmunity: 0,
+      brittle: 1,
+      brittleLeft: 0,
+      shatter: 0,
+      shatterRadius: 0,
+      melt: 0,
+      spread: 0,
+      spreadTime: 1,
       maxHealth: config.health * scale,
-      reward: Math.round(config.reward * (1 + (this.wave - 1) * 0.035)),
+      reward: Math.round(
+        config.reward * (1 + Math.max(0, this.wave - 1) * 0.01),
+      ),
       progress: 0,
       alive: true,
       burn: 0,
@@ -125,91 +190,346 @@ export class Game {
       frozen: 0,
       ...onPath(0),
     };
+    if (traits.elite) {
+      e.elite = true;
+      e.name = "Ironbound Captain";
+      e.health *= 3;
+      e.maxHealth *= 3;
+      e.armor *= 2;
+      e.maxArmor *= 2;
+      e.reward *= 2;
+      e.lives = 4;
+      e.radius += 5;
+    }
     this.enemies.push(e);
     this.emit("spawn", { enemy: e });
     return e;
   }
-  damage(e, amount, magic = false) {
-    if (!e?.alive || this.ended) return;
-    e.health -= amount * (magic ? 1 : 1 - e.armor);
+  // A damage packet describes health damage, armor damage and penetration.
+  // Wardens absorb their own damage in shields; nearby allies receive protection.
+  damage(e, amount, packet = {}) {
+    if (!e?.alive || this.ended || !Number.isFinite(amount) || amount < 0)
+      return;
+    if (typeof packet === "boolean")
+      packet = {
+        damageType: packet ? "magic" : "physical",
+        bypass: packet ? 1 : 0,
+      };
+    const magic = packet.damageType === "magic";
+    let healthDamage = amount * (magic ? 1 - (e.magicResistance || 0) : 1);
+    if (
+      this.enemies.some(
+        (w) =>
+          w !== e &&
+          w.alive &&
+          w.protection &&
+          w.shield > 0 &&
+          distance(w, e) <= w.abilityRange,
+      )
+    )
+      healthDamage *= 0.7;
+    if (e.shield > 0) {
+      const absorbed = Math.min(e.shield, healthDamage);
+      e.shield -= absorbed;
+      healthDamage -= absorbed;
+      if (!e.shield) this.emit("shieldBreak", { enemy: e });
+    }
+    const wasArmored = e.armor > 0;
+    if (wasArmored) {
+      const armorDamage =
+        (packet.armorDamage || 0) * (e.brittleLeft > 0 ? e.brittle : 1);
+      this.breakArmor(e, armorDamage);
+      const penetration = packet.penetration || packet.bypass || 0;
+      healthDamage *= penetration;
+      if (!penetration && !armorDamage) this.emit("ricochet", { enemy: e });
+    }
+    let shatterBurst = null;
+    // Brittle marks are consumed at most once per impact, never by DoT ticks.
+    if (
+      !magic &&
+      e.shatter > 0 &&
+      e.slowLeft > 0 &&
+      !packet.tick &&
+      (packet.shatterDepth || 0) < 3
+    ) {
+      const bonus = e.shatter,
+        radius = e.shatterRadius;
+      e.shatter = 0;
+      healthDamage += bonus;
+      this.emit("shatter", { enemy: e, radius: radius || 25 });
+      if (radius) shatterBurst = { radius, bonus };
+    }
+    e.health -= healthDamage;
     if (e.health <= 0) {
       e.alive = false;
       this.gold += e.reward;
       this.earned += e.reward;
       this.kills++;
       this.emit("death", { enemy: e });
-    } else if (amount > 2) this.emit("hit", { enemy: e });
+      if (e.split)
+        for (let i = 0; i < e.split; i++) {
+          const child = this.spawn("sprout");
+          child.progress = Math.max(0, e.progress - i * 10);
+          child.speed *= 1.25;
+          child.reward = 3;
+          child.split = 0;
+          Object.assign(child, onPath(child.progress));
+        }
+    } else if (healthDamage > 2) this.emit("hit", { enemy: e });
+    if (e.alive && e.type === "boss") this.bossPhase(e);
+    // Resolve the original victim first: recursive shatters must never award
+    // the same death twice or damage a corpse while unwinding a chain.
+    if (shatterBurst)
+      for (const other of this.enemies.filter(
+        (a) => a !== e && a.alive && distance(a, e) <= shatterBurst.radius,
+      ))
+        this.damage(other, shatterBurst.bonus * 0.65, {
+          damageType: "physical",
+          penetration: 1,
+          shatterDepth: (packet.shatterDepth || 0) + 1,
+        });
+  }
+  breakArmor(e, amount) {
+    if (e.armor <= 0 || amount <= 0) return;
+    e.armor = Math.max(0, e.armor - amount);
+    if (!e.armor) this.emit("armorBreak", { enemy: e });
+  }
+  bossPhase(e) {
+    const phase =
+      e.health <= e.maxHealth * 0.3
+        ? 3
+        : e.health <= e.maxHealth * 0.66
+          ? 2
+          : 1;
+    if (phase <= e.phase) return;
+    e.phase = phase;
+    if (phase === 2) {
+      e.armor = 850;
+      e.maxArmor = 850;
+    }
+    if (phase === 3) {
+      e.speed = 41;
+      e.abilityPeriod = 5;
+    }
+    this.emit("phase", { enemy: e, radius: 110 });
+  }
+  chill(e, slow, duration, freeze = 0) {
+    const resist = e.controlResistance || 0;
+    e.slow = Math.min(e.slow, slow + (1 - slow) * resist);
+    e.slowLeft = Math.max(e.slowLeft, duration);
+    if (freeze && e.freezeImmunity <= 0) {
+      e.frozen = Math.max(e.frozen, freeze * (1 - resist));
+      e.freezeImmunity = e.type === "boss" ? 4 : freeze + 0.6;
+    }
   }
   applyHit(p, e) {
     if (!e.alive) return;
-    this.damage(
-      e,
-      p.stats.damage,
-      p.type === "fire" || p.type === "frost" || p.type === "lightning",
-    );
+    this.damage(e, p.stats.damage, p.stats);
     if (!e.alive) return;
     if (p.type === "frost") {
-      e.slow = Math.min(e.slow, p.stats.slow);
-      e.slowLeft = p.stats.duration;
-      if (p.freeze) e.frozen = p.stats.freeze;
+      this.chill(
+        e,
+        p.stats.slow,
+        p.stats.duration,
+        p.freeze ? p.stats.freeze : 0,
+      );
+      if (p.stats.brittle) {
+        e.brittle = p.stats.brittle;
+        e.brittleLeft = p.stats.duration;
+      }
+      if (p.stats.shatter) {
+        e.shatter = Math.max(e.shatter, p.stats.shatter);
+        e.shatterRadius = p.stats.shatterRadius || 0;
+      }
     }
     if (p.type === "fire") {
+      // Strongest burn wins. Repeated hits refresh rather than infinitely stack.
       e.burn = Math.max(e.burn, p.stats.burn);
-      e.burnLeft = p.stats.duration;
+      e.burnLeft = Math.max(e.burnLeft, p.stats.duration);
+      e.melt = Math.max(e.melt, p.stats.melt || 0);
+      e.spread = Math.max(e.spread, p.stats.spread || 0);
     }
+  }
+  area(center, radius, amount, stats, type) {
+    for (const e of this.enemies.filter(
+      (e) => e.alive && distance(e, center) <= radius,
+    ))
+      this.damage(e, amount, stats);
+    this.emit("impact", { ...center, attack: type, radius });
   }
   impact(p) {
     if (!p.target.alive) return;
     const center = { x: p.target.x, y: p.target.y };
-    const victims = p.stats.splash
+    let victims = p.stats.splash
       ? this.enemies.filter(
           (e) => e.alive && distance(e, center) <= p.stats.splash,
         )
       : [p.target];
+    if (p.stats.pierce) {
+      const dx = center.x - p.origin.x,
+        dy = center.y - p.origin.y,
+        len = Math.hypot(dx, dy) || 1;
+      victims = this.enemies
+        .filter((e) => {
+          const along =
+            ((e.x - p.origin.x) * dx + (e.y - p.origin.y) * dy) / len;
+          const across =
+            Math.abs((e.x - p.origin.x) * dy - (e.y - p.origin.y) * dx) / len;
+          return e.alive && along >= 0 && along < len + 180 && across < 24;
+        })
+        .sort((a, b) => distance(a, p.origin) - distance(b, p.origin))
+        .slice(0, p.stats.pierce);
+    }
     for (const e of victims) this.applyHit(p, e);
     this.emit("impact", {
       ...center,
       attack: p.type,
       radius: p.stats.splash || 16,
     });
+    if (p.stats.clusters)
+      for (let i = 0; i < p.stats.clusters; i++) {
+        const a = (i * Math.PI * 2) / p.stats.clusters;
+        this.area(
+          { x: center.x + Math.cos(a) * 42, y: center.y + Math.sin(a) * 42 },
+          32,
+          p.stats.clusterDamage,
+          { ...p.stats, armorDamage: p.stats.armorDamage * 0.25 },
+          p.type,
+        );
+      }
+    if (p.stats.pool) {
+      this.zones.push({
+        ...center,
+        towerId: p.towerId,
+        radius: p.stats.pool,
+        left: 3,
+        damage: p.stats.poolDamage,
+        melt: p.stats.melt,
+      });
+      if (this.zones.length > 32) this.zones.shift();
+    }
   }
   attack(t, targets, stats) {
     t.shots++;
-    if (t.type === "lightning") {
+    const hitStats = { ...stats };
+    if (stats.critical && t.shots % stats.critEvery === 0)
+      hitStats.damage *= stats.critical;
+    if (stats.beam) {
+      t.heat =
+        t.focusId === targets[0].id
+          ? Math.min(stats.focusMax, (t.heat || 1) + stats.focusRamp)
+          : 1;
+      t.focusId = targets[0].id;
+      hitStats.damage *= t.heat;
+      hitStats.burn *= t.heat;
+      this.applyHit({ type: t.type, stats: hitStats }, targets[0]);
+      this.emit("jet", { tower: t, target: targets[0], heat: t.heat });
+    } else if (t.type === "lightning") {
       const chain = [targets[0]];
       while (chain.length < stats.chains) {
         const last = chain.at(-1);
         const next = this.enemies
           .filter(
-            (e) => e.alive && !chain.includes(e) && distance(e, last) < 115,
+            (e) =>
+              e.alive &&
+              !chain.includes(e) &&
+              distance(e, last) < (stats.chainRange || 115),
           )
-          .sort((a, b) => distance(a, last) - distance(b, last))[0];
+          .sort(
+            (a, b) => distance(a, last) - distance(b, last) || a.id - b.id,
+          )[0];
         if (!next) break;
         chain.push(next);
       }
       this.emit("bolt", {
         tower: t,
         points: chain.map((e) => ({ x: e.x, y: e.y })),
+        heavy: stats.shock,
       });
       chain.forEach((e, i) =>
-        this.damage(e, stats.damage * Math.pow(0.86, i), true),
+        this.damage(e, hitStats.damage * Math.pow(0.88, i), hitStats),
       );
-    } else {
-      for (const target of targets.slice(0, stats.targets || 1)) {
+      if (stats.shock)
+        this.area(targets[0], stats.shock, stats.damage * 0.15, stats, t.type);
+    } else
+      for (const target of targets.slice(0, stats.targets || 1))
         this.projectiles.push({
           id: ++this.id,
           towerId: t.id,
           type: t.type,
           x: t.x,
           y: t.y - 15,
+          origin: { x: t.x, y: t.y },
           target,
-          stats: { ...stats },
+          stats: hitStats,
           freeze: stats.freeze && t.shots % 3 === 0,
-          speed: t.type === "cannon" ? 280 : 410,
+          speed: stats.arc
+            ? 210
+            : t.type === "cannon"
+              ? 280
+              : stats.pierce
+                ? 650
+                : 410,
+        });
+    if (stats.rain && t.shots % 6 === 0) {
+      this.area(targets[0], stats.rain, stats.damage * 2, stats, t.type);
+      this.emit("rain", {
+        x: targets[0].x,
+        y: targets[0].y,
+        radius: stats.rain,
+      });
+    }
+    if (stats.flare && t.shots % 5 === 0)
+      this.area(targets[0], stats.flare, stats.damage, stats, t.type);
+    if (stats.pulse && t.shots % (stats.pulseEvery || 5) === 0) {
+      for (const e of this.enemies.filter(
+        (e) => e.alive && distance(e, t) <= stats.pulse,
+      )) {
+        this.damage(e, stats.damage, stats);
+        if (t.type === "frost")
+          this.chill(e, stats.slow, stats.duration, stats.freeze || 0.4);
+      }
+      this.emit("impact", {
+        x: t.x,
+        y: t.y,
+        attack: t.type,
+        radius: stats.pulse,
+      });
+      if (stats.storm) {
+        const stormTargets = this.targets(t, stats).slice(0, stats.storm);
+        stormTargets.forEach((e) => this.damage(e, stats.damage * 1.5, stats));
+        this.emit("bolt", {
+          tower: t,
+          points: stormTargets.map((e) => ({ x: e.x, y: e.y })),
         });
       }
     }
     this.emit("attack", { tower: t, target: targets[0] });
+  }
+  abilities(e, dt) {
+    e.abilityTime -= dt;
+    if (e.abilityTime > 0) return;
+    e.abilityTime = e.abilityPeriod || 1;
+    if (e.heal) {
+      for (const ally of this.enemies)
+        if (ally.alive && ally !== e && distance(ally, e) <= e.abilityRange)
+          ally.health = Math.min(ally.maxHealth, ally.health + e.heal);
+      this.emit("heal", { enemy: e, radius: e.abilityRange });
+    }
+    if (e.type === "boss" && e.summons < 12 && this.enemies.length < 100) {
+      e.summons++;
+      for (const type of [
+        e.phase === 3 ? "warden" : "armored",
+        "runner",
+        "sprout",
+      ]) {
+        const ally = this.spawn(type);
+        ally.progress = Math.max(0, e.progress - 30);
+        Object.assign(ally, onPath(ally.progress));
+        // Finite summons grant small bounties; the boss cannot farm a stalled wave.
+        ally.reward = Math.min(ally.reward, 6);
+      }
+    }
   }
   // The same fixed-sized steps drive 1x, 2x, and accelerated test simulations.
   update(realDelta) {
@@ -224,16 +544,41 @@ export class Game {
   step(dt) {
     if (!this.active) return;
     this.waveTime += dt;
-    while (this.queue.length && this.queue[0].at <= this.waveTime)
-      this.spawn(this.queue.shift().type);
+    while (this.queue.length && this.queue[0].at <= this.waveTime) {
+      const entry = this.queue.shift();
+      this.spawn(entry.type, entry);
+    }
     for (const e of this.enemies) {
       if (!e.alive) continue;
       if (e.burnLeft > 0) {
         const burnTime = Math.min(e.burnLeft, dt);
         e.burnLeft -= dt;
-        this.damage(e, e.burn * burnTime, true);
+        this.damage(e, e.burn * burnTime, {
+          damageType: "magic",
+          bypass: 0.65,
+          tick: true,
+        });
+        this.breakArmor(e, e.melt * burnTime);
+        e.spreadTime -= dt;
+        if (e.spread && e.spreadTime <= 0) {
+          e.spreadTime = 1;
+          for (const other of this.enemies
+            .filter((a) => a !== e && a.alive && distance(a, e) <= e.spread)
+            .slice(0, 2)) {
+            other.burn = Math.max(other.burn, e.burn * 0.6);
+            other.burnLeft = Math.max(other.burnLeft, 2);
+          }
+        }
         if (!e.alive) continue;
+        if (e.burnLeft <= 0) {
+          e.burn = 0;
+          e.melt = 0;
+          e.spread = 0;
+        }
       }
+      this.abilities(e, dt);
+      e.freezeImmunity = Math.max(0, e.freezeImmunity - dt);
+      e.brittleLeft = Math.max(0, e.brittleLeft - dt);
       e.slowLeft = Math.max(0, e.slowLeft - dt);
       if (!e.slowLeft) e.slow = 1;
       const stopped = Math.min(dt, e.frozen);
@@ -251,13 +596,31 @@ export class Game {
       }
     }
     if (this.ended) return;
+    this.zones = this.zones.filter((z) => {
+      z.left -= dt;
+      for (const e of this.enemies.filter(
+        (e) => e.alive && distance(e, z) <= z.radius,
+      )) {
+        this.damage(e, z.damage * dt, {
+          damageType: "magic",
+          bypass: 0.65,
+          tick: true,
+        });
+        this.breakArmor(e, z.melt * dt);
+      }
+      return z.left > 0;
+    });
     for (const t of this.towers) {
+      const aura = towerStats(t);
+      if (aura.aura)
+        for (const e of this.enemies.filter(
+          (e) => e.alive && distance(e, t) <= aura.aura,
+        ))
+          this.chill(e, aura.auraSlow, 0.1);
       t.cooldown -= dt;
       if (t.cooldown > 0) continue;
-      const stats = TOWERS[t.type].levels[t.level - 1];
-      const targets = this.enemies
-        .filter((e) => e.alive && distance(e, t) <= stats.range)
-        .sort((a, b) => b.progress - a.progress);
+      const stats = towerStats(t);
+      const targets = this.targets(t, stats);
       if (targets.length) {
         this.attack(t, targets, stats);
         t.cooldown = stats.cooldown;
@@ -279,6 +642,7 @@ export class Game {
     if (!this.remaining) {
       this.active = false;
       this.projectiles = [];
+      this.zones = [];
       const bonus = 20 + this.wave * 3;
       this.gold += bonus;
       this.earned += bonus;
@@ -291,6 +655,7 @@ export class Game {
     this.active = false;
     this.queue = [];
     this.projectiles = [];
+    this.zones = [];
     this.emit("end", { result });
   }
 }

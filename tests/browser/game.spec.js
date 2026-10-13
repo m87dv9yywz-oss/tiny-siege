@@ -33,9 +33,13 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
     box.y + (105 / 640) * box.height,
   );
   await expect(page.locator("#gold")).toHaveText("225");
-  await page.getByRole("button", { name: "Upgrade · 100 gold" }).click();
+  await page
+    .getByRole("button", { name: "Reinforced Arrows · 100 gold" })
+    .click();
   await expect(page.locator("#gold")).toHaveText("125");
-  await expect(page.locator("#selection-panel")).toContainText("LEVEL 2");
+  await expect(page.locator("#selection-panel")).toContainText(
+    "Armor-Piercing Bolts",
+  );
   await page.locator("#mute").click();
   await expect(page.locator("#mute")).toContainText("Sound on");
   await page.getByRole("button", { name: "START WAVE 1" }).click();
@@ -97,8 +101,9 @@ test("all tower artwork, final boss, victory and defeat render without errors", 
     ].forEach(([type, x, y]) => {
       const t = g.place(type, x, y);
       if (!t) throw Error(`Invalid test placement ${type}`);
-      g.upgrade(t.id);
-      g.upgrade(t.id);
+      g.upgrade(t.id, 0);
+      g.upgrade(t.id, 0);
+      g.upgrade(t.id, 0);
     });
     g.wave = 19;
     g.startWave();
