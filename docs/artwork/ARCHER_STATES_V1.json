@@ -1,0 +1,163 @@
+{
+  "status": "tier1_seven_states_created_four_previous_approved_three_pending_review",
+  "tower_type": "archer",
+  "base_reference": "towers/archer/archer_shop_icon.png",
+  "path_names": [
+    "Siege Ballista",
+    "Arrowstorm",
+    "Deadeye"
+  ],
+  "state_count": 25,
+  "states": {
+    "0-0-0": {
+      "name": "Base Archer",
+      "state_art": "towers/archer/states/archer_0-0-0.png",
+      "status": "approved_for_art_direction_not_deployed",
+      "preview_for_card": "towers/archer/exports/card_512/archer_0-0-0.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_0-0-0.png"
+    },
+    "1-0-0": {
+      "name": "Reinforced Arrows",
+      "state_art": "towers/archer/states/archer_1-0-0.png",
+      "status": "approved_for_art_direction_not_deployed",
+      "preview_for_card": "towers/archer/exports/card_512/archer_1-0-0.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_1-0-0.png"
+    },
+    "0-1-0": {
+      "name": "Quick Draw",
+      "state_art": "towers/archer/states/archer_0-1-0.png",
+      "status": "approved_for_art_direction_not_deployed",
+      "preview_for_card": "towers/archer/exports/card_512/archer_0-1-0.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_0-1-0.png"
+    },
+    "0-0-1": {
+      "name": "Eagle Eye",
+      "state_art": "towers/archer/states/archer_0-0-1.png",
+      "status": "approved_for_art_direction_not_deployed",
+      "preview_for_card": "towers/archer/exports/card_512/archer_0-0-1.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_0-0-1.png"
+    },
+    "1-1-0": {
+      "name": "Reinforced + Quick Draw",
+      "state_art": "towers/archer/states/archer_1-1-0.png",
+      "status": "rendered_pending_user_review",
+      "method": "transparent cutout composition from approved individual upgrade illustrations",
+      "detail": "Reinforced crossbow and red-steel ammunition, with quick-loading pulley and trailing green ribbon",
+      "preview_for_card": "towers/archer/exports/card_512/archer_1-1-0.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_1-1-0.png"
+    },
+    "1-0-1": {
+      "name": "Reinforced + Eagle Eye",
+      "state_art": "towers/archer/states/archer_1-0-1.png",
+      "status": "rendered_pending_user_review",
+      "method": "transparent cutout composition from approved individual upgrade illustrations",
+      "detail": "Reinforced crossbow and red steel-tipped bolts, added golden eye crest and brass scope",
+      "preview_for_card": "towers/archer/exports/card_512/archer_1-0-1.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_1-0-1.png"
+    },
+    "0-1-1": {
+      "name": "Quick Draw + Eagle Eye",
+      "state_art": "towers/archer/states/archer_0-1-1.png",
+      "status": "rendered_pending_user_review",
+      "method": "transparent cutout composition from approved individual upgrade illustrations",
+      "detail": "Quick-loading bow, green-feathered bolts and ribbon, added golden eye crest and brass scope",
+      "preview_for_card": "towers/archer/exports/card_512/archer_0-1-1.png",
+      "preview_for_battlefield": "towers/archer/exports/battlefield_256/archer_0-1-1.png"
+    },
+    "2-0-0": {
+      "name": "Armor-Piercing Bolts",
+      "state_art": "towers/archer/states/archer_2-0-0.png",
+      "status": "not_generated"
+    },
+    "0-2-0": {
+      "name": "Multishot",
+      "state_art": "towers/archer/states/archer_0-2-0.png",
+      "status": "not_generated"
+    },
+    "0-0-2": {
+      "name": "Precision Strikes",
+      "state_art": "towers/archer/states/archer_0-0-2.png",
+      "status": "not_generated"
+    },
+    "2-1-0": {
+      "name": "Armor-Piercing + Quick Draw",
+      "state_art": "towers/archer/states/archer_2-1-0.png",
+      "status": "not_generated"
+    },
+    "2-0-1": {
+      "name": "Armor-Piercing + Eagle Eye",
+      "state_art": "towers/archer/states/archer_2-0-1.png",
+      "status": "not_generated"
+    },
+    "1-2-0": {
+      "name": "Multishot + Reinforced",
+      "state_art": "towers/archer/states/archer_1-2-0.png",
+      "status": "not_generated"
+    },
+    "0-2-1": {
+      "name": "Multishot + Eagle Eye",
+      "state_art": "towers/archer/states/archer_0-2-1.png",
+      "status": "not_generated"
+    },
+    "1-0-2": {
+      "name": "Precision + Reinforced",
+      "state_art": "towers/archer/states/archer_1-0-2.png",
+      "status": "not_generated"
+    },
+    "0-1-2": {
+      "name": "Precision + Quick Draw",
+      "state_art": "towers/archer/states/archer_0-1-2.png",
+      "status": "not_generated"
+    },
+    "3-0-0": {
+      "name": "Siege Ballista",
+      "state_art": "towers/archer/states/archer_3-0-0.png",
+      "status": "not_generated"
+    },
+    "0-3-0": {
+      "name": "Arrowstorm",
+      "state_art": "towers/archer/states/archer_0-3-0.png",
+      "status": "not_generated"
+    },
+    "0-0-3": {
+      "name": "Master Sniper",
+      "state_art": "towers/archer/states/archer_0-0-3.png",
+      "status": "not_generated"
+    },
+    "3-1-0": {
+      "name": "Siege Ballista + Quick Draw",
+      "state_art": "towers/archer/states/archer_3-1-0.png",
+      "status": "not_generated"
+    },
+    "3-0-1": {
+      "name": "Siege Ballista + Eagle Eye",
+      "state_art": "towers/archer/states/archer_3-0-1.png",
+      "status": "not_generated"
+    },
+    "1-3-0": {
+      "name": "Arrowstorm + Reinforced",
+      "state_art": "towers/archer/states/archer_1-3-0.png",
+      "status": "not_generated"
+    },
+    "0-3-1": {
+      "name": "Arrowstorm + Eagle Eye",
+      "state_art": "towers/archer/states/archer_0-3-1.png",
+      "status": "not_generated"
+    },
+    "1-0-3": {
+      "name": "Master Sniper + Reinforced",
+      "state_art": "towers/archer/states/archer_1-0-3.png",
+      "status": "not_generated"
+    },
+    "0-1-3": {
+      "name": "Master Sniper + Quick Draw",
+      "state_art": "towers/archer/states/archer_0-1-3.png",
+      "status": "not_generated"
+    }
+  },
+  "generated_count": 7,
+  "planned_count": 18,
+  "reference_only": "towers/archer/references/dual_tier1_concept_comparison.png",
+  "review_reference": "towers/archer/references/ARCHER_ALL_SEVEN_REVIEW.png",
+  "field_card_art_consistency": "identical high-resolution source PNG is resized for each usage"
+}
