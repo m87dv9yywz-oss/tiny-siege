@@ -12,7 +12,7 @@ export function textures(scene) {
   const g = scene.make.graphics({ x: 0, y: 0 }, false);
   for (const [type, def] of Object.entries(TOWERS))
     for (let level = 1; level <= 3; level++) {
-      if (type === "grove") continue;
+      if (["grove","wind","rune"].includes(type)) continue;
       g.clear();
       g.fillStyle(0x1c3e32, 0.28);
       g.fillEllipse(42, 68, 65, 19);
@@ -299,7 +299,20 @@ export function textures(scene) {
       g.fillStyle(0x9f574b);
       g.fillRect(x - r, y + 7, r * 2, 6);
     }
-    if (type === "boss") {
+    if(type==='crystal'||type==='crystalBoss') {
+      polygon(g,[[x-r,y+2],[x-r*.7,y-r*1.1],[x,y-r*1.6],[x+r*.8,y-r],[x+r,y+3]],0xa5e4ed);
+      g.lineStyle(2,0xf1fdff);g.lineBetween(x,y-r*1.5,x-3,y+4);g.lineBetween(x-r*.6,y-r*.8,x+r*.6,y-r*.4);
+      if(type==='crystal') {g.lineStyle(3,0x567a91);for(const side of [-1,1])for(const dy of [-3,7,15])g.lineBetween(x+side*r*.6,y+dy,x+side*(r+7),y+dy+5);}
+    }
+    if(type==='ember'||type==='drake') {
+      polygon(g,[[x-r*.5,y-r*.7],[x-r*.8,y-r*1.2],[x-r*.1,y-r],[x+r*.2,y-r*1.6],[x+r*.4,y-r*.8]],0xffda8b);
+      if(type==='drake') {
+        polygon(g,[[x-r*.5,y],[2,12],[6,46],[x-r*.7,y+12]],0xe58768);
+        polygon(g,[[x+r*.5,y],[78,10],[73,48],[x+r*.7,y+12]],0xe58768);
+        g.lineStyle(3,0xffce91);g.lineBetween(9,23,x-r*.5,y+5);g.lineBetween(71,22,x+r*.5,y+5);
+      }
+    }
+    if (type==='boss') {
       polygon(
         g,
         [
@@ -348,7 +361,7 @@ export function battlefield(
 ) {
   const { PATH, distanceToPath } = trail;
   const palette =
-    biome === "amber"
+    biome === "crystal" ? {0x76a77a:0x729fae,0x6b9c70:0x577e98,0x8ab787:0xa4c4cc,0x355e45:0x3c677d,0x477d52:0x718ba5,0x619558:0x9da9cc,0x89b46c:0xafd7d9} : biome === "coast" ? {0x76a77a:0xcbb58e,0x6b9c70:0xb99b82,0x8ab787:0xe4c597,0x355e45:0x725e64,0x477d52:0x8a7470,0x619558:0xb1967d,0x89b46c:0xe3bc91} : biome === "amber"
       ? {
           0x76a77a: 0xdcb876,
           0x6b9c70: 0xb99261,
@@ -419,6 +432,8 @@ export function battlefield(
       g.fillCircle(x, y, 4);
     }
   }
+  if(biome==='coast') {g.fillStyle(0x66bdcd);g.fillCircle(450,100,80);g.fillStyle(0xffac67);g.fillEllipse(470,320,66,55);g.fillStyle(0xffdf8a);g.fillEllipse(470,320,30,22);g.fillStyle(0xa17972);g.fillCircle(810,475,24);g.fillStyle(0xffb273);g.fillCircle(810,475,14);}
+  if(biome==='crystal') for(const [x,y] of [[60,290],[440,320],[840,330]]) {g.fillStyle(0x647b92);g.fillEllipse(x,y,72,54);polygon(g,[[x-20,y],[x-12,y-46],[x+7,y-58],[x+22,y]],0xa4dfea);}
   const line = (width, color, offset = 0) => {
     g.lineStyle(width, color, 1);
     g.beginPath();
@@ -441,6 +456,17 @@ export function battlefield(
     );
   }
   const tree = (x, y, s = 1) => {
+    if(distanceToPath(x,y)<62)return;
+    if(biome==='crystal') {
+      polygon(g,[[x-18*s,y+8*s],[x-24*s,y-25*s],[x-7*s,y-52*s],[x+9*s,y-26*s],[x+13*s,y+8*s]],0x8bcfdf);
+      polygon(g,[[x+9*s,y+8*s],[x+12*s,y-32*s],[x+27*s,y-45*s],[x+33*s,y-16*s],[x+28*s,y+8*s]],0xc49eee);
+      g.lineStyle(3,0xe7fbff,.8);g.lineBetween(x-7*s,y-42*s,x-6*s,y);return;
+    }
+    if(biome==='coast') {
+      g.fillStyle(0x655c63);g.fillEllipse(x,y,42*s,23*s);
+      polygon(g,[[x-22*s,y],[x-9*s,y-35*s],[x+8*s,y-43*s],[x+25*s,y]],0x94797a);
+      g.lineStyle(3,0xffb879);g.lineBetween(x-9*s,y-20*s,x+6*s,y-8*s);return;
+    }
     g.fillStyle(palette[0x426a47] || 0x426a47, 0.25);
     g.fillEllipse(x + 5, y + 9, 48 * s, 20 * s);
     g.fillStyle(palette[0x806646] || 0x806646);
@@ -515,6 +541,8 @@ export function battlefield(
       g.fillCircle(x + 2, y - 2, 2);
     }
   }
+  // Existing woodland pond stays off the new routes.
+  if (!["crystal","coast"].includes(biome)) {
   // Pond, stepping stones, and tiny magical crystals.
   g.fillStyle(palette[0x558a72] || 0x558a72);
   g.fillEllipse(732, 298, 96, 75);
@@ -524,6 +552,7 @@ export function battlefield(
   g.fillEllipse(725, 285, 55, 23);
   g.lineStyle(2, 0xb8e0c1, 0.5);
   g.lineBetween(709, 297, 731, 297);
+  }
   g.lineBetween(736, 280, 751, 280);
   [
     [338, 344],
@@ -707,7 +736,7 @@ function evolutionArt(g) {
   for (const [type, def] of Object.entries(TOWERS))
     for (let p = 0; p < 3; p++)
       for (const tier of [2, 3]) {
-        if (type === "grove") continue;
+        if (["grove","wind","rune"].includes(type)) continue;
         g.clear();
         const ultimate = tier === 3;
         stone(ultimate ? 68 : 52);

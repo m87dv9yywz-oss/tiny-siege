@@ -1,3 +1,4 @@
+import { HEROES } from "../data/heroes.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -14,6 +15,29 @@ export class GameScene extends Phaser.Scene {
     this.towerSprites = new Map();
     this.enemySprites = new Map();
     this.effects = [];
+  }
+  preload() {
+    const base = import.meta.env.BASE_URL;
+    for (const type of ["wind", "rune"]) {
+      for (const level of [1, 2, 3])
+        this.load.svg(
+          `tower-${type}-${level}`,
+          `${base}portraits/${type}-${level === 1 ? "base" : "tier1-0"}.svg`,
+          { width: 84, height: 88 },
+        );
+      for (const path of [0, 1, 2])
+        for (const tier of [2, 3])
+          this.load.svg(
+            `evolution-${type}-${path}-${tier}`,
+            `${base}portraits/${type}-${tier === 2 ? "tier2-" + path : path}.svg`,
+            { width: 96, height: 100 },
+          );
+    }
+    for (const type of Object.keys(HEROES))
+      this.load.svg(`hero-${type}`, `${base}heroes/${type}.svg`, {
+        width: 80,
+        height: 84,
+      });
   }
   create() {
     textures(this);
@@ -66,6 +90,26 @@ export class GameScene extends Phaser.Scene {
           this.ui.selected = tower.id;
           this.ui.upgradeOpen = true;
           this.ui.refresh(true);
+        }
+      } else if (
+        this.model.hero &&
+        (this.ui.heroMoving ||
+          Math.hypot(point.x - this.model.hero.x, point.y - this.model.hero.y) <
+            38)
+      ) {
+        if (
+          this.ui.heroMoving &&
+          Math.hypot(
+            point.x - this.model.hero.x,
+            point.y - this.model.hero.y,
+          ) >= 38
+        ) {
+          if (this.model.moveHero(point.x, point.y)) this.ui.heroMoving = false;
+          else this.ui.toast("Choose clear ground for your hero.");
+        } else {
+          this.ui.heroMoving = true;
+          this.ui.closeUpgrades();
+          this.ui.toast("Tap clear ground to move your hero.");
         }
       } else {
         const tower = this.towerAt(point);
@@ -168,6 +212,37 @@ export class GameScene extends Phaser.Scene {
       this.effects = [];
       Object.values(this.particles).forEach((p) => p.killAll());
       return;
+    }
+    if (type === "heroAttack") {
+      const h = event.hero,
+        c = HEROES[h.type].color;
+      this.effects.push({
+        type: "ring",
+        x: event.target.x,
+        y: event.target.y,
+        color: c,
+        age: 0,
+        life: 0.45,
+        radius: event.radius,
+      });
+      this.effects.push({
+        type: "seedBounce",
+        points: [
+          { x: h.x, y: h.y - 20 },
+          { x: event.target.x, y: event.target.y },
+        ],
+        color: c,
+        age: 0,
+        life: 0.22,
+      });
+      if (this.heroSprite)
+        this.tweens.add({
+          targets: this.heroSprite,
+          scaleX: 1.1,
+          scaleY: 0.92,
+          duration: 90,
+          yoyo: true,
+        });
     }
     if (type === "build" || type === "upgrade") {
       this.effects.push({
@@ -361,6 +436,39 @@ export class GameScene extends Phaser.Scene {
         sprite.destroy();
         this.towerSprites.delete(id);
       }
+    const hero = this.model.hero;
+    if (hero) {
+      if (!this.heroSprite)
+        this.heroSprite = this.add.image(
+          hero.x,
+          hero.y - 15,
+          `hero-${hero.type}`,
+        );
+      this.heroSprite
+        .setTexture(`hero-${hero.type}`)
+        .setPosition(
+          hero.x,
+          hero.y - 15 + (this.model.paused ? 0 : Math.sin(time * 0.004) * 2),
+        )
+        .setDepth(hero.y + 45)
+        .setVisible(true);
+      if (this.ui.heroMoving) {
+        g.lineStyle(2, HEROES[hero.type].color, 0.8);
+        g.strokeCircle(hero.x, hero.y, HEROES[hero.type].range);
+        g.lineStyle(2, 0xffe39a, 0.45);
+        g.strokeCircle(
+          hero.x,
+          hero.y,
+          HEROES[hero.type].buffRange *
+            (this.model.relics.includes("banner") ? 1.2 : 1),
+        );
+      }
+      if (hero.destination) {
+        g.lineStyle(2, 0xffe39a, 0.7);
+        g.lineBetween(hero.x, hero.y, hero.destination.x, hero.destination.y);
+        g.strokeCircle(hero.destination.x, hero.destination.y, 15);
+      }
+    } else this.heroSprite?.setVisible(false);
     for (const t of this.model.towers) {
       let sprite = this.towerSprites.get(t.id);
       if (!sprite) {
@@ -445,7 +553,7 @@ export class GameScene extends Phaser.Scene {
         g.lineStyle(2, 0xe7be75);
         g.strokeCircle(e.x, e.y - 8, 23);
       }
-      if (e.type === "boss") {
+      if (e.boss) {
         sprite.setScale(1 + (e.phase - 1) * 0.12);
         if (e.armor > 0) {
           g.lineStyle(3, 0xafd791, 0.85);
@@ -486,14 +594,14 @@ export class GameScene extends Phaser.Scene {
             ? 0xb6e8f7
             : e.burnLeft > 0
               ? 0xffb797
-              : e.type === "boss" && e.phase === 3
+              : e.boss && e.phase === 3
                 ? 0xffc791
                 : 0xffffff,
       );
-      const w = e.type === "boss" ? 64 : 26;
+      const w = e.boss ? 64 : 26;
       g.fillStyle(0x223e38, 0.8);
       g.fillRoundedRect(e.x - w / 2, e.y - e.radius - 18, w, 4, 2);
-      g.fillStyle(e.type === "boss" ? 0xc2a4ed : 0xd5e891);
+      g.fillStyle(e.boss ? 0xc2a4ed : 0xd5e891);
       g.fillRoundedRect(
         e.x - w / 2,
         e.y - e.radius - 18,
@@ -575,6 +683,25 @@ export class GameScene extends Phaser.Scene {
           p.x - dx * (length - 4) + dy * 4,
           p.y - dy * (length - 4) - dx * 4,
         );
+      } else if (p.type === "wind") {
+        g.lineStyle(3 * v.size, c, 0.95);
+        g.beginPath();
+        g.arc(p.x, p.y, 7 * v.size, time * 0.008, time * 0.008 + 4.8);
+        g.strokePath();
+        g.lineStyle(2, 0xf4ffff, 0.8);
+        g.lineBetween(p.x - 8 * v.size, p.y + 3, p.x + 8 * v.size, p.y - 3);
+      } else if (p.type === "rune") {
+        g.fillStyle(c, 0.7);
+        g.fillTriangle(
+          p.x,
+          p.y - 8 * v.size,
+          p.x - 7 * v.size,
+          p.y + 6 * v.size,
+          p.x + 7 * v.size,
+          p.y + 6 * v.size,
+        );
+        g.lineStyle(2, 0xfff1bb, 0.9);
+        g.strokeCircle(p.x, p.y, 9 * v.size);
       } else if (p.type === "frost") {
         g.lineStyle(2, c);
         for (let n = 0; n < 3 + v.tier; n++) {

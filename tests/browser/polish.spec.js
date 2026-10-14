@@ -21,8 +21,8 @@ for (const [width, height] of sizes)
     await page.locator("#new-profile").tap();
     await page.locator("#nickname").fill("Sunny Knight");
     await page.locator("#profile-form button").tap();
-    await expect(page.locator(".map-choice")).toHaveCount(4);
-    await expect(page.locator(".level-state.new")).toHaveCount(4);
+    await expect(page.locator(".map-choice")).toHaveCount(6);
+    await expect(page.locator(".level-state.new")).toHaveCount(6);
     expect(
       await page
         .locator(".home-card")
@@ -213,6 +213,7 @@ test("Kingdom tabs and future trees preserve the original battle pause state", a
   await page.locator("#nickname").fill("Reading Knight");
   await page.locator("#profile-form button").click();
   await page.locator('[data-map="emerald"]').click();
+  await page.locator("#begin-adventure").click();
   await page.locator("#start-wave").click();
   for (const paused of [false, true]) {
     if (paused) await page.locator("#pause").click();

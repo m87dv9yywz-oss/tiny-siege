@@ -1,3 +1,7 @@
+import { validateBattle } from "../systems/checkpoint.js";
+import { HEROES } from "../data/heroes.js";
+import { RELICS } from "../data/relics.js";
+import { DIFFICULTIES } from "../data/difficulties.js";
 import { TOWERS } from "../data/towers.js";
 import { CAMPAIGNS } from "../data/waves.js";
 
@@ -11,15 +15,35 @@ export const AVATAR_ART = {
   wizard: "🧙",
   unicorn: "🦄",
 };
-export const UNLOCK_COSTS = { fire: 75, lightning: 130, grove: 90 };
-const LEGACY_TYPES = TYPES.filter((t) => t !== "grove");
-const MAP_IDS = ["emerald", "amber", "moon", "garden"];
+export const UNLOCK_COSTS = {
+  fire: 75,
+  lightning: 130,
+  grove: 90,
+  wind: 100,
+  rune: 110,
+};
+const LEGACY_TYPES = ["archer", "cannon", "frost", "fire", "lightning"];
+const V31_TYPES = [...LEGACY_TYPES, "grove"];
+const profileTypes = (p) =>
+  p?.schemaVersion === 1
+    ? LEGACY_TYPES
+    : p?.schemaVersion === 2
+      ? V31_TYPES
+      : TYPES;
+const MAP_IDS = ["emerald", "amber", "moon", "garden", "crystal", "coast"];
 export const XP_COSTS = { 2: 180, 3: 500 };
 export const freshProfile = (
   nickname = "Little Knight",
   avatar = "dragon",
 ) => ({
-  schemaVersion: 2,
+  schemaVersion: 3,
+  heroes: {
+    unlocked: ["dragon", "tiger"],
+    equipped: "dragon",
+    xp: { dragon: 0, dinosaur: 0, tiger: 0 },
+  },
+  relics: { unlocked: [], equipped: [] },
+  mapProgress: {},
   nickname,
   avatar,
   crowns: 0,
@@ -45,13 +69,26 @@ const PROFILE_FIELDS = new Set(Object.keys(freshProfile()));
 const integer = (v, max = 1000000000) =>
   Number.isInteger(v) && v >= 0 && v <= max;
 export function validateProfile(p) {
-  const types = p?.schemaVersion === 1 ? LEGACY_TYPES : TYPES;
-  const maps = p?.schemaVersion === 1 ? MAP_IDS.slice(0, 3) : MAP_IDS;
+  const types = profileTypes(p);
+  const maps =
+    p?.schemaVersion === 1
+      ? MAP_IDS.slice(0, 3)
+      : p?.schemaVersion === 2
+        ? MAP_IDS.slice(0, 4)
+        : MAP_IDS;
+  const fields =
+    p?.schemaVersion === 3
+      ? PROFILE_FIELDS
+      : new Set(
+          [...PROFILE_FIELDS].filter(
+            (k) => !["heroes", "relics", "mapProgress"].includes(k),
+          ),
+        );
   if (
     !p ||
-    Object.keys(p).length !== PROFILE_FIELDS.size ||
-    Object.keys(p).some((k) => !PROFILE_FIELDS.has(k)) ||
-    ![1, 2].includes(p.schemaVersion) ||
+    Object.keys(p).length !== fields.size ||
+    Object.keys(p).some((k) => !fields.has(k)) ||
+    ![1, 2, 3].includes(p.schemaVersion) ||
     typeof p.nickname !== "string" ||
     !p.nickname.trim() ||
     /[\u0000-\u001f\u007f]/.test(p.nickname) ||
@@ -95,7 +132,7 @@ export function validateProfile(p) {
   )
     return false;
   if (
-    !p.mapStars ||
+    !p.mapStars || Array.isArray(p.mapStars) ||
     Object.keys(p.mapStars).some(
       (m) => !p.completedMaps.includes(m) || !integer(p.mapStars[m], 3),
     )
@@ -121,6 +158,50 @@ export function validateProfile(p) {
     return false;
   for (const k of ["wins", "waves", "damage", "armor", "kills"])
     if (!integer(p.statistics[k])) return false;
+  if (p.schemaVersion === 3) {
+    const h = p.heroes,
+      r = p.relics;
+    if (
+      !h ||
+      Object.keys(h).length !== 3 ||
+      !Array.isArray(h.unlocked) ||
+      !h.unlocked.includes("dragon") ||
+      new Set(h.unlocked).size !== h.unlocked.length ||
+      !h.unlocked.every((k) => Object.hasOwn(HEROES, k)) ||
+      !h.unlocked.includes(h.equipped) ||
+      !h.xp ||
+      Object.keys(h.xp).length !== 3 ||
+      !Object.keys(HEROES).every((k) => integer(h.xp[k]))
+    )
+      return false;
+    if (
+      !r ||
+      Object.keys(r).length !== 2 ||
+      ![r.unlocked, r.equipped].every(
+        (a) =>
+          Array.isArray(a) &&
+          new Set(a).size === a.length &&
+          a.every((k) => Object.hasOwn(RELICS, k)),
+      ) ||
+      r.equipped.length > 2 ||
+      !r.equipped.every((k) => r.unlocked.includes(k))
+    )
+      return false;
+    if (
+      !p.mapProgress ||
+      Object.keys(p.mapProgress).some((k) => !MAP_IDS.includes(k))
+    )
+      return false;
+    for (const m of Object.values(p.mapProgress))
+      if (
+        !m ||
+        Object.keys(m).length !== 6 ||
+        !Object.keys(DIFFICULTIES).every(
+          (k) => integer(m[k], 3) && integer(m[k + "Claims"], 6),
+        )
+      )
+        return false;
+  }
   return (
     p.settings &&
     Object.keys(p.settings).length === 2 &&
@@ -129,7 +210,7 @@ export function validateProfile(p) {
   );
 }
 export function migrateProfile(data) {
-  const types = data?.schemaVersion === 1 ? LEGACY_TYPES : TYPES;
+  const types = profileTypes(data);
   if (data?.towerXP && Object.hasOwn(data.towerXP, "archerEarned")) {
     const keys = types.flatMap((t) => [t + "Earned", t + "Spent"]);
     if (
@@ -152,14 +233,30 @@ export function migrateProfile(data) {
   }
   // The infrastructure prototype used schema 1 with empty nested maps.
   const p = freshProfile(data?.nickname, data?.avatar);
-  if (data?.schemaVersion && ![1, 2].includes(data.schemaVersion))
+  if (data?.schemaVersion && ![1, 2, 3].includes(data.schemaVersion))
     throw Error("This save needs a newer Tiny Siege version.");
   if (validateProfile(data)) {
     const copy = structuredClone(data);
-    if (copy.schemaVersion === 1) {
-      copy.schemaVersion = 2;
-      copy.towerXP.grove = { earned: 0, spent: 0 };
-      copy.unlockedUpgrades.grove = [1, 1, 1];
+    if (copy.schemaVersion < 3) {
+      copy.schemaVersion = 3;
+      for (const t of TYPES) {
+        copy.towerXP[t] ||= { earned: 0, spent: 0 };
+        copy.unlockedUpgrades[t] ||= [1, 1, 1];
+      }
+      copy.heroes = structuredClone(p.heroes);
+      copy.relics = structuredClone(p.relics);
+      copy.mapProgress = {};
+      for (const map of copy.completedMaps)
+        copy.mapProgress[map] = {
+          easy: copy.mapStars[map] || 1,
+          medium: 0,
+          hard: 0,
+          easyClaims: 1,
+          mediumClaims: 0,
+          hardClaims: 0,
+        };
+      for (const [key, relic] of Object.entries(RELICS))
+        if (relic.unlock(copy)) copy.relics.unlocked.push(key);
     }
     return copy;
   }
@@ -182,7 +279,8 @@ export function applyOperation(profile, op) {
   if (
     typeof op.id !== "string" ||
     !/^[a-zA-Z0-9_-]{1,96}$/.test(op.id) ||
-    p.statistics.ledger.length + op.id.length + 2 > 194000
+    (p.schemaVersion < 3 &&
+      p.statistics.ledger.length + op.id.length + 2 > 194000)
   )
     throw Error("Save history is full. Export a backup before continuing.");
   if (op.type === "reward") {
@@ -190,7 +288,23 @@ export function applyOperation(profile, op) {
     if (!map || op.map === "classic" || !integer(op.stars, 3))
       throw Error("Invalid map reward.");
     if (op.win) {
-      p.crowns += p.completedMaps.includes(op.map) ? map.repeat : map.first;
+      if (op.difficulty) {
+        const mode = DIFFICULTIES[op.difficulty];
+        if (!mode) throw Error("Invalid difficulty reward.");
+        const progress = (p.mapProgress[op.map] ||= {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+          easyClaims: 0,
+          mediumClaims: 0,
+          hardClaims: 0,
+        });
+        const claims = progress[op.difficulty + "Claims"];
+        if (claims < 6) p.crowns += claims ? mode.repeat : mode.first;
+        progress[op.difficulty + "Claims"] = Math.min(6, claims + 1);
+        progress[op.difficulty] = Math.max(progress[op.difficulty], op.stars);
+      } else
+        p.crowns += p.completedMaps.includes(op.map) ? map.repeat : map.first;
       if (!p.completedMaps.includes(op.map)) p.completedMaps.push(op.map);
       p.mapStars[op.map] = Math.max(p.mapStars[op.map] || 0, op.stars);
       p.statistics.wins++;
@@ -201,6 +315,11 @@ export function applyOperation(profile, op) {
         !p.achievements.includes("three-kingdoms")
       )
         p.achievements.push("three-kingdoms");
+    }
+    if (op.hero) {
+      if (!Object.hasOwn(HEROES, op.hero) || !integer(op.heroXP || 0, 300))
+        throw Error("Invalid hero XP.");
+      p.heroes.xp[op.hero] += op.heroXP || 0;
     }
     for (const t of TYPES) {
       const amount = op.xp?.[t] || 0;
@@ -239,13 +358,35 @@ export function applyOperation(profile, op) {
       if (op.tier === 3 && !p.achievements.includes("evolution"))
         p.achievements.push("evolution");
     }
+  } else if (op.type === "hero") {
+    if (!HEROES[op.hero]) throw Error("Choose an animal hero.");
+    if (!p.heroes.unlocked.includes(op.hero)) {
+      if (p.crowns < HEROES[op.hero].cost) throw Error("Not enough Crowns.");
+      p.crowns -= HEROES[op.hero].cost;
+      p.heroes.unlocked.push(op.hero);
+    }
+    p.heroes.equipped = op.hero;
+  } else if (op.type === "relic") {
+    if (
+      !Array.isArray(op.equipped) ||
+      op.equipped.length > 2 ||
+      new Set(op.equipped).size !== op.equipped.length ||
+      !op.equipped.every((k) => p.relics.unlocked.includes(k))
+    )
+      throw Error("Equip up to two earned relics.");
+    p.relics.equipped = [...op.equipped];
   } else if (op.type === "rename") {
     p.nickname = op.nickname;
     p.avatar = op.avatar;
   } else if (op.type === "settings")
     p.settings = { ...p.settings, ...op.settings };
   else throw Error("Unknown save operation.");
-  p.statistics.ledger = (p.statistics.ledger || "|") + op.id + "|";
+  const history = [...p.statistics.ledger.split("|").filter(Boolean), op.id];
+  p.statistics.ledger = "|" + history.slice(-128).join("|") + "|";
+  if (p.schemaVersion === 3)
+    for (const [key, relic] of Object.entries(RELICS))
+      if (relic.unlock(p) && !p.relics.unlocked.includes(key))
+        p.relics.unlocked.push(key);
   p.statistics.revision++;
   p.updatedAt = Date.now();
   if (!validateProfile(p)) throw Error("Invalid save operation.");
@@ -273,6 +414,11 @@ export function rewardForRun(model, runId) {
     type: "reward",
     map: model.campaign.id,
     win: model.ended === "victory",
+    difficulty: model.campaign.mode || null,
+    hero: model.hero?.type || null,
+    heroXP: model.hero
+      ? Math.min(300, Math.floor(model.hero.damage * 0.012) + model.wave * 3)
+      : 0,
     stars: model.lives >= 18 ? 3 : model.lives >= 10 ? 2 : 1,
     xp,
     stats: {
@@ -351,12 +497,39 @@ export class ProfileStore {
   commit(op) {
     const entry = this.data.profiles[this.data.selected];
     if (!entry) throw Error("Choose a profile first.");
+    entry.receipts ||= Object.fromEntries(
+      entry.profile.statistics.ledger
+        .split("|")
+        .filter(Boolean)
+        .map((id) => [id, true]),
+    );
+    if (Object.hasOwn(entry.receipts, op.id)) return entry.profile;
     const next = applyOperation(entry.profile, op);
+    Object.defineProperty(entry.receipts, op.id, {
+      value: true,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
     if (next.statistics.revision !== entry.profile.statistics.revision)
       entry.pending.push(op);
     entry.profile = next;
     this.persist();
     return next;
+  }
+  saveBattle(battle) {
+    const entry = this.data.profiles[this.data.selected];
+    if (!entry) throw Error("Choose a profile first.");
+    entry.battle = structuredClone(battle);
+    const pending = entry.pending.filter((op) => op.type !== "battle");
+    pending.push({
+      id: crypto.randomUUID(),
+      type: "battle",
+      battle: entry.battle,
+      expectedBattleRevision: entry.battleRevision || 0,
+    });
+    entry.pending = pending;
+    this.persist();
   }
   remove(id) {
     delete this.data.profiles[id];
@@ -368,6 +541,14 @@ export class ProfileStore {
     return JSON.stringify(
       {
         version: 1,
+        checkpoints: Object.fromEntries(
+          Object.entries(this.data.profiles)
+            .filter(([, e]) => !e.owner || e.owner === owner)
+            .map(([id, e]) => [
+              id,
+              { battle: e.battle || null, receipts: e.receipts || {} },
+            ]),
+        ),
         profiles: Object.fromEntries(
           Object.entries(this.data.profiles)
             .filter(([, e]) => !e.owner || e.owner === owner)
@@ -392,13 +573,29 @@ export class ProfileStore {
     ]);
     if (Object.keys(this.data.profiles).length + entries.length > 12)
       throw Error("Not enough profile slots.");
+    for (const [id] of entries) {
+      const metadata = data.checkpoints?.[id];
+      if (metadata?.battle && !validateBattle(metadata.battle))
+        throw Error("Invalid battle backup. Existing progress kept.");
+      if (
+        metadata?.receipts &&
+        (typeof metadata.receipts !== "object" ||
+          Array.isArray(metadata.receipts) ||
+          Object.keys(metadata.receipts).some(
+            (k) => !/^[a-zA-Z0-9_-]{1,96}$/.test(k),
+          ))
+      )
+        throw Error("Invalid reward history.");
+    }
     // Always import as independent copies. Never silently replace an existing profile.
-    for (const [, p] of entries) {
+    for (const [sourceId, p] of entries) {
       const id = crypto.randomUUID();
       this.data.profiles[id] = {
         profile: p,
         pending: [],
         remoteRevision: null,
+        battle: data.checkpoints?.[sourceId]?.battle || null,
+        receipts: data.checkpoints?.[sourceId]?.receipts || {},
       };
     }
     this.persist();

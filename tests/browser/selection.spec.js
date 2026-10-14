@@ -17,7 +17,7 @@ for (const [width, height] of [
   [844, 390],
   [1024, 768],
 ])
-  test(`${width}×${height}: reopen Lightning and Archer from artwork, range only, second tap and outside dismissal`, async ({
+  test(`${width}×${height}: reopen Lightning and Archer from artwork, one-tap upgrades, range and outside dismissal`, async ({
     page,
   }) => {
     const errors = [];
@@ -34,10 +34,11 @@ for (const [width, height] of [
     await page.locator("#close-panel").tap();
     // Archer roof lies outside the old 30-world-pixel ground-anchor hit circle.
     await tapWorld(page, 145, 60);
-    await expect(page.locator("#tower-inspector")).toBeVisible();
-    await expect(page.locator("#selection-panel")).toBeHidden();
+    await expect(page.locator("#tower-inspector")).toBeHidden();
+    await expect(page.locator("#selection-panel")).toBeVisible();
+    await expect(page.locator("#selection-panel")).toBeVisible();
     await expect(page.locator("#range-tower-name")).toHaveText("Archer");
-    await page.locator("#show-upgrades").tap();
+    await tapWorld(page, 145, 60);
     await expect(page.locator("#selection-panel")).toContainText(
       "Siege Ballista",
     );
@@ -56,7 +57,7 @@ for (const [width, height] of [
       const y = field.width > canvas.width + 5 ? field.y + 60 : field.y + 3;
       await page.touchscreen.tap(x, y);
       await expect(page.locator("#selection-panel")).toBeHidden();
-      await page.locator("#show-upgrades").tap();
+      await tapWorld(page, 145, 60);
     }
     for (let i = 0; i < 3; i++) {
       await tapWorld(page, 60, 80);
@@ -72,7 +73,7 @@ for (const [width, height] of [
         if (visible) {
           await page.locator(".orientation-hint").tap();
           await expect(page.locator("#selection-panel")).toBeHidden();
-          await page.locator("#show-upgrades").tap();
+          await tapWorld(page, 145, 60);
         }
       });
     await page.locator("#close-panel").tap();
@@ -150,10 +151,11 @@ test("range inspection works while paused and battle controls preserve upgrades"
   await expect(page.locator("#pause")).toContainText("Resume");
   await expect(page.locator("#selection-panel")).toBeVisible();
   await page.locator("#close-panel").tap();
-  await page.locator("#clear-range").tap();
+  await tapWorld(page, 60, 80);
   await tapWorld(page, 145, 60);
-  await expect(page.locator("#tower-inspector")).toBeVisible();
-  await page.locator("#show-upgrades").tap();
+  await expect(page.locator("#tower-inspector")).toBeHidden();
+    await expect(page.locator("#selection-panel")).toBeVisible();
+  await tapWorld(page, 145, 60);
   await expect(page.locator('[data-upgrade="0"]')).toBeDisabled();
   await page.locator("#pause").tap();
   await expect(page.locator("#pause")).toContainText("Pause");

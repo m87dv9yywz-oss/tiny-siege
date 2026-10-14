@@ -10,6 +10,10 @@ const enemy = (name, health, speed, reward, radius, color, extra = {}) => ({
   ...extra,
 });
 export const ENEMIES = {
+  crystal: enemy("Crystal Crawler", 85, 60, 17, 13, 0x8de5ec, {armor:35}),
+  crystalBoss: enemy("Crystal Colossus", 14000, 25, 500, 32, 0x91dbec, {boss:true,armor:750,lives:20,controlResistance:.7,abilityPeriod:9}),
+  ember: enemy("Lava Imp", 100, 72, 18, 12, 0xffa570, {magicResistance:.3}),
+  drake: enemy("Ember Drake", 15000, 30, 500, 32, 0xffa46a, {boss:true,armor:600,lives:20,controlResistance:.7,abilityPeriod:8}),
   basic: enemy("Mossling", 32, 52, 9, 12, 0x88c65c),
   runner: enemy("Fleetfoot", 46, 100, 11, 11, 0xf3cf69),
   sprout: enemy("Sproutling", 18, 78, 4, 7, 0xb1dd71),
@@ -34,6 +38,7 @@ export const ENEMIES = {
     magicResistance: 0.6,
   }),
   boss: enemy("The Thorn King", 18000, 29, 500, 30, 0x9c79be, {
+    boss: true,
     lives: 20,
     abilityPeriod: 8,
     controlResistance: 0.65,

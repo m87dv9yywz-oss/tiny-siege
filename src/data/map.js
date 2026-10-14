@@ -51,20 +51,29 @@ export function createTrail(points = knots) {
     length: Math.hypot(b.x - PATH[i].x, b.y - PATH[i].y),
   }));
   const PATH_LENGTH = SEGMENTS.reduce((n, s) => n + s.length, 0);
+  const ends = [];
+  let total = 0;
+  for (const segment of SEGMENTS) {
+    total += segment.length;
+    ends.push(total);
+  }
   function onPath(distance) {
-    let d = Math.max(0, distance);
-    for (const s of SEGMENTS) {
-      if (d <= s.length) {
-        const t = d / s.length;
-        return {
-          x: s.a.x + (s.b.x - s.a.x) * t,
-          y: s.a.y + (s.b.y - s.a.y) * t,
-          angle: Math.atan2(s.b.y - s.a.y, s.b.x - s.a.x),
-        };
-      }
-      d -= s.length;
+    const d = Math.max(0, distance);
+    if (d > PATH_LENGTH) return { ...PATH.at(-1), angle: 0 };
+    let lo = 0,
+      hi = SEGMENTS.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (ends[mid] < d) lo = mid + 1;
+      else hi = mid;
     }
-    return { ...PATH.at(-1), angle: 0 };
+    const s = SEGMENTS[lo],
+      t = (d - (lo ? ends[lo - 1] : 0)) / s.length;
+    return {
+      x: s.a.x + (s.b.x - s.a.x) * t,
+      y: s.a.y + (s.b.y - s.a.y) * t,
+      angle: Math.atan2(s.b.y - s.a.y, s.b.x - s.a.x),
+    };
   }
   function distanceToPath(x, y) {
     return Math.min(
@@ -85,6 +94,37 @@ export function createTrail(points = knots) {
   return { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath };
 }
 export const TRAILS = {
+  crystal: createTrail([
+    [-30, 100],
+    [120, 100],
+    [180, 150],
+    [180, 460],
+    [260, 490],
+    [340, 430],
+    [340, 170],
+    [420, 120],
+    [500, 180],
+    [540, 410],
+    [620, 480],
+    [730, 430],
+    [760, 180],
+    [850, 120],
+    [910, 190],
+    [910, 500],
+    [990, 560],
+  ]),
+  coast: createTrail([
+    [100, -30],
+    [100, 160],
+    [190, 240],
+    [700, 240],
+    [790, 320],
+    [700, 400],
+    [280, 400],
+    [180, 470],
+    [280, 550],
+    [990, 550],
+  ]),
   classic: createTrail(),
   emerald: createTrail(),
   amber: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 140) * 32])),
@@ -93,3 +133,16 @@ export const TRAILS = {
 };
 export const { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath } =
   TRAILS.classic;
+
+export const OBSTACLES = {
+  crystal: [
+    { x: 60, y: 290, r: 34 },
+    { x: 440, y: 320, r: 32 },
+    { x: 840, y: 330, r: 33 },
+  ],
+  coast: [
+    { x: 450, y: 100, r: 80 },
+    { x: 470, y: 320, r: 35 },
+    { x: 810, y: 475, r: 24 },
+  ],
+};

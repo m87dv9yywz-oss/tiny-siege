@@ -1,3 +1,5 @@
+import { HEROES } from "../data/heroes.js";
+import { heroStart, moveHero, heroAttack, stepHero } from "./Hero.js";
 import {
   TOWERS,
   towerStats,
@@ -6,7 +8,8 @@ import {
 } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
 import { waveQueue, CAMPAIGNS } from "../data/waves.js";
-import { MAP, TRAILS } from "../data/map.js";
+import { campaignFor } from "../data/difficulties.js";
+import { MAP, TRAILS, OBSTACLES } from "../data/map.js";
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export class Game {
   constructor(onEvent = () => {}, options = {}) {
@@ -14,8 +17,16 @@ export class Game {
     this.onEvent = onEvent;
     this.reset();
   }
-  configure({ map = "classic", profile = null } = {}) {
-    this.campaign = CAMPAIGNS[map] || CAMPAIGNS.classic;
+  configure({
+    map = "classic",
+    profile = null,
+    difficulty = null,
+    hero = null,
+    relics = [],
+  } = {}) {
+    this.campaign = campaignFor(map, difficulty);
+    this.heroType = hero;
+    this.relics = relics;
     this.trail = TRAILS[this.campaign.id];
     this.profile = profile;
   }
@@ -61,6 +72,13 @@ export class Game {
       ended: null,
       id: 0,
     });
+    this.gold += this.relics.includes("purse") ? 25 : 0;
+    this.lives += this.relics.includes("shield") ? 2 : 0;
+    this.hero = heroStart(
+      this,
+      this.heroType,
+      this.profile?.heroes?.xp[this.heroType] || 0,
+    );
     this.emit("reset");
   }
   emit(type, payload = {}) {
@@ -71,14 +89,22 @@ export class Game {
     if (this.paused) return "Resume before placing a tower.";
     if (!Number.isFinite(x) || !Number.isFinite(y))
       return "Choose a spot inside the battlefield.";
-    if (!TOWERS[type]) return "Choose a tower first.";
+    if (!Object.hasOwn(TOWERS,type)) return "Choose a tower first.";
     if (!this.available(type))
       return "Unlock this tower in your Kingdom first.";
+    if (this.towers.length >= 80)
+      return "This battlefield has room for 80 towers.";
     if (this.gold < TOWERS[type].cost) return "Not enough gold for this tower.";
     if (x < 30 || x > MAP.width - 30 || y < 60 || y > MAP.height - 30)
       return "Stay inside the battlefield.";
     if (this.trail.distanceToPath(x, y) < MAP.pathWidth / 2 + MAP.towerRadius)
       return "Keep the trail clear.";
+    if (
+      (OBSTACLES[this.campaign.id] || []).some(
+        (o) => Math.hypot(o.x - x, o.y - y) < o.r + MAP.towerRadius,
+      )
+    )
+      return "Keep cliffs and lava clear.";
     if (this.towers.some((t) => Math.hypot(t.x - x, t.y - y) < 52))
       return "Give your towers a little room.";
     return null;
@@ -153,6 +179,55 @@ export class Game {
     this.emit("targeting", { tower: t });
     return true;
   }
+  moveHero(x, y) {
+    return moveHero(this, x, y);
+  }
+  heroAbility() {
+    return heroAttack(this, true);
+  }
+  baseStats(t) {
+    this.statCache ||= new WeakMap();
+    const key = t.paths.join("|"),
+      cached = this.statCache.get(t);
+    if (cached?.key === key) return cached.stats;
+    const stats = towerStats(t);
+    this.statCache.set(t, { key, stats });
+    return stats;
+  }
+  effectiveStats(t) {
+    const stats = { ...this.baseStats(t) };
+    let damage = 0,
+      rate = 0,
+      armor = 0;
+    for (const source of this.towers) {
+      if (source === t || source.type !== "rune") continue;
+      const buff = this.baseStats(source);
+      if (buff.buffRange && distance(t, source) <= buff.buffRange) {
+        damage = Math.max(damage, buff.buffDamage || 0);
+        rate = Math.max(rate, buff.buffRate || 0);
+        armor = Math.max(armor, buff.buffArmor || 0);
+      }
+    }
+    if (
+      this.hero &&
+      distance(t, this.hero) <=
+        HEROES[this.hero.type].buffRange *
+          (this.relics.includes("banner") ? 1.2 : 1)
+    ) {
+      if (this.hero.type === "dragon" && t.type === "fire") {
+        damage += 0.15;
+        stats.burn = (stats.burn || 0) * 1.15;
+      }
+      if (this.hero.type === "dinosaur" && t.type === "cannon") armor += 0.25;
+      if (this.hero.type === "tiger" && t.type === "archer")
+        rate = Math.min(0.32, rate + 0.12);
+    }
+    if (this.relics.includes("lens")) stats.range *= 1.05;
+    stats.damage *= 1 + damage;
+    stats.cooldown *= 1 - rate;
+    stats.armorDamage = (stats.armorDamage || 0) * (1 + armor);
+    return stats;
+  }
   targets(t, stats = towerStats(t)) {
     const relevant = (e) => e.health + e.armor + (e.shield || 0);
     const compare = {
@@ -200,7 +275,19 @@ export class Game {
   }
   spawn(type, traits = {}) {
     const config = ENEMIES[type],
-      scale = type === "boss" ? 1 : 1 + Math.max(0, this.wave - 1) * 0.055;
+      scale = config.boss
+        ? 1
+        : this.campaign.mode
+          ? this.wave <= 3
+            ? 1
+            : this.campaign.difficulty.health *
+              (1 +
+                (this.wave - 1) *
+                  (this.campaign.mode === "hard" ? 0.04 : 0.028) +
+                (this.campaign.mode === "hard"
+                  ? Math.max(0, this.wave - 20) * 0.14
+                  : 0))
+          : 1 + Math.max(0, this.wave - 1) * 0.055;
     const e = {
       id: ++this.id,
       type,
@@ -208,12 +295,13 @@ export class Game {
       health: config.health * scale,
       armor: config.armor * scale,
       maxArmor: config.armor * scale,
-      shield: config.shield || 0,
-      maxShield: config.shield || 0,
+      shield: (config.shield || 0) * (this.campaign.mode ? scale : 1),
+      maxShield: (config.shield || 0) * (this.campaign.mode ? scale : 1),
       abilityTime: config.abilityPeriod || 1,
       phase: 1,
       summons: 0,
       freezeImmunity: 0,
+      pushCooldown: 0,
       brittle: 1,
       brittleLeft: 0,
       shatter: 0,
@@ -234,6 +322,11 @@ export class Game {
       frozen: 0,
       ...this.trail.onPath(0),
     };
+    if (this.campaign.mode && e.heal) e.heal *= Math.sqrt(scale);
+    if (traits.bossHealth && config.boss) {
+      e.health = traits.bossHealth;
+      e.maxHealth = traits.bossHealth;
+    }
     if (traits.elite) {
       e.elite = true;
       e.name = "Ironbound Captain";
@@ -328,7 +421,7 @@ export class Game {
           Object.assign(child, this.trail.onPath(child.progress));
         }
     } else if (healthDamage > 2) this.emit("hit", { enemy: e });
-    if (e.alive && e.type === "boss") this.bossPhase(e);
+    if (e.alive && e.boss) this.bossPhase(e);
     // Resolve the original victim first: recursive shatters must never award
     // the same death twice or damage a corpse while unwinding a chain.
     if (shatterBurst)
@@ -356,8 +449,10 @@ export class Game {
     if (phase <= e.phase) return;
     e.phase = phase;
     if (phase === 2) {
-      e.armor = 850;
-      e.maxArmor = 850;
+      e.armor = this.campaign.mode
+        ? Math.max(850, Math.round(e.maxHealth * 0.08))
+        : 850;
+      e.maxArmor = e.armor;
     }
     if (phase === 3) {
       e.speed = 41;
@@ -371,7 +466,7 @@ export class Game {
     e.slowLeft = Math.max(e.slowLeft, duration);
     if (freeze && e.freezeImmunity <= 0) {
       e.frozen = Math.max(e.frozen, freeze * (1 - resist));
-      e.freezeImmunity = e.type === "boss" ? 4 : freeze + 0.6;
+      e.freezeImmunity = e.boss ? 4 : freeze + 0.6;
     }
   }
   applyHit(p, e) {
@@ -393,6 +488,14 @@ export class Game {
         e.shatter = Math.max(e.shatter, p.stats.shatter);
         e.shatterRadius = p.stats.shatterRadius || 0;
       }
+    }
+    if (p.stats.knockback && e.pushCooldown <= 0) {
+      e.progress = Math.max(
+        0,
+        e.progress - p.stats.knockback * (1 - (e.controlResistance || 0)),
+      );
+      Object.assign(e, this.trail.onPath(e.progress));
+      e.pushCooldown = e.boss ? 3 : 1.2;
     }
     if (p.type === "fire") {
       // Strongest burn wins. Repeated hits refresh rather than infinitely stack.
@@ -438,6 +541,19 @@ export class Game {
       victims = [...new Set([...victims, ...blastVictims])];
     }
     for (const e of victims) this.applyHit(p, e);
+    if (p.stats.trap && this.zones.length < 32)
+      this.zones.push({
+        x: center.x,
+        y: center.y,
+        radius: p.stats.trap,
+        left: p.stats.trapDuration,
+        damage: p.stats.trapDamage,
+        trap: true,
+        armDelay: 0.3,
+        towerId: p.towerId,
+        source: p.type,
+        armor: p.stats.armorDamage || 0,
+      });
     this.emit("impact", {
       ...center,
       attack: p.type,
@@ -491,12 +607,12 @@ export class Game {
         ...center,
         towerId: p.towerId,
         radius: p.stats.pool,
-        left: 3,
+        left: p.stats.poolDuration || 3,
         damage: p.stats.poolDamage,
         melt: p.stats.melt || 0,
         type: p.type,
         source: p.type,
-        slow: p.stats.rootSlow || 0,
+        slow: p.stats.rootSlow || p.stats.slow || 0,
       });
       if (this.zones.length > 32) this.zones.shift();
     }
@@ -609,7 +725,11 @@ export class Game {
           ally.health = Math.min(ally.maxHealth, ally.health + e.heal);
       this.emit("heal", { enemy: e, radius: e.abilityRange });
     }
-    if (e.type === "boss" && e.summons < 12 && this.enemies.length < 100) {
+    if (
+      e.boss &&
+      e.summons < 12 &&
+      this.enemies.filter((a) => a.alive).length < 100
+    ) {
       e.summons++;
       for (const type of [
         e.phase === 3 ? "warden" : "armored",
@@ -635,6 +755,7 @@ export class Game {
     }
   }
   step(dt) {
+    stepHero(this, dt);
     if (!this.active) return;
     this.waveTime += dt;
     while (this.queue.length && this.queue[0].at <= this.waveTime) {
@@ -672,6 +793,7 @@ export class Game {
         }
       }
       this.abilities(e, dt);
+      e.pushCooldown = Math.max(0, e.pushCooldown - dt);
       e.freezeImmunity = Math.max(0, e.freezeImmunity - dt);
       e.brittleLeft = Math.max(0, e.brittleLeft - dt);
       e.slowLeft = Math.max(0, e.slowLeft - dt);
@@ -693,6 +815,28 @@ export class Game {
     if (this.ended) return;
     this.zones = this.zones.filter((z) => {
       z.left -= dt;
+      if (z.trap) {
+        z.armDelay -= dt;
+        if (
+          z.armDelay <= 0 &&
+          this.enemies.some((e) => e.alive && distance(e, z) <= z.radius)
+        ) {
+          this.area(
+            z,
+            z.radius,
+            z.damage,
+            {
+              damageType: "physical",
+              penetration: 1,
+              armorDamage: z.armor,
+              source: z.source,
+            },
+            z.source,
+          );
+          z.left = 0;
+        }
+        return z.left > 0;
+      }
       for (const e of this.enemies.filter(
         (e) => e.alive && distance(e, z) <= z.radius,
       )) {
@@ -708,21 +852,21 @@ export class Game {
       return z.left > 0;
     });
     for (const t of this.towers) {
-      const aura = towerStats(t);
+      const aura = this.baseStats(t);
       if (aura.aura)
         for (const e of this.enemies.filter(
           (e) => e.alive && distance(e, t) <= aura.aura,
         ))
           this.chill(e, aura.auraSlow, 0.1);
       this.participation[t.type].time += dt;
-      if (t.type === "frost" || t.type === "grove")
+      if (["frost", "grove", "wind", "rune"].includes(t.type))
         this.participation[t.type].control +=
           this.enemies.filter(
             (e) => e.alive && distance(e, t) <= aura.range && e.slow < 1,
           ).length * dt;
       t.cooldown -= dt;
       if (t.cooldown > 0) continue;
-      const stats = towerStats(t);
+      const stats = this.effectiveStats(t);
       const targets = this.targets(t, stats);
       if (targets.length) {
         this.attack(t, targets, stats);

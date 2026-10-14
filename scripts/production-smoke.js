@@ -68,9 +68,17 @@ try {
     size: 180,
   });
   await page.locator("#close-panel").tap();
-  await page.locator("#show-upgrades").tap();
+  const reopen = await page.locator("canvas").boundingBox();
+  await page.touchscreen.tap(
+    reopen.x + (reopen.width * 145) / 960,
+    reopen.y + (reopen.height * 60) / 640,
+  );
   assert.equal(await page.locator("#selection-panel").isVisible(), true);
-  await page.locator(".orientation-hint").tap();
+  const empty = await page.locator("canvas").boundingBox();
+  await page.touchscreen.tap(
+    empty.x + (empty.width * 60) / 960,
+    empty.y + (empty.height * 80) / 640,
+  );
   assert.equal(await page.locator("#selection-panel").isVisible(), false);
   const roof = await page.locator("canvas").boundingBox();
   await page.touchscreen.tap(
@@ -94,8 +102,16 @@ try {
   await page.locator("#nickname").fill("Preview Knight");
   await page.locator("#profile-form button").tap();
   await page.locator('[data-map="emerald"]').tap();
+  await page.locator("#begin-adventure").tap();
   assert.equal(await page.locator('[data-tower="fire"]').isDisabled(), true);
-  assert.equal(await page.locator(".wave-counter em").textContent(), " / 14");
+  assert.equal(await page.locator(".wave-counter em").textContent(), " / 20");
+  await page.locator("#hero-move").tap();
+  const heroBoard = await page.locator("canvas").boundingBox();
+  await page.touchscreen.tap(
+    heroBoard.x + (heroBoard.width * 340) / 960,
+    heroBoard.y + (heroBoard.height * 100) / 640,
+  );
+  await page.waitForTimeout(2000);
   await page.locator('[data-tower="archer"]').tap();
   const beginner = await page.locator("canvas").boundingBox();
   await page.touchscreen.tap(
@@ -128,12 +144,13 @@ try {
     "Earned XP must survive reload",
   );
   await page.locator("#back").tap();
-  await page.locator('[data-map="emerald"]').tap();
+  await page.locator("#continue-battle").tap();
+  assert.equal(await page.locator("#wave").textContent(), "1");
   assert.deepEqual(errors, []);
   mkdirSync("test-results", { recursive: true });
   await page.screenshot({ path: "test-results/production-smoke.png" });
   console.log(
-    `Verified Tiny Siege v3.1 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
+    `Verified Tiny Siege v4.0 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
   );
 } finally {
   await browser.close();

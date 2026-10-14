@@ -21,7 +21,15 @@ const labels = {
   pool: "Patch radius",
   poolDamage: "Patch damage/s",
   melt: "Armor melt/s",
-  bounces: "Seed bounces",
+  bounces: "Ricochet targets",
+  knockback: "Push distance",
+  buffRange: "Support range",
+  buffDamage: "Damage bonus",
+  buffRate: "Speed bonus",
+  buffArmor: "Armor bonus",
+  trap: "Trap radius",
+  trapDamage: "Trap damage",
+  trapDuration: "Trap seconds",
 };
 const format = (key, n) =>
   key === "cooldown"

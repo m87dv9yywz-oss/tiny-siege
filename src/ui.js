@@ -1,3 +1,4 @@
+import { HEROES } from "./data/heroes.js";
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
 import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
 import { guideHTML } from "./upgradeGuide.js";
@@ -31,6 +32,33 @@ export class UI {
         }),
     );
     this.bindDrag();
+    this.heroMoving = false;
+    $("hero-move").onclick = () => {
+      this.heroMoving = !this.heroMoving;
+      this.placing = null;
+      this.closeUpgrades();
+      this.toast(
+        this.heroMoving
+          ? "Tap clear ground to move your hero."
+          : "Hero movement cancelled.",
+      );
+    };
+    $("hero-ability").onclick = () => {
+      if (!this.model.heroAbility())
+        this.toast(
+          "Bring enemies into hero range, or wait for the ability to recharge.",
+        );
+    };
+    window.addEventListener("pagehide", () =>
+      this.kingdom?.safe(() => this.kingdom.saveBattle()),
+    );
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && !this.inMenu) {
+        this.model.paused = true;
+        this.kingdom?.safe(() => this.kingdom.saveBattle());
+        this.refresh(true);
+      }
+    });
     $("show-upgrades").onclick = () => this.openUpgrades();
     $("clear-range").onclick = () => this.cancel();
     document.addEventListener(
@@ -232,7 +260,10 @@ export class UI {
     this.tone(event);
     if (event.type === "invalid") this.toast(event.message);
     if (event.type === "clear")
-      this.kingdom?.safe(() => this.kingdom.checkpoint());
+      this.kingdom?.safe(() => {
+        this.kingdom.checkpoint();
+        this.kingdom.saveBattle();
+      });
     if (event.type === "clear")
       this.toast(`Wave ${this.model.wave} cleared · +${event.bonus} gold`);
     if (event.type === "escape")
@@ -265,15 +296,16 @@ export class UI {
       this.toast("Unlock this tower with Kingdom Crowns.");
       return;
     }
+    this.heroMoving = false;
     this.placing = this.placing === type ? null : type;
     this.selected = null;
     this.upgradeOpen = false;
     this.refresh(true);
   }
   selectTower(tower) {
-    const same = this.selected === tower.id;
     this.placing = null;
-    this.upgradeOpen = this.upgradeOpen || same;
+    this.heroMoving = false;
+    this.upgradeOpen = true;
     this.selected = tower.id;
     this.refresh(true);
   }
@@ -291,6 +323,7 @@ export class UI {
     this.placing = null;
     this.selected = null;
     this.upgradeOpen = false;
+    this.heroMoving = false;
     this.refresh(true);
   }
   leaveRun() {
@@ -299,7 +332,7 @@ export class UI {
     this.model.paused = true;
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Leave this run?</h1><p>Your earned XP and hero progress stay saved. This battlefield will be cleared.</p><button id="confirm-leave" class="primary">Main menu</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Leave this run?</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
     );
     $("keep-playing").onclick = () => {
       this.helpOpen = false;
@@ -310,7 +343,18 @@ export class UI {
     };
     this.overlayClose = $("keep-playing").onclick;
     $("confirm-leave").onclick = () => {
-      this.kingdom?.safe(() => this.kingdom.finishRun());
+      this.kingdom?.safe(() => this.kingdom.saveBattle());
+      this.helpOpen = false;
+      this.cancel();
+      this.inMenu = true;
+      this.model.reset();
+      this.menu();
+    };
+    $("abandon-battle").onclick = () => {
+      this.kingdom?.safe(() => {
+        this.kingdom.finishRun();
+        this.kingdom.clearBattle();
+      });
       this.helpOpen = false;
       this.cancel();
       this.inMenu = true;
@@ -349,6 +393,7 @@ export class UI {
     draw(path);
   }
   beginWave(skipIntro = false) {
+    this.kingdom?.safe(() => this.kingdom.saveBattle());
     if (
       this.inMenu ||
       this.helpOpen ||
@@ -487,6 +532,7 @@ export class UI {
     this.refresh(true);
   }
   refresh(force = false) {
+    if (force) this.fitBattlefield?.();
     const m = this.model,
       key = [
         m.gold,
@@ -507,7 +553,7 @@ export class UI {
           : "",
       ].join("|");
     // Boss health changes even when no counters change.
-    const boss = m.enemies.find((e) => e.type === "boss" && e.alive);
+    const boss = m.enemies.find((e) => e.boss && e.alive);
     $("boss-bar").hidden = !boss;
     if (boss)
       $("boss-bar").querySelector("span").textContent =
@@ -573,10 +619,24 @@ export class UI {
       b.classList.toggle("selected", this.placing === b.dataset.tower);
       b.setAttribute("aria-pressed", String(this.placing === b.dataset.tower));
     });
+    const h = m.hero;
+    $("hero-controls").hidden = !h || this.inMenu;
+    if (h) {
+      $("hero-icon").src = `${import.meta.env.BASE_URL}heroes/${h.type}.svg`;
+      $("hero-icon").alt = HEROES[h.type].name;
+      $("hero-move").textContent = this.heroMoving
+        ? "Cancel move"
+        : `${HEROES[h.type].short} · Move`;
+      $("hero-ability").textContent =
+        h.abilityLeft > 0
+          ? `${HEROES[h.type].ability} · ${Math.ceil(h.abilityLeft)}s`
+          : HEROES[h.type].ability;
+      $("hero-ability").disabled =
+        !m.active || m.paused || h.abilityLeft > 0 || !!m.ended;
+    }
     const t = m.towers.find((t) => t.id === this.selected),
       panel = $("selection-panel");
-    $("tower-inspector").hidden =
-      !t || this.upgradeOpen || !!this.placing || this.inMenu || !!m.ended;
+    $("tower-inspector").hidden = true;
     if (t) $("range-tower-name").textContent = towerName(t);
     const panelKey = t
       ? [
@@ -626,6 +686,7 @@ export class UI {
       // bounds first so closing/opening a panel never crops the battlefield.
       this.scene.scale.getParentBounds();
       this.scene.scale.refresh();
+      this.fitBattlefield?.();
     }
     if (t) {
       const def = TOWERS[t.type],
@@ -677,5 +738,6 @@ export class UI {
     } else
       panel.innerHTML =
         '<div class="empty-selection"><span>⌖</span><b>Every great defense starts small.</b>Choose a tower above to build.<br>Click a tower on the map to upgrade.</div>';
+    if (force || sizeChanged) this.fitBattlefield?.(true);
   }
 }
