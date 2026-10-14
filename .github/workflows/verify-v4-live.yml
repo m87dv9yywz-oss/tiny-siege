@@ -1,0 +1,28 @@
+name: Read-only v4 production verification
+on:
+  push:
+    branches: [test/v4-production-verification]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci --cache "$RUNNER_TEMP/npm-cache"
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: node scripts/verify-v4-live.js
+        env:
+          PLAYWRIGHT_USE_BUNDLED: "true"
+          EXPECTED_PRODUCTION_SHA: 29ee7a856d1b3e1ce57d97721c5a28a0088eb079
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-v4-expanded-verification
+          path: test-results/
