@@ -151,3 +151,6 @@ vite.config.ts.timestamp-*
 # Browser test outputs
 /test-results/
 /playwright-report/
+
+# No Google authentication artifacts belong in source or Pages builds.
+gha-creds-*.json

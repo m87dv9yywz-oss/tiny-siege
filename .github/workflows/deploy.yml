@@ -4,11 +4,16 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      rules_only:
+        description: Validate and publish rules without deploying the game
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   test-build:
     runs-on: ubuntu-latest
@@ -23,6 +28,7 @@ jobs:
           distribution: temurin
           java-version: "21"
       - run: npm test
+      - run: node --test tests/rules-deployment.test.js
       - run: npx playwright install --with-deps chromium
       - name: Firestore rules, Google Auth emulator and multi-browser cloud saves
         run: npm run test:cloud
@@ -50,9 +56,50 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: dist
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+  firebase-rules:
+    # Bootstrap: main may manually validate rules before automatic releases activate.
+    if: github.repository == 'm87dv9yywz-oss/tiny-siege' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (vars.FIREBASE_RULES_AUTOMATION_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.rules_only == true))
     needs: test-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: firebase-rules
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Authenticate with short-lived Google credentials
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: tiny-siege-game
+          workload_identity_provider: projects/909962953566/locations/global/workloadIdentityPools/tiny-siege-github/providers/github
+          service_account: tiny-siege-rules-deployer@tiny-siege-game.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 300s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: false
+      - name: Publish Firestore rules and verify exact source
+        run: node scripts/deploy-firestore-rules.js
+        env:
+          FIREBASE_RULES_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          FIREBASE_RULES_EVIDENCE_DIR: ${{ runner.temp }}/firebase-rules-evidence
+          FIREBASE_RULES_FORCE_PUBLISH: ${{ github.event_name == 'workflow_dispatch' && inputs.rules_only == true }}
+      - name: Preserve rules verification and rollback source
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-rules-evidence
+          path: ${{ runner.temp }}/firebase-rules-evidence/
+          if-no-files-found: ignore
+  deploy:
+    if: vars.FIREBASE_RULES_AUTOMATION_ENABLED == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.rules_only != true
+    needs: [test-build, firebase-rules]
     runs-on: ubuntu-latest
     permissions:
       pages: write
