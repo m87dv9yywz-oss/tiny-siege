@@ -1,0 +1,24 @@
+name: Read-only v3.1 production verification
+on:
+  push:
+    branches: [test/v3.1-live-verification]
+permissions:
+  contents: read
+jobs:
+  verify-production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci --cache "$RUNNER_TEMP/npm-cache"
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/v31-live-verification.js https://m87dv9yywz-oss.github.io/tiny-siege/
+        env:
+          PLAYWRIGHT_USE_BUNDLED: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-v31-features
+          path: test-results/live-v31/
