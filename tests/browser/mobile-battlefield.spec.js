@@ -108,6 +108,19 @@ test('hero rails keep the enlarged map and active ability controls preserve upgr
    const b=await page.locator(q).boundingBox();expect(b.height).toBeGreaterThanOrEqual(44);
    expect(b.y+b.height).toBeLessThanOrEqual(390);
  }
+ await page.locator('[data-tower="archer"]').tap();await tap(page,820,110);
+ for(const [width,height] of [[1024,768],[1440,900]]) {
+   await page.setViewportSize({width,height});
+   await page.locator('#close-panel').tap();await tap(page,820,70);
+   await expect(page.locator('#selection-panel')).toHaveAttribute('data-side','left');
+   for(const selector of ['#hero-move','#hero-ability','#pause','#speed','#start-wave']) {
+     expect(await page.locator(selector).evaluate(e=>{
+       const r=e.getBoundingClientRect();
+       const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+       return hit===e||e.contains(hit);
+     }), selector).toBe(true);
+   }
+ }
  await page.locator('#hero-move').tap();await tap(page,340,100);
  await expect.poll(()=>page.evaluate(()=>window.__tinySiege.ui.heroMoving)).toBe(false);
 });

@@ -2849,3 +2849,6 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel[data-side="right"]:not(.placing) { left: calc(100% - 110px - 208px); }
 }
 @media (prefers-reduced-motion: reduce) { #selection-panel:not(.placing) { transition: none; } }
+@media (min-width: 851px) and (min-height: 601px) {
+  main:has(#hero-controls:not([hidden])) #selection-panel:not(.placing) { top: 106px; }
+}
