@@ -147,3 +147,22 @@ test('native Settings and targeting keys do not start or pause gameplay',async({
  expect(await page.evaluate(()=>window.__tinySiege.model.paused)).toBe(false);
  await expect(page.locator('#selection-panel')).toBeVisible();
 });
+test('Hard battle treasury and wave numbers remain inside the landscape HUD rail',async({page})=>{
+ await page.setViewportSize({width:844,height:390});await page.goto('./');
+ await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);
+ await page.locator('#new-profile').click();await page.locator('#nickname').fill('Treasury Knight');
+ await page.locator('#profile-form button').click();await page.locator('[data-map="emerald"]').click();
+ await page.locator('[data-difficulty="hard"]').click();await page.locator('#begin-adventure').click();
+ // UI boundary fixture, not a funded campaign or progression reward.
+ await page.evaluate(()=>{const{model,ui}=window.__tinySiege;model.gold=123456;model.wave=99;ui.refresh(true)});
+ for(const [width,height] of [[844,390],[740,360],[667,375]]){
+   await page.setViewportSize({width,height});await page.waitForTimeout(200);
+   const hud=await page.locator('.hud').boundingBox(),pause=await page.locator('#pause').boundingBox();
+   for(const q of ['#gold','.lives','.wave-counter','.remaining']){
+     const b=await page.locator(q).boundingBox();
+     expect(b.x+b.width,q).toBeLessThanOrEqual(hud.x+hud.width+.5);
+     expect(b.y+b.height,q).toBeLessThanOrEqual(pause.y);
+   }
+ }
+ await page.setViewportSize({width:844,height:390});await capture(page,'large-treasury');
+});

@@ -2852,3 +2852,15 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
 @media (min-width: 851px) and (min-height: 601px) {
   main:has(#hero-controls:not([hidden])) #selection-panel:not(.placing) { top: 106px; }
 }
+@media (orientation: landscape) and (max-height: 600px) {
+  .hud { grid-template-columns: repeat(2,minmax(0,1fr)); row-gap: 8px; }
+  .hud .gold { grid-column: 1/-1; grid-row: 1; }
+  .hud .lives { grid-column: 1; grid-row: 2; }
+  .hud .remaining { grid-column: 2; grid-row: 2; }
+  .hud .wave-counter { grid-column: 1/-1; grid-row: 3; display: flex; align-items: center; gap: 6px; }
+  .map-footer { display: none; }
+}
+@media (orientation: landscape) and (max-height: 330px) {
+  .hud { top: 98px; row-gap: 3px; }
+  .hud .resource b, .hud .wave-counter b { font-size: 18px; }
+}
