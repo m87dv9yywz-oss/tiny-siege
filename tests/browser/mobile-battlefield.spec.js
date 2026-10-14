@@ -128,3 +128,22 @@ test('hero rails keep the enlarged map and active ability controls preserve upgr
  await page.locator('#hero-move').tap();await tap(page,340,100);
  await expect.poll(()=>page.evaluate(()=>window.__tinySiege.ui.heroMoving)).toBe(false);
 });
+test('native Settings and targeting keys do not start or pause gameplay',async({page})=>{
+ await ready(page);
+ await page.locator('[data-tower="archer"]').tap();await tap(page,145,105);
+ const settings=page.locator('#battle-settings'), summary=settings.locator('summary');
+ await summary.focus();await page.keyboard.press('Space');
+ await expect(settings).toHaveAttribute('open','');
+ expect(await page.evaluate(()=>window.__tinySiege.model.wave)).toBe(0);
+ await page.keyboard.press('Escape');await expect(settings).not.toHaveAttribute('open','');
+ await expect(page.locator('#selection-panel')).toBeVisible();
+ await page.locator('#targeting').focus();await page.keyboard.press('Space');
+ await page.keyboard.press('Escape');
+ expect(await page.evaluate(()=>window.__tinySiege.model.wave)).toBe(0);
+ await expect(page.locator('#selection-panel')).toBeVisible();
+ await page.locator('#start-wave').click();
+ await summary.focus();await page.keyboard.press('Space');
+ await expect(settings).toHaveAttribute('open','');
+ expect(await page.evaluate(()=>window.__tinySiege.model.paused)).toBe(false);
+ await expect(page.locator('#selection-panel')).toBeVisible();
+});

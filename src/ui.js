@@ -117,7 +117,14 @@ export class UI {
         : "♫ <span>Sound off</span>";
     };
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && $("battle-settings").open) {
+      // Native selects and disclosure widgets own their keyboard actions;
+      // don't let Phaser's window-level Space shortcut start/pause a wave.
+      if (e.target.closest?.("select") ||
+          (e.code === "Space" && e.target.closest?.("summary"))) {
+        e.stopPropagation();
+        return;
+      }
+      if (e.key === "Escape" && $("battle-settings").open && $("modal").hidden) {
         e.preventDefault();
         e.stopPropagation();
         $("battle-settings").open = false;
