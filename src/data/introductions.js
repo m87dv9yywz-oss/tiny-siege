@@ -1,5 +1,9 @@
 // Only first appearances in the chosen campaign; never opens during combat.
 export const ENEMY_GUIDE = {
+  crystal: {name:'Crystal Crawler',icon:'◆',ability:'Bright crystal shells absorb ordinary arrows.',tip:'Runesmith, Cannon and piercing upgrades crack the crystals.'},
+  crystalBoss: {name:'Crystal Colossus',icon:'◆',ability:'A giant crystal guardian grows new armor and summons allies.',tip:'Break its plates, mix powerful damage and keep your hero nearby.'},
+  ember: {name:'Lava Imp',icon:'♨',ability:'Fiery visitors resist some magical damage.',tip:'Arrows and runes work well. Slows help on the long coastal straights.'},
+  drake: {name:'Ember Drake',icon:'♨',ability:'A mighty dragon gains armor and speeds up when wounded.',tip:'Bring focused damage and armor counters. Bosses resist repeated stuns and pushes.'},
   runner: {
     name: "Fleetfoot",
     icon: "➜",

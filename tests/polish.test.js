@@ -120,6 +120,8 @@ test("enemy introductions occur only before the first wave containing a class on
 test("v3 local and wire saves migrate losslessly; Grove progress and fourth-map rewards survive merges and repeat imports", () => {
   const old = freshProfile("Old hero");
   old.schemaVersion = 1;
+  for(const t of ["grove","wind","rune"]) {delete old.towerXP[t];delete old.unlockedUpgrades[t];}
+  for(const k of ["heroes","relics","mapProgress"])delete old[k];
   delete old.towerXP.grove;
   delete old.unlockedUpgrades.grove;
   old.crowns = 90;
@@ -141,7 +143,7 @@ test("v3 local and wire saves migrate losslessly; Grove progress and fourth-map 
   assert.deepEqual(a, b);
   assert.equal(a.statistics.ledger, old.statistics.ledger);
   assert.deepEqual(a.towerXP.archer, old.towerXP.archer);
-  assert.equal(a.schemaVersion, 2);
+  assert.equal(a.schemaVersion, 3);
   let p = applyOperation(a, {
     id: "grove-unlock",
     type: "tower",
@@ -172,7 +174,7 @@ test("v3 local and wire saves migrate losslessly; Grove progress and fourth-map 
   assert.equal(merged.crowns, p.crowns);
   assert.equal(merged.towerXP.grove.spent, 180);
   assert.deepEqual(merged.mapStars, { garden: 3 });
-  assert.throws(() => migrateProfile({ ...old, schemaVersion: 3 }));
+  assert.throws(() => migrateProfile({ ...old, schemaVersion: 4 }));
   assert.throws(() =>
     migrateProfile({
       ...oldWire,

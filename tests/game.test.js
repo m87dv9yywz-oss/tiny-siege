@@ -35,7 +35,7 @@ test("starting resources, prices, legal placement, collisions, and honest refund
   assert.equal(g.active, false);
   assert.deepEqual(
     Object.values(TOWERS).map((t) => t.cost),
-    [75, 160, 130, 150, 200, 115],
+    [75, 160, 130, 150, 200, 115, 145, 175],
   );
   assert.equal(g.place("archer", 150, 170), null);
   assert.equal(g.place("archer", -4, 100), null);
@@ -431,8 +431,8 @@ for (const strategy of Object.keys(STRATEGIES))
       report.find((w) => w.towers.some((t) => t.paths.includes(3))).wave <= 16,
     );
   });
-test("ten classes and twenty waves introduce abilities gradually, with one final boss", () => {
-  assert.equal(Object.keys(ENEMIES).length, 10);
+test("fourteen classes and the preserved twenty Classic waves introduce abilities gradually, with one final boss", () => {
+  assert.equal(Object.keys(ENEMIES).length, 14);
   assert.equal(WAVES.length, 20);
   assert.ok(WAVES.slice(0, 3).every((w) => w.every((g) => g.type === "basic")));
   for (const [index, type] of [

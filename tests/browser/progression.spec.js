@@ -18,8 +18,9 @@ test("independent heroes, beginner map, locked purchases and durable guest saves
   await create(page, "Fox", "fox");
   await page.locator("[data-profile]").filter({ hasText: "Dragon" }).click();
   await page.locator('[data-map="emerald"]').click();
+  await page.locator("#begin-adventure").click();
   await expect(page.locator('[data-tower="fire"]')).toBeDisabled();
-  await expect(page.locator(".wave-counter em")).toHaveText(" / 14");
+  await expect(page.locator(".wave-counter em")).toHaveText(" / 20");
   await page.locator('[data-tower="archer"]').tap();
   const b = await page.locator("canvas").boundingBox();
   await page.touchscreen.tap(
@@ -40,7 +41,7 @@ test("independent heroes, beginner map, locked purchases and durable guest saves
       control: 0,
       kills: 1,
     };
-    model.wave = 14;
+    model.wave = 20;
     model.finish("victory");
   });
   await expect(page.locator(".reward-summary")).toContainText(
@@ -100,6 +101,7 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
   await create(page, "Explorer");
   for (const map of ["emerald", "amber", "moon"]) {
     await page.locator(`[data-map="${map}"]`).click();
+    await page.locator("#begin-adventure").click();
     await expect(page.locator(".map-label")).toContainText(
       map === "emerald" ? "Emerald" : map === "amber" ? "Amber" : "Moonlit",
     );
@@ -111,7 +113,7 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
     });
     await page.screenshot({ path: `test-results/v3-map-${map}.png` });
     await page.locator("#leave-run").click();
-    await page.locator("#confirm-leave").click();
+    await page.locator("#abandon-battle").click();
   }
   await page.locator("#play").click();
   await page.evaluate(() => {

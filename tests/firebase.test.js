@@ -19,10 +19,12 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import {
-  freshProfile,
+  freshProfile as modernProfile,
   applyOperation,
   migrateProfile,
 } from "../src/progression/profiles.js";
+const asLegacy=(p)=>{const copy=structuredClone(p);copy.schemaVersion=2;for(const k of ['heroes','relics','mapProgress'])delete copy[k];for(const k of ['wind','rune']){delete copy.towerXP[k];delete copy.unlockedUpgrades[k];}return copy;};
+const freshProfile=(...args)=>asLegacy(modernProfile(...args));
 let env;
 before(async () => {
   env = await initializeTestEnvironment({
@@ -184,7 +186,7 @@ test("two independently connected clients atomically converge without duplicate 
       const target = ref(db, "atomic");
       const snap = await tx.get(target);
       const p = applyOperation(migrateProfile(snap.data()), op);
-      tx.set(target, cloudProfile({ ...p, updatedAt: serverTimestamp() }));
+      tx.set(target, cloudProfile({ ...asLegacy(p), updatedAt: serverTimestamp() }));
       return p;
     });
   await Promise.all([commit(first, grant), commit(second, grant)]);
@@ -269,7 +271,7 @@ test("legacy v3 profiles migrate to schema 2 with Grove and garden, but older cl
   upgraded.completedMaps.push("garden");
   upgraded.mapStars.garden = 3;
   await assertSucceeds(
-    setDoc(target, cloudProfile({ ...upgraded, updatedAt: serverTimestamp() })),
+    setDoc(target, cloudProfile({ ...asLegacy(upgraded), updatedAt: serverTimestamp() })),
   );
   await assertFails(setDoc(target, legacy));
   for (const mutate of [

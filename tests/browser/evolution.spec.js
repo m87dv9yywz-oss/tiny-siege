@@ -135,13 +135,13 @@ test("touch drag has an above-finger preview, validates terrain and purchases ex
       });
     await page.waitForFunction(
       ({ x, y }) => {
-        const p = window.__tinySiege.ui.drag?.point;
+        const p = window.__tinySiege?.ui.drag?.point;
         return p && Math.abs(p.x - x) < 1 && Math.abs(p.y - y) < 1;
       },
       { x, y },
     );
     const preview = await page.evaluate(
-      () => window.__tinySiege.ui.drag?.point,
+      () => window.__tinySiege?.ui.drag?.point,
     );
     expect(Math.abs(preview.x - x)).toBeLessThan(1);
     expect(Math.abs(preview.y - y)).toBeLessThan(1);
@@ -199,7 +199,7 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
   await open(page);
   const art = await page.evaluate(async () => {
     const { model: g, ui } = window.__tinySiege,
-      types = ["archer", "cannon", "frost", "fire", "lightning", "grove"],
+      types = ["archer", "cannon", "frost", "fire", "lightning", "grove", "wind", "rune"],
       art = [];
     g.gold = 100000;
     for (const type of types)
@@ -228,7 +228,7 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
     for (const e of g.enemies) Object.assign(e, path.onPath(e.progress));
     return art;
   });
-  expect(new Set(art.map((a) => a.name)).size).toBe(18);
+  expect(new Set(art.map((a) => a.name)).size).toBe(24);
   await page.waitForTimeout(1000);
   await page.screenshot({ path: "test-results/evolution-combat.png" });
   const samples = await page.evaluate(async () => {
@@ -260,7 +260,7 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
     const sheet = document.createElement("div");
     sheet.id = "art-sheet";
     sheet.style =
-      "position:fixed;inset:0;z-index:20;background:#213f3c;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);gap:8px;padding:15px";
+      "position:fixed;inset:0;z-index:20;background:#213f3c;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(8,1fr);gap:8px;padding:15px";
     sheet.innerHTML = art
       .map(
         (a) =>
@@ -269,7 +269,7 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
       .join("");
     document.body.append(sheet);
   }, art);
-  await page.screenshot({ path: "test-results/eighteen-evolutions.png" });
+  await page.screenshot({ path: "test-results/twenty-four-evolutions.png" });
   expect(errors).toEqual([]);
   console.log(
     "Headless Canvas stress sample:",

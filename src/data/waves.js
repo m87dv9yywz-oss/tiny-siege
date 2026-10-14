@@ -211,3 +211,6 @@ export const CAMPAIGNS = {
     ],
   },
 };
+
+CAMPAIGNS.crystal = { id:'crystal', name:'Crystal Caverns', biome:'crystal', first:160, repeat:50, description:'Glowing switchbacks, crystal creatures and the Crystal Colossus.', waves: WAVES.map((groups,i)=> i===19 ? [{type:'crystalBoss',count:1,interval:1},{type:'crystal',count:18,interval:.65}] : [...groups, ...(i>=4?[{type:'crystal',count:4+Math.floor(i/3),interval:.7}]:[])]) };
+CAMPAIGNS.coast = { id:'coast', name:'Ember Coast', biome:'coast', first:170, repeat:55, description:'Coastal straights, lava islands and an Ember Drake.', waves: WAVES.map((groups,i)=> i===19 ? [{type:'drake',count:1,interval:1},{type:'ember',count:20,interval:.6}] : [...groups, ...(i>=4?[{type:'ember',count:4+Math.floor(i/3),interval:.7}]:[])]) };

@@ -1,3 +1,4 @@
+import { EXPANSION_TOWERS } from "./expansionTowers.js";
 // Each tier applies a data patch. Secondary Tier 1 bonuses are added after the
 // primary specialization, so cross-path purchases retain their value.
 const tier = (name, description, stats) => ({ name, description, stats });
@@ -552,6 +553,7 @@ export const TOWERS = {
     ],
   },
 };
+Object.assign(TOWERS, EXPANSION_TOWERS);
 export function primaryPath(tower) {
   return tower.paths.findIndex((t) => t >= 2);
 }
@@ -609,6 +611,8 @@ export function attackVisual(t) {
     fire: [0xffad4f, 0xff646b, 0xffcf50],
     lightning: [0xc99cff, 0xffd86b, 0x8beaff],
     grove: [0xee718e, 0xffd66d, 0x83f3b4],
+    wind: [0x94eeff, 0x74f5b0, 0xffd788],
+    rune: [0xd5a4ff, 0xff9a6c, 0x83caff],
   };
   const secondary = t.paths.reduce((n, v) => n + v, 0) - tier;
   return {

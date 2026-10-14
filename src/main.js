@@ -5,11 +5,13 @@ import { GameScene } from "./scenes/GameScene.js";
 import { ProfileStore } from "./progression/profiles.js";
 import { KingdomUI } from "./progression/KingdomUI.js";
 import { UI } from "./ui.js";
+import { fitBattlefield } from "./viewport.js";
 let ui;
 const model = new Game((event) => ui?.event(event));
 const profiles = new ProfileStore(localStorage);
 const kingdom = new KingdomUI(model, profiles);
 ui = new UI(model, kingdom);
+ui.fitBattlefield = fitBattlefield(ui);
 for (const id of ["mute", "effects"])
   document
     .getElementById(id)

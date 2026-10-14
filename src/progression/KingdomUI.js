@@ -1,3 +1,11 @@
+import { HEROES, heroLevel } from "../data/heroes.js";
+import { RELICS } from "../data/relics.js";
+import { DIFFICULTIES } from "../data/difficulties.js";
+import {
+  battleCheckpoint,
+  validateBattle,
+  restoreBattle,
+} from "../systems/checkpoint.js";
 import { guideHTML } from "../upgradeGuide.js";
 import { CAMPAIGNS } from "../data/waves.js";
 import { TOWERS, towerName } from "../data/towers.js";
@@ -26,6 +34,7 @@ export class KingdomUI {
     this.run = null;
     this.cloud = null;
     this.loading = false;
+    this.difficulty = "easy";
   }
   saveSettings() {
     if (!this.store.current) return;
@@ -81,7 +90,7 @@ export class KingdomUI {
             `<button data-profile="${escape(id)}" class="profile-choice ${this.store.data.selected === id ? "chosen" : ""}">${AVATAR_ART[e.profile.avatar]} <b>${escape(e.profile.nickname)}</b><small>♛ ${e.profile.crowns} · ${e.owner ? "Cloud" : "Guest"}</small></button>`,
         )
         .join("")}</div>
-      ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m, i) => `<button data-map="${m.id}" class="map-choice biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}"><span class="map-number">${i + 1}</span><div><b>${m.name.replace(" · Beginner", "")}</b><small>${["Beginner", "Intermediate", "Advanced", "Intermediate"][i]} · ${m.waves.length} waves</small></div><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span></button>`).join("")}</div><button id="collection" class="primary">Kingdom · Towers & upgrades</button>` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
+      ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m, i) => `<button data-map="${m.id}" class="map-choice biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}"><span class="map-number">${i + 1}</span><div><b>${m.name.replace(" · Beginner", "")}</b><small>20 / 40 / 100 waves</small></div><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span></button>`).join("")}</div><div class="kingdom-actions"><button id="collection" class="primary">Towers & upgrades</button><button id="heroes" class="secondary">Animal heroes</button><button id="relics" class="secondary">Relics · ${p.relics.equipped.length}/2</button></div>${entry?.battle ? `<button id="continue-battle" class="primary">Continue ${escape(CAMPAIGNS[entry.battle.map]?.name || "battle")} · Wave ${entry.battle.wave + 1}</button>` : ""}` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
       <div class="home-actions"><button id="new-profile" class="secondary">＋ New hero</button>${p ? `<button id="manage-profile" class="secondary">Manage hero</button>` : ""}<button id="play" class="secondary" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button><button id="parent-cloud" class="secondary">${this.cloud?.uid ? "Cloud saves" : "Parent sign-in"}</button><button id="menu-help" class="secondary">How to play</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
     $("modal").querySelector(".modal-card").classList.add("home-card");
     document.querySelectorAll("[data-profile]").forEach(
@@ -96,10 +105,15 @@ export class KingdomUI {
     if (p) {
       $("manage-profile").onclick = () => this.manage();
       $("collection").onclick = () => this.collection();
+      $("heroes").onclick = () => this.heroCollection();
+      $("relics").onclick = () => this.relicCollection();
+      if ($("continue-battle"))
+        $("continue-battle").onclick = () =>
+          this.safe(() => this.resumeBattle());
     }
     document
       .querySelectorAll("[data-map]")
-      .forEach((b) => (b.onclick = () => this.start(b.dataset.map)));
+      .forEach((b) => (b.onclick = () => this.prepare(b.dataset.map)));
     $("play").onclick = () => this.start("classic");
     $("menu-help").onclick = () => this.ui.help();
     $("parent-cloud").onclick = () => this.parent();
@@ -118,6 +132,108 @@ export class KingdomUI {
     if (target) target.textContent = text;
     else this.ui.toast(text);
   }
+  prepare(map) {
+    if (!this.store.current) return this.editProfile();
+    this.ui.modal(
+      `<div class="eyebrow">YOUR NEXT ADVENTURE</div><h1 id="modal-title">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</h1><div class="difficulty-picker">${Object.entries(
+        DIFFICULTIES,
+      )
+        .map(
+          ([id, d]) =>
+            `<button data-difficulty="${id}" aria-pressed="${this.difficulty === id}"><b>${d.name} (${d.waves})</b><small>${id === "easy" ? "A gentle adventure" : id === "medium" ? "A growing challenge" : "An epic endurance journey"}</small></button>`,
+        )
+        .join(
+          "",
+        )}</div><div class="equipped-hero"><img src="${import.meta.env.BASE_URL}heroes/${this.store.current.heroes.equipped}.svg" alt=""><b>${HEROES[this.store.current.heroes.equipped].name}</b><button id="choose-hero" class="secondary">Change hero</button></div><p>${escape(CAMPAIGNS[map].description)}<br>Relics: ${this.store.current.relics.equipped.map((k) => RELICS[k].name).join(", ") || "None equipped"}</p><button id="begin-adventure" class="primary">Begin ${DIFFICULTIES[this.difficulty].name} · ${DIFFICULTIES[this.difficulty].waves} waves</button><button id="back" class="secondary">Back</button>`,
+    );
+    document.querySelector(".modal-card").classList.add("adventure-card");
+    document.querySelectorAll("[data-difficulty]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          this.difficulty = b.dataset.difficulty;
+          this.prepare(map);
+        }),
+    );
+    $("choose-hero").onclick = () =>
+      this.heroCollection(() => this.prepare(map));
+    $("begin-adventure").onclick = () => {
+      if (this.store.data.profiles[this.store.data.selected].battle) {
+        this.ui.modal(
+          `<h1 id="modal-title">Start a new battle?</h1><p>Your current checkpoint will be replaced. Permanent progress stays safe.</p><button id="replace-battle" class="primary">Start new battle</button><button id="back" class="secondary">Keep checkpoint</button>`,
+        );
+        $("replace-battle").onclick = () => {
+          this.clearBattle();
+          this.start(map);
+        };
+        $("back").onclick = () => this.menu();
+      } else this.start(map);
+    };
+    $("back").onclick = () => this.menu();
+    this.ui.overlayClose = $("back").onclick;
+  }
+  heroCollection(back = () => this.menu()) {
+    const p = this.store.current;
+    this.ui.modal(
+      `<div class="eyebrow">ONE ANIMAL FRIEND PER BATTLE</div><h1 id="modal-title">Animal heroes</h1><div class="hero-roster">${Object.entries(
+        HEROES,
+      )
+        .map(
+          ([id, h]) =>
+            `<article><img src="${import.meta.env.BASE_URL}heroes/${id}.svg" alt="${h.name}"><h2>${h.name}</h2><small>Level ${heroLevel(p.heroes.xp[id])} · ${p.heroes.xp[id]} XP</small><p>${h.description}</p><button data-hero="${id}" class="${p.heroes.equipped === id ? "primary" : "secondary"}" ${!p.heroes.unlocked.includes(id) && p.crowns < h.cost ? "disabled" : ""}>${p.heroes.equipped === id ? "Equipped" : p.heroes.unlocked.includes(id) ? "Equip" : `Unlock · ♛ ${h.cost}`}</button></article>`,
+        )
+        .join("")}</div><button id="back" class="secondary">Back</button>`,
+    );
+    document.querySelector(".modal-card").classList.add("hero-card");
+    document.querySelectorAll("[data-hero]").forEach(
+      (b) =>
+        (b.onclick = () =>
+          this.safe(() => {
+            this.store.commit({
+              id: crypto.randomUUID(),
+              type: "hero",
+              hero: b.dataset.hero,
+            });
+            this.cloud?.sync();
+            this.heroCollection(back);
+          })),
+    );
+    $("back").onclick = back;
+    this.ui.overlayClose = back;
+  }
+  relicCollection() {
+    const p = this.store.current;
+    this.ui.modal(
+      `<div class="eyebrow">EARNED THROUGH ADVENTURES</div><h1 id="modal-title">Kingdom Relics · ${p.relics.equipped.length}/2</h1><div class="relic-grid">${Object.entries(
+        RELICS,
+      )
+        .map(
+          ([id, r], i) =>
+            `<article class="relic-${id}"><img class="relic-art" src="${import.meta.env.BASE_URL}relics/${id}.svg" alt=""><b>${r.name}</b><p>${r.description}</p><small>${r.condition}</small><button data-relic="${id}" ${p.relics.unlocked.includes(id) ? "" : "disabled"}>${p.relics.equipped.includes(id) ? "Unequip" : p.relics.unlocked.includes(id) ? "Equip" : "Earn in adventures"}</button></article>`,
+        )
+        .join(
+          "",
+        )}</div><p>Two different relics at a time. Bonuses never stack with themselves.</p><button id="back" class="secondary">Back</button>`,
+    );
+    document.querySelector(".modal-card").classList.add("relic-card");
+    document.querySelectorAll("[data-relic]").forEach(
+      (b) =>
+        (b.onclick = () =>
+          this.safe(() => {
+            const list = p.relics.equipped.includes(b.dataset.relic)
+              ? p.relics.equipped.filter((k) => k !== b.dataset.relic)
+              : [...p.relics.equipped, b.dataset.relic];
+            this.store.commit({
+              id: crypto.randomUUID(),
+              type: "relic",
+              equipped: list,
+            });
+            this.cloud?.sync();
+            this.relicCollection();
+          })),
+    );
+    $("back").onclick = () => this.menu();
+    this.ui.overlayClose = $("back").onclick;
+  }
   start(map) {
     if (map !== "classic" && !this.store.current) {
       this.editProfile();
@@ -127,6 +243,9 @@ export class KingdomUI {
     this.model.configure({
       map,
       profile: map === "classic" ? null : this.store.current,
+      difficulty: map === "classic" ? null : this.difficulty,
+      hero: map === "classic" ? null : this.store.current.heroes.equipped,
+      relics: map === "classic" ? [] : this.store.current.relics.equipped,
     });
     const settings = this.store.current?.settings;
     if (settings) {
@@ -142,6 +261,7 @@ export class KingdomUI {
       granted: Object.fromEntries(TYPES.map((t) => [t, 0])),
       stats: { waves: 0, damage: 0, armor: 0, kills: 0 },
       finished: false,
+      heroGranted: 0,
     };
   }
   checkpoint(win = false) {
@@ -156,6 +276,8 @@ export class KingdomUI {
       `${run.id}-${win ? "end" : this.model.wave}`,
     );
     op.win = win && this.model.ended === "victory";
+    const heroTotal = op.heroXP;
+    op.heroXP = Math.max(0, heroTotal - (run.heroGranted || 0));
     const totals = { ...op.xp },
       stats = { ...op.stats };
     for (const t of TYPES) op.xp[t] = Math.max(0, totals[t] - run.granted[t]);
@@ -166,6 +288,7 @@ export class KingdomUI {
     this.model.profile = p;
     run.granted = totals;
     run.stats = stats;
+    run.heroGranted = heroTotal;
     this.cloud?.sync();
     return { crowns: p.crowns - before, xp: totals };
   }
@@ -180,6 +303,7 @@ export class KingdomUI {
       return "Could not save rewards. Export a backup before leaving.";
     }
     this.run.finished = true;
+    this.clearBattle();
     return `♛ +${result.crowns} Kingdom Crowns · ${this.model.ended === "victory" ? "★".repeat(this.model.lives >= 18 ? 3 : this.model.lives >= 10 ? 2 : 1) : "XP for a brave attempt"}<br>${TYPES.filter(
       (t) => result.xp[t],
     )
@@ -187,6 +311,40 @@ export class KingdomUI {
       .join(
         " · ",
       )}<small>Progress saved. Spend Crowns and XP in your Kingdom.</small>`;
+  }
+  saveBattle() {
+    if (
+      this.ui.inMenu ||
+      this.model.campaign.id === "classic" ||
+      !this.run ||
+      this.run.finished
+    )
+      return;
+    const b = battleCheckpoint(this.model, this.run);
+    if (!b) return; // Keep the pre-wave checkpoint through an interrupted wave.
+    if (!validateBattle(b))
+      throw Error(
+        "Could not save this checkpoint safely. Keep playing or export a backup.",
+      );
+    this.store.saveBattle(b);
+    this.cloud?.sync();
+  }
+  clearBattle() {
+    if (this.store.current) this.store.saveBattle(null);
+    this.cloud?.sync();
+  }
+  resumeBattle() {
+    const entry = this.store.data.profiles[this.store.data.selected];
+    this.run = restoreBattle(this.model, entry.battle, entry.profile);
+    this.run.profileId = this.store.data.selected;
+    this.ui.inMenu = false;
+    this.ui.helpOpen = false;
+    this.ui.cancel();
+    $("modal").hidden = true;
+    $("app").inert = false;
+    this.ui.refresh(true);
+    this.ui.fitBattlefield?.();
+    this.ui.toast("Checkpoint restored. Resume, then start the next wave.");
   }
   editProfile(id = null) {
     const p = id ? this.store.data.profiles[id].profile : null;
@@ -437,6 +595,9 @@ export class KingdomUI {
     const reviewedVersions = Object.fromEntries(
       cloud.map(([, e]) => [e.cloudId, e.remoteRevision]),
     );
+    const reviewedBattle = new Map(
+      cloud.map(([, e]) => [e.cloudId, e.battleRevision || 0]),
+    );
     this.ui.modal(
       `<h1 id="modal-title">Review import</h1><p>Import as a new cloud hero, or choose an existing hero. Merge keeps the larger lifetime Crown total, subtracts the cost of combined tower unlocks, and combines XP and stars. Balances are never added; both originals are kept. Replace uses the guest save after a backup. Nothing happens until you choose below.</p><label>Guest hero<select id="guest-source">${guests.map(([id, e]) => `<option value="${escape(id)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><label>Cloud hero<select id="cloud-target"><option value="">Create separate cloud hero</option>${cloud.map(([, e]) => `<option value="${escape(e.cloudId)}">${escape(e.profile.nickname)} · ♛ ${e.profile.crowns}</option>`).join("")}</select></label><button id="merge-guest" class="primary">Import new / merge reviewed heroes</button><button id="replace-guest" class="danger">Back up and replace chosen cloud hero</button><button id="back" class="secondary">Cancel</button><p id="save-message" role="status"></p>`,
     );
@@ -449,7 +610,13 @@ export class KingdomUI {
           throw Error("Choose the cloud hero to replace.");
         if (mode === "replace") this.export();
         const reviewed = target ? reviewedVersions[target] : null;
-        await this.cloud.importGuest(guest, target || null, mode, reviewed);
+        await this.cloud.importGuest(
+          guest,
+          target || null,
+          mode,
+          reviewed,
+          reviewedBattle.get(target) ?? null,
+        );
         this.menu();
       });
     $("merge-guest").onclick = () => apply("merge");
@@ -483,6 +650,9 @@ export class KingdomUI {
             "Cloud profile no longer exists. Import your local hero as new.",
           );
         entry.profile = remote.profile;
+        entry.battle = remote.battle || null;
+        entry.battleRevision = remote.battleRevision || 0;
+        entry.remoteRevision = remote.profile.statistics.revision;
         entry.pending = [];
         this.cloud.conflict = null;
         this.store.persist();

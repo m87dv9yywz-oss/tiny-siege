@@ -142,6 +142,51 @@ test("Google emulator credential, guest migration, two browser sessions, offline
   expect(
     await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
   ).toBe(75);
+  await p.evaluate(async () => {
+    const { profiles, kingdom } = window.__tinySiege;
+    profiles.commit({
+      id: "crystal-medium-cloud",
+      type: "reward",
+      map: "crystal",
+      difficulty: "medium",
+      win: true,
+      stars: 3,
+      xp: { wind: 350, rune: 350 },
+      hero: "dinosaur",
+      heroXP: 100,
+      stats: {},
+    });
+    profiles.commit({ id: "wind-cloud", type: "tower", tower: "wind" });
+    profiles.commit({ id: "rune-cloud", type: "tower", tower: "rune" });
+    profiles.commit({ id: "rex-cloud", type: "hero", hero: "dinosaur" });
+    profiles.commit({
+      id: "relic-cloud",
+      type: "relic",
+      equipped: ["lens", "crown"],
+    });
+    await kingdom.cloud.sync();
+  });
+  await q.evaluate(() => window.__tinySiege.kingdom.cloud.refresh());
+  expect(
+    await q.evaluate(() => {
+      const p = window.__tinySiege.profiles.current;
+      return {
+        crowns: p.crowns,
+        wind: p.towerXP.wind.earned,
+        rune: p.towerXP.rune.earned,
+        dinosaur: p.heroes.unlocked.includes("dinosaur"),
+        relics: p.relics.equipped,
+        stars: p.mapProgress.crystal.medium,
+      };
+    }),
+  ).toEqual({
+    crowns: 5,
+    wind: 350,
+    rune: 350,
+    dinosaur: true,
+    relics: ["lens", "crown"],
+    stars: 3,
+  });
   await p.locator("#new-profile").click();
   await p.locator("#nickname").fill("Cloud Fox");
   await expect(p.locator("#profile-cloud")).toBeChecked();

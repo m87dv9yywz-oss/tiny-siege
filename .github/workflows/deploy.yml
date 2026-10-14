@@ -41,6 +41,7 @@ jobs:
           CI: "true"
           PLAYWRIGHT_USE_BUNDLED: "true"
       - run: node scripts/v3-balance-report.js
+      - run: node scripts/v4-balance-report.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -48,6 +49,7 @@ jobs:
           path: |
             test-results/
             docs/v3-balance-results.json
+            docs/v4-balance-results.json
           if-no-files-found: ignore
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
