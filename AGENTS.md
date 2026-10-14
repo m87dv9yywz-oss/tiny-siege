@@ -1,5 +1,14 @@
 # Tiny Siege
 
+## Current project plan and artwork (read before any Tiny Siege V5 task)
+
+**Canonical, cross-session entry point:** [V5 Master Plan](docs/V5_MASTER_PLAN.md). For asset state/locations, read [Artwork Index](docs/artwork/ARTWORK_INDEX.md), [Asset Manifest](docs/artwork/ASSET_MANIFEST.json), [Asset Locations](docs/artwork/ASSET_LOCATIONS.md), and [Codex Setup](docs/CODEX_ACCESS_AND_INTEGRATION.md). Keep these docs synchronized when adding new art.
+
+The owner expects any request to **save artwork** to mean persistent repository-accessible/Google Drive project storage, **not** a chat-only sandbox path. Approved Archer tower art: **16 of 25 legal states** as of 2026-10-14; nine Tier 3 states unfinished. Existing image bytes are preserved in Google Drive; **do not assume the PNGs are already in this GitHub checkout until the one-time binary import is performed**. Read the asset access instructions, and never substitute reference sheets for playable sprites.
+
+Do not modify unrelated apps, backend, balance or release the game just because docs/artwork was updated. Preview and obtain owner approval first.
+
+
 Work only in this repository. Do not touch HospitalOS, PowerPark, Stormlight, or unrelated projects. Keep the existing Phaser/Vite static architecture and GitHub Pages hosting. Firebase Auth and Firestore are authorized for v3 in the existing `tiny-siege-game` Spark project. Do not create a project, enable billing, Functions, Storage, Analytics or Firebase Hosting. Never commit private credentials; the web client config is public.
 
 ## Project and environment
