@@ -10,7 +10,8 @@ async function tap(page,x,y) {
   await page.touchscreen.tap(r.x+r.width*x/960,r.y+r.height*y/640);
 }
 async function capture(page,name) {
-  await page.screenshot({path:`docs/artwork/mobile-battlefield/${name}.png`});
+  await page.waitForTimeout(220);
+  await page.screenshot({animations: "disabled", path:`docs/artwork/mobile-battlefield/${name}.png`});
 }
 test('large landscape map, opposite panels, paid artwork upgrades and live wave controls',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -62,6 +63,8 @@ for(const [width,height]of[[932,430],[740,360],[667,375],[390,844],[375,812],[76
    expect(r.x+r.width).toBeLessThanOrEqual(width);expect(r.y+r.height).toBeLessThanOrEqual(height);
    for(const selector of ['#pause','#speed','#start-wave','#battle-settings summary', '[data-tower="archer"]','[data-tower="rune"]']){
      const b=await page.locator(selector).boundingBox();
+     expect(b.x,selector).toBeGreaterThanOrEqual(0);
+     expect(b.x+b.width,selector).toBeLessThanOrEqual(width);
      expect(b.height,selector).toBeGreaterThanOrEqual(44);
      expect(b.width,selector).toBeGreaterThanOrEqual(44);
      expect(b.y+b.height,selector).toBeLessThanOrEqual(height);

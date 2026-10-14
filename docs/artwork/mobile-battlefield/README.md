@@ -46,11 +46,17 @@ Portrait phones/tablets retain the largest full-width 3:2 board. With no selecti
 
 ## Validation and limits
 
-Validation results and CI link are recorded in the pull request. Focused tests exercise panel sides, unchanged canvas dimensions, immediate paid artwork changes, live combat, 44px main/shop targets, no page overflow, real repeated viewport transitions, native touch placement after rotation, and hero controls. The full existing suite covers all 16 Archer states/nine visual fallbacks, drag placement, upgrades/selling, eight towers, heroes, progression/checkpoints and cloud synchronization. Earned-gold V3/V4 reports are rerun without balance changes. Production build and shipped UI are checked separately.
+Local validation: **86 logic checks**, **53 browser tests** (one separately gated cloud test skipped), **17 focused transition/selection rechecks**, **39 earned-gold progression victories**, and a successful production build. The [draft PR's checks](https://github.com/m87dv9yywz-oss/tiny-siege/pull/15/checks) rerun the full suite including cloud emulators; exact final CI evidence is recorded in the PR. The local emulator JAR download was denied by environment network policy, so no local emulator success is claimed. Focused tests exercise panel sides, unchanged canvas dimensions, immediate paid artwork changes, live combat, 44px main/shop targets, no page overflow, real repeated viewport transitions, native touch placement after rotation, and hero controls. The full existing suite covers all 16 Archer states/nine visual fallbacks, drag placement, upgrades/selling, eight towers, heroes, progression/checkpoints and cloud synchronization. Earned-gold V3/V4 reports are rerun without balance changes. Production build and shipped UI are checked separately.
 
 The original reference plan's `screenshots/` directory is absent from the Archer prototype checkout. The preserved V4 capture and freshly measured running baseline supply the comparisons; no missing reference images were invented.
 
 Known tradeoffs: overlays cover some of the opposite map edge; a tower underneath an overlay requires closing it before tapping. Narrow portrait uses a sheet, since a full-height side panel would cover most of the board. Long blueprints still use the existing paused reading interface. Fine Archer details improve with scale but the nine Tier 3 artwork states remain the prototype's approved Tier 2 fallbacks. No physical iPhone/iPad Safari or home-screen PWA test has been performed.
+
+## Performance observation
+
+The isolated local 844 × 390 headless Chromium stress fixture used **24 evolved towers**, up to **101 enemies**, and an open upgrade panel. Over 180 frames it measured **18.9ms median / 29.0ms p95**; effects stayed capped at 100, projectiles peaked at 20, and each emitter peaked at 100 live particles. [Recorded sample](performance.json). This is a short software-rendered stress observation, not physical iPhone FPS or a long-session heap benchmark. A concurrent-run sample was slower, so the reported run was repeated after other local browser tests completed.
+
+The raster canvas remains **960 × 640**, and no new runtime image payload, simulation work or particle system is added by the layout. Approved Archer files are unchanged. Screenshots live outside `public/` and are not shipped to players. Reproduce the isolated development fixture with `node scripts/v5-layout-performance.js` against the local Vite server. The fixture uses test gold; campaign validation separately uses earned gold.
 
 ## Playable review build
 

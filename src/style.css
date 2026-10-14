@@ -2833,3 +2833,19 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel .sell-button { grid-column: 1/-1; grid-row: 5; min-height: 44px; }
   .tower-icon, .tower-icon img { height: clamp(24px,calc((var(--app-height,100dvh) - 180px)/8 - 40px),50px); }
 }
+/* Move the existing overlay between edges without reflowing the map. */
+@media (min-width: 851px) and (min-height: 601px) {
+  #selection-panel:not(.placing) { transition: left .16s ease-out; }
+  #selection-panel[data-side="right"]:not(.placing) { left: calc(100% - 142px - 280px); right: auto; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  #selection-panel:not(.placing) { transition: left .16s ease-out; }
+  #selection-panel[data-side="right"]:not(.placing) { left: calc(100% - 130px - 252px); right: auto; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  #selection-panel[data-side="right"]:not(.placing) { left: calc(100% - 114px - 235px); }
+}
+@media (orientation: landscape) and (max-width: 700px) {
+  #selection-panel[data-side="right"]:not(.placing) { left: calc(100% - 110px - 208px); }
+}
+@media (prefers-reduced-motion: reduce) { #selection-panel:not(.placing) { transition: none; } }
