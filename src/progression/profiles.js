@@ -269,9 +269,19 @@ export function migrateProfile(data) {
     Object.keys(data.unlockedUpgrades || {}).length === 0 &&
     integer(data.crowns)
   ) {
-    p.crowns = data.crowns;
-    if (!validateProfile(p)) throw Error("Invalid profile.");
-    return p;
+    const legacy = { ...p, ...structuredClone(data), schemaVersion: 1 };
+    delete legacy.heroes;
+    delete legacy.relics;
+    delete legacy.mapProgress;
+    legacy.towerXP = Object.fromEntries(
+      LEGACY_TYPES.map((t) => [t, { earned: 0, spent: 0 }]),
+    );
+    legacy.unlockedUpgrades = Object.fromEntries(
+      LEGACY_TYPES.map((t) => [t, [1, 1, 1]]),
+    );
+    if (!validateProfile(legacy))
+      throw Error("Invalid profile. Your existing save has been kept.");
+    return migrateProfile(legacy);
   }
   throw Error("This save is invalid. Your existing save has been kept.");
 }

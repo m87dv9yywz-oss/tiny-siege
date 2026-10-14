@@ -6,7 +6,24 @@
     "lives": 20,
     "totalGold": 5027,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 0,
@@ -32,6 +49,14 @@
           "spent": 0
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -71,6 +96,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [],
@@ -96,6 +131,9 @@
       "type": "reward",
       "map": "emerald",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -103,7 +141,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 14,
@@ -1056,7 +1096,27 @@
     "lives": 11,
     "totalGold": 20381,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 25,
@@ -1082,6 +1142,14 @@
           "spent": 0
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -1122,6 +1190,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -1146,13 +1224,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934430893
+      "updatedAt": 1791973945038
     },
     "reward": {
       "id": "run1",
       "type": "reward",
       "map": "amber",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 2,
       "xp": {
         "archer": 350,
@@ -1160,7 +1241,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 20,
@@ -2691,7 +2774,28 @@
     "lives": 20,
     "totalGold": 20476,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 15,
@@ -2717,6 +2821,14 @@
           "spent": 0
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -2758,6 +2870,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -2785,13 +2907,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934433299
+      "updatedAt": 1791973946293
     },
     "reward": {
       "id": "run2",
       "type": "reward",
       "map": "moon",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -2799,7 +2924,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 20,
@@ -4278,7 +4405,28 @@
     "lives": 20,
     "totalGold": 20425,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 165,
@@ -4304,6 +4452,14 @@
           "spent": 0
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -4345,6 +4501,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -4375,13 +4541,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934434479
+      "updatedAt": 1791973946963
     },
     "reward": {
       "id": "run3",
       "type": "reward",
       "map": "moon",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -4389,7 +4558,9 @@
         "frost": 350,
         "fire": 350,
         "lightning": 350,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 20,
@@ -5884,7 +6055,28 @@
     "lives": 20,
     "totalGold": 20476,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 220,
@@ -5910,6 +6102,14 @@
           "spent": 180
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -5951,6 +6151,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -5981,13 +6191,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934435913
+      "updatedAt": 1791973947736
     },
     "reward": {
       "id": "run4",
       "type": "reward",
       "map": "moon",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -5995,7 +6208,9 @@
         "frost": 350,
         "fire": 108,
         "lightning": 0,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 20,
@@ -7450,7 +7665,28 @@
     "lives": 20,
     "totalGold": 20408,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 275,
@@ -7476,6 +7712,14 @@
           "spent": 180
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -7517,6 +7761,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -7547,13 +7801,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934437085
+      "updatedAt": 1791973948276
     },
     "reward": {
       "id": "run5",
       "type": "reward",
       "map": "moon",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -7561,7 +7818,9 @@
         "frost": 350,
         "fire": 350,
         "lightning": 350,
-        "grove": 0
+        "grove": 0,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 20,
@@ -9024,7 +9283,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 240,
@@ -9050,6 +9330,14 @@
           "spent": 680
         },
         "grove": {
+          "earned": 0,
+          "spent": 0
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
           "earned": 0,
           "spent": 0
         }
@@ -9092,6 +9380,16 @@
           1,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -9122,13 +9420,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934438082
+      "updatedAt": 1791973948787
     },
     "reward": {
       "id": "run6",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -9136,7 +9437,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -10373,7 +10676,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 380,
@@ -10401,6 +10725,14 @@
         "grove": {
           "earned": 350,
           "spent": 180
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -10441,6 +10773,16 @@
           2,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -10473,13 +10815,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934439068
+      "updatedAt": 1791973949273
     },
     "reward": {
       "id": "run7",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -10487,7 +10832,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -11716,7 +12063,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 430,
@@ -11744,6 +12112,14 @@
         "grove": {
           "earned": 700,
           "spent": 680
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -11784,6 +12160,16 @@
           3,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -11816,13 +12202,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934440086
+      "updatedAt": 1791973949813
     },
     "reward": {
       "id": "run8",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -11830,7 +12219,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -13035,7 +13426,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 480,
@@ -13063,6 +13475,14 @@
         "grove": {
           "earned": 1050,
           "spent": 680
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -13103,6 +13523,16 @@
           3,
           1,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -13135,13 +13565,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934440850
+      "updatedAt": 1791973950161
     },
     "reward": {
       "id": "run9",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -13149,7 +13582,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -14386,7 +14821,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 530,
@@ -14414,6 +14870,14 @@
         "grove": {
           "earned": 1400,
           "spent": 860
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -14454,6 +14918,16 @@
           3,
           2,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -14486,13 +14960,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934441759
+      "updatedAt": 1791973950616
     },
     "reward": {
       "id": "run10",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -14500,7 +14977,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -15729,7 +16208,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 580,
@@ -15757,6 +16257,14 @@
         "grove": {
           "earned": 1750,
           "spent": 1360
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -15797,6 +16305,16 @@
           3,
           3,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -15829,13 +16347,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934442691
+      "updatedAt": 1791973951133
     },
     "reward": {
       "id": "run11",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -15843,7 +16364,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -17048,7 +17571,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 630,
@@ -17076,6 +17620,14 @@
         "grove": {
           "earned": 2100,
           "spent": 1360
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -17116,6 +17668,16 @@
           3,
           3,
           1
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -17148,13 +17710,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934443621
+      "updatedAt": 1791973951633
     },
     "reward": {
       "id": "run12",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -17162,7 +17727,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -18399,7 +18966,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 680,
@@ -18427,6 +19015,14 @@
         "grove": {
           "earned": 2450,
           "spent": 1540
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -18467,6 +19063,16 @@
           3,
           3,
           2
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -18499,13 +19105,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934444537
+      "updatedAt": 1791973952214
     },
     "reward": {
       "id": "run13",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -18513,7 +19122,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,
@@ -19742,7 +20353,28 @@
     "lives": 20,
     "totalGold": 13679,
     "permanentBefore": {
-      "schemaVersion": 2,
+      "schemaVersion": 3,
+      "heroes": {
+        "unlocked": [
+          "dragon",
+          "tiger"
+        ],
+        "equipped": "dragon",
+        "xp": {
+          "dragon": 0,
+          "dinosaur": 0,
+          "tiger": 0
+        }
+      },
+      "relics": {
+        "unlocked": [
+          "purse",
+          "shield",
+          "banner"
+        ],
+        "equipped": []
+      },
+      "mapProgress": {},
       "nickname": "Balance Knight",
       "avatar": "dragon",
       "crowns": 730,
@@ -19770,6 +20402,14 @@
         "grove": {
           "earned": 2800,
           "spent": 2040
+        },
+        "wind": {
+          "earned": 0,
+          "spent": 0
+        },
+        "rune": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -19810,6 +20450,16 @@
           3,
           3,
           3
+        ],
+        "wind": [
+          1,
+          1,
+          1
+        ],
+        "rune": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -19842,13 +20492,16 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791934445871
+      "updatedAt": 1791973954107
     },
     "reward": {
       "id": "run14",
       "type": "reward",
       "map": "garden",
       "win": true,
+      "difficulty": null,
+      "hero": null,
+      "heroXP": 0,
       "stars": 3,
       "xp": {
         "archer": 350,
@@ -19856,7 +20509,9 @@
         "frost": 350,
         "fire": 0,
         "lightning": 0,
-        "grove": 350
+        "grove": 350,
+        "wind": 0,
+        "rune": 0
       },
       "stats": {
         "waves": 18,

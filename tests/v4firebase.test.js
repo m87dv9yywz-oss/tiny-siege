@@ -79,7 +79,10 @@ test("maximum-size segmented checkpoints stay within the security-rule evaluatio
     (r) => r.id === "maximum-battle",
   );
   assert.equal(saved.battle.towers.length, 80);
-  assert.deepEqual(saved.battle.towers, checkpoint.towers);
+  assert.deepEqual(
+    saved.battle.towers,
+    checkpoint.towers.map((t) => ({ ...t, heat: t.heat || 0 })),
+  );
   const metrics = battleDocuments(checkpoint, serverTimestamp(), 2)[
     "battleProgress/archer"
   ];

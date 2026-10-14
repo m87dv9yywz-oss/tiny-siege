@@ -2184,6 +2184,22 @@ main:has(#selection-panel.open:not(.placing)) aside {
   flex-shrink: 0;
   filter: drop-shadow(0 3px 2px #50643d33);
 }
+@media (min-width: 600px) and (max-width: 850px) and (orientation: portrait) {
+  #selection-panel .path {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  #selection-panel .path-heading {
+    flex: 1;
+    min-width: 0;
+  }
+  #selection-panel .upgrade-button {
+    width: 150px;
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+}
 
 /* v4: the measured board sits directly beneath the HUD on phones. */
 .battle-column {

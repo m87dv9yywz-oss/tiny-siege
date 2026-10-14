@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { Game } from "../src/systems/Game.js";
 import { TOWERS, towerStats } from "../src/data/towers.js";
 import { HEROES } from "../src/data/heroes.js";
+import { mergeProfiles } from "../src/cloud/firebase.js";
 import { TRAILS, OBSTACLES } from "../src/data/map.js";
 import { DIFFICULTIES, campaignFor } from "../src/data/difficulties.js";
 import {
@@ -41,6 +42,46 @@ const run = (g) => ({
   stats: { waves: 0, damage: 0, armor: 0, kills: 0 },
   heroGranted: 0,
   finished: false,
+});
+test("prototype migration retains valid non-XP progress and repeated hero imports cannot refund Crowns", () => {
+  const old = freshProfile("Early Explorer");
+  old.schemaVersion = 1;
+  delete old.heroes;
+  delete old.relics;
+  delete old.mapProgress;
+  old.towerXP = {};
+  old.unlockedUpgrades = {};
+  old.crowns = 65;
+  old.completedMaps = ["emerald"];
+  old.mapStars = { emerald: 2 };
+  old.statistics.wins = 1;
+  old.statistics.ledger = "|early-clear|";
+  old.settings.sound = true;
+  const migrated = migrateProfile(old);
+  assert.equal(migrated.crowns, 65);
+  assert.equal(migrated.statistics.ledger, "|early-clear|");
+  assert.equal(migrated.statistics.wins, 1);
+  assert.equal(migrated.mapStars.emerald, 2);
+  assert.equal(migrated.settings.sound, true);
+  assert.equal(validateProfile({ ...migrated, mapProgress: [] }), false);
+  let guest = applyOperation(freshProfile(), {
+    id: "rex-reward",
+    type: "reward",
+    map: "emerald",
+    difficulty: "easy",
+    win: true,
+    stars: 3,
+    xp: {},
+    stats: {},
+  });
+  const cloud = applyOperation(guest, {
+    id: "rex-purchase",
+    type: "hero",
+    hero: "dinosaur",
+  });
+  const once = mergeProfiles(cloud, guest);
+  assert.equal(once.crowns, 60);
+  assert.equal(mergeProfiles(once, guest).crowns, 60);
 });
 test("v4 accepts full legacy schemas without losing any balances, stats, unlocks or stars", () => {
   for (const version of [1, 2]) {
