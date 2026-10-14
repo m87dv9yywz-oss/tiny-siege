@@ -46,12 +46,14 @@ assertion.repository_owner_id == '326222032' &&
 assertion.repository == 'm87dv9yywz-oss/tiny-siege' &&
 assertion.ref == 'refs/heads/main' &&
 assertion.workflow_ref == 'm87dv9yywz-oss/tiny-siege/.github/workflows/deploy.yml@refs/heads/main' &&
-assertion.sub == 'repo:m87dv9yywz-oss/tiny-siege:environment:firebase-rules' &&
+assertion.sub == 'repo:m87dv9yywz-oss@326222032/tiny-siege@1417141926:environment:firebase-rules' &&
 (assertion.event_name == 'push' || assertion.event_name == 'workflow_dispatch')
 ```
 
+GitHub uses [immutable subjects](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims) for this repository. Both the provider condition and impersonation principal must include the owner/repository numeric IDs shown here. A names-only subject is rejected. After a policy correction, allow for [IAM propagation](https://docs.cloud.google.com/iam/docs/access-change-propagation) before retrying; do not add broader roles.
+
 Grant impersonation to the exact environment subject:
-`principal://iam.googleapis.com/projects/909962953566/locations/global/workloadIdentityPools/tiny-siege-github/subject/repo:m87dv9yywz-oss/tiny-siege:environment:firebase-rules`.
+`principal://iam.googleapis.com/projects/909962953566/locations/global/workloadIdentityPools/tiny-siege-github/subject/repo:m87dv9yywz-oss@326222032/tiny-siege@1417141926:environment:firebase-rules`.
 
 Configure GitHub environment `firebase-rules` to permit only branch `main` (no tags), with any applicable approval protection. Protect main and require successful CI/review for workflow, script and rule changes. PRs, forks, other workflows, feature branches and `pull_request_target` must fail the provider condition even if they request an OIDC token. Environment restrictions and provider conditions are independent layers; a workflow `if` alone is insufficient. Review the actual Google/GitHub settings before activation.
 
