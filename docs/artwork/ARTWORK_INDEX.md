@@ -4,7 +4,7 @@
 
 - V5 project plan: `docs/V5_MASTER_PLAN.md`
 - Codex procedure: `docs/CODEX_ACCESS_AND_INTEGRATION.md`
-- Exact filenames / checksums / dimensions: `docs/ASSET_MANIFEST.json`
+- Exact filenames / checksums / dimensions: `docs/artwork/ASSET_MANIFEST.json`
 - Production game source lives in `m87dv9yywz-oss/tiny-siege` (GitHub).
 - **Image assets are not automatically deployed**: only integrate when asked; no changed gameplay mechanics/balance or live-site deployment.
 - The same `archer_A-B-C.png` artwork must be used on battlefield and cards; use provided 256 and 512 exports, not different redraws.
