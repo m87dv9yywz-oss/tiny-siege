@@ -120,14 +120,19 @@ export const CAMPAIGNS = {
     first: 0,
     repeat: 0,
     description:
-      "The complete v2 campaign. All towers and evolutions unlocked. No permanent rewards.",
+      "The complete v2 campaign. All six towers and evolutions unlocked. No permanent rewards.",
   },
   emerald: {
     id: "emerald",
     name: "Emerald Trail · Beginner",
     biome: "emerald",
-    hints:[...WAVE_HINTS.slice(0,12), "Armor and splitters together! Mix Cannons with Frost and Archers.", "The Ironbound Captain leads the final march. Break its armor and protect your little kingdom!"],
-    victoryText:"The Emerald Trail is safe. Your first kingdom adventure is complete!",
+    hints: [
+      ...WAVE_HINTS.slice(0, 12),
+      "Armor and splitters together! Mix Cannons with Frost and Archers.",
+      "The Ironbound Captain leads the final march. Break its armor and protect your little kingdom!",
+    ],
+    victoryText:
+      "The Emerald Trail is safe. Your first kingdom adventure is complete!",
     first: 100,
     repeat: 35,
     description:
@@ -149,8 +154,11 @@ export const CAMPAIGNS = {
     id: "amber",
     name: "Amber Pass",
     biome: "amber",
-    hints:[...WAVE_HINTS.slice(0,19), "Ironbound Captains lead the last autumn march. Break armor, slow the swarms and hold the bends!"],
-    victoryText:"Amber Pass is safe. Your heroes protected the autumn road!",
+    hints: [
+      ...WAVE_HINTS.slice(0, 19),
+      "Ironbound Captains lead the last autumn march. Break armor, slow the swarms and hold the bends!",
+    ],
+    victoryText: "Amber Pass is safe. Your heroes protected the autumn road!",
     first: 120,
     repeat: 45,
     description:
@@ -176,5 +184,30 @@ export const CAMPAIGNS = {
     description:
       "20 mystical waves. Healers, wraiths and the Thorn King. First clear: 150 Crowns.",
     waves: WAVES,
+  },
+  garden: {
+    id: "garden",
+    name: "Sunflower Gardens",
+    biome: "garden",
+    first: 140,
+    repeat: 50,
+    description:
+      "18 sunny waves. Bouncing seeds and living roots meet shielded swarms.",
+    victoryText:
+      "The Sunflower Gardens bloom again. Your living towers saved the summer kingdom!",
+    hints: [
+      ...WAVE_HINTS.slice(0, 17),
+      "The garden captains arrive with healers and shields. Pierce their armor and keep the summer trail safe!",
+    ],
+    waves: [
+      ...WAVES.slice(0, 17),
+      [
+        group("armored", 2, 1, { elite: true }),
+        group("warden", 8, 0.7),
+        group("healer", 6, 0.8),
+        group("shard", 16, 0.5),
+        group("brute", 14, 0.8),
+      ],
+    ],
   },
 };

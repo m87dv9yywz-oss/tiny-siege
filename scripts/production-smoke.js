@@ -88,7 +88,8 @@ try {
   assert.match(await page.locator("#pause").textContent(), /Resume/);
   await page.locator("#pause").tap();
   // Guest progression is tested through the production DOM, never dev hooks.
-  await page.locator(".brand").tap();
+  await page.locator("#leave-run").tap();
+  await page.locator("#confirm-leave").tap();
   await page.locator("#new-profile").tap();
   await page.locator("#nickname").fill("Preview Knight");
   await page.locator("#profile-form button").tap();
@@ -107,7 +108,8 @@ try {
   await page.waitForFunction(() =>
     document.querySelector("#start-wave").textContent.includes("START WAVE 2"),
   );
-  await page.locator(".brand").tap();
+  await page.locator("#leave-run").tap();
+  await page.locator("#confirm-leave").tap();
   await page.reload();
   await page.waitForFunction(() =>
     document.querySelector(".profile-choice.chosen"),
@@ -131,7 +133,7 @@ try {
   mkdirSync("test-results", { recursive: true });
   await page.screenshot({ path: "test-results/production-smoke.png" });
   console.log(
-    `Verified Tiny Siege v3 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
+    `Verified Tiny Siege v3.1 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
   );
 } finally {
   await browser.close();

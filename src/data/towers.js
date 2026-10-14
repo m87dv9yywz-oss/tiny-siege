@@ -441,6 +441,116 @@ export const TOWERS = {
       ]),
     ],
   },
+  grove: {
+    name: "Grove",
+    subtitle: "Nature · thorns, seeds & roots",
+    icon: "❧",
+    color: 0x74ce99,
+    hex: "#74ce99",
+    cost: 115,
+    prices: [140, 330, 820],
+    base: {
+      damage: 16,
+      range: 145,
+      cooldown: 0.85,
+      damageType: "physical",
+      armorDamage: 6,
+      penetration: 0.15,
+    },
+    paths: [
+      path("Thorn Sentinel", [
+        tier(
+          "Rose Thorns",
+          "Ruby-tipped thorns: +12 damage and 16 armor damage.",
+          { addDamage: 12, addArmorDamage: 16 },
+        ),
+        tier(
+          "Bramble Spears",
+          "Heavy thorns pierce 3 foes and bypass 55% armor protection.",
+          {
+            damage: 65,
+            armorDamage: 45,
+            penetration: 0.55,
+            pierce: 3,
+            range: 175,
+          },
+        ),
+        tier(
+          "Thorn Sentinel",
+          "A living rose fortress fires four enormous, armor-piercing spears.",
+          {
+            damage: 130,
+            armorDamage: 95,
+            penetration: 0.85,
+            pierce: 5,
+            targets: 4,
+            cooldown: 0.95,
+            range: 205,
+          },
+        ),
+      ]),
+      path("Seedburst Orchard", [
+        tier("Plump Pods", "Golden seed pods burst over a small area.", {
+          splash: 30,
+          addDamage: 8,
+        }),
+        tier(
+          "Bouncing Seeds",
+          "Pods bounce to 3 nearby enemies, losing 20% damage each bounce.",
+          { damage: 42, splash: 38, bounces: 3, bounceRange: 110 },
+        ),
+        tier(
+          "Seedburst Orchard",
+          "Pods bounce through five foes; their first impact scatters seed explosions.",
+          {
+            damage: 95,
+            splash: 55,
+            bounces: 5,
+            bounceRange: 130,
+            clusters: 3,
+            clusterDamage: 20,
+            cooldown: 0.75,
+          },
+        ),
+      ]),
+      path("Elderwood Guardian", [
+        tier(
+          "Clinging Vines",
+          "Leaf shots slow enemies to 70% speed for 1.8 seconds.",
+          { slow: 0.7, duration: 1.8 },
+        ),
+        tier(
+          "Living Roots",
+          "Shots leave 3-second root patches that damage and slow enemies.",
+          {
+            damage: 28,
+            pool: 50,
+            poolDamage: 18,
+            rootSlow: 0.65,
+            slow: 0.6,
+            duration: 2.4,
+          },
+        ),
+        tier(
+          "Elderwood Guardian",
+          "An ancient guardian spreads broad root patches and sends out a rooting pulse every fourth shot. Bosses resist roots.",
+          {
+            damage: 65,
+            pool: 80,
+            poolDamage: 40,
+            rootSlow: 0.55,
+            slow: 0.5,
+            duration: 2.5,
+            freeze: 0.7,
+            pulse: 180,
+            pulseEvery: 4,
+            range: 195,
+            cooldown: 0.85,
+          },
+        ),
+      ]),
+    ],
+  },
 };
 export function primaryPath(tower) {
   return tower.paths.findIndex((t) => t >= 2);
@@ -484,4 +594,29 @@ export function towerTexture(t) {
   return p < 0
     ? `tower-${t.type}-${t.paths.some(Boolean) ? 2 : 1}`
     : `evolution-${t.type}-${p}-${t.paths[p]}`;
+}
+
+// A shared, deterministic visual recipe for every path/tier, used by shots,
+// tower ornaments, upgrade previews and rendering tests.
+export function attackVisual(t) {
+  const main = primaryPath(t);
+  const p = main >= 0 ? main : t.paths.findIndex(Boolean);
+  const tier = p < 0 ? 0 : t.paths[p];
+  const colors = {
+    archer: [0xf16965, 0x64d8ab, 0xffd36d],
+    cannon: [0xffb357, 0x77dfe1, 0xd8adff],
+    frost: [0x88efff, 0xb9adff, 0x8cbbff],
+    fire: [0xffad4f, 0xff646b, 0xffcf50],
+    lightning: [0xc99cff, 0xffd86b, 0x8beaff],
+    grove: [0xee718e, 0xffd66d, 0x83f3b4],
+  };
+  const secondary = t.paths.reduce((n, v) => n + v, 0) - tier;
+  return {
+    path: p,
+    tier,
+    color: tier ? colors[t.type][p] : TOWERS[t.type].color,
+    size: 1 + tier * 0.4 + secondary * 0.08,
+    trail: 16 + tier * 13 + secondary * 5,
+    ornaments: t.paths.reduce((n, v) => n + v, 0),
+  };
 }

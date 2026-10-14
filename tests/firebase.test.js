@@ -1,5 +1,5 @@
 import { cloudProfile } from "../src/cloud/schema.js";
-import { readFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile } from "node:fs/promises";
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -34,7 +34,33 @@ before(async () => {
     },
   });
 });
-after(async () => env?.cleanup());
+after(async () => {
+  try {
+    const coverage = await fetch(
+      "http://127.0.0.1:8080/emulator/v1/projects/demo-tiny-siege:ruleCoverage",
+    ).then((r) => r.json());
+    const positions = [];
+    function walk(o) {
+      if (!o || typeof o !== "object") return;
+      if (o.sourcePosition)
+        positions.push({
+          position: o.sourcePosition,
+          count: (o.values || []).reduce((n, v) => n + (v.count || 0), 0),
+        });
+      for (const v of Object.values(o)) if (typeof v === "object") walk(v);
+    }
+    walk(coverage);
+    await mkdir("test-results", { recursive: true });
+    await writeFile(
+      "test-results/rule-coverage-positions.json",
+      JSON.stringify(positions, null, 2),
+    );
+    console.log("Rule coverage positions captured:", positions.length);
+  } catch (error) {
+    console.log("Rule coverage unavailable:", error.message);
+  }
+  await env?.cleanup();
+});
 const database = (uid) =>
   uid
     ? env.authenticatedContext(uid).firestore()
@@ -94,7 +120,27 @@ test("create and update use the same strict nested validation", async () => {
     (p) => (p.statistics.ledger = "x".repeat(194001)),
     (p) => (p.statistics.kills = -1),
     (p) => (p.updatedAt = new Date(0)),
-    (p) => (p.schemaVersion = 2),
+    (p) => (p.schemaVersion = 3),
+    (p) => {
+      delete p.avatar;
+      p.role = "admin";
+    },
+    (p) => {
+      delete p.towerXP.cannonSpent;
+      p.towerXP.role = 0;
+    },
+    (p) => {
+      delete p.unlockedUpgrades.frost;
+      p.unlockedUpgrades.hacked = [1, 1, 1];
+    },
+    (p) => {
+      delete p.statistics.kills;
+      p.statistics.role = 0;
+    },
+    (p) => {
+      delete p.settings.sound;
+      p.settings.extra = false;
+    },
   ];
   for (let i = 0; i < mutations.length; i++) {
     const create = payload();
@@ -162,9 +208,16 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
   const db = database("parentA"),
     p = payload();
   p.crowns = 1000000000;
-  p.unlockedTowers = ["archer", "cannon", "frost", "fire", "lightning"];
-  p.completedMaps = ["emerald", "amber", "moon"];
-  p.mapStars = { emerald: 3, amber: 3, moon: 3 };
+  p.unlockedTowers = [
+    "archer",
+    "cannon",
+    "frost",
+    "fire",
+    "lightning",
+    "grove",
+  ];
+  p.completedMaps = ["emerald", "amber", "moon", "garden"];
+  p.mapStars = { emerald: 3, amber: 3, moon: 3, garden: 3 };
   p.achievements = ["first-clear", "three-kingdoms", "evolution"];
   for (const type of p.unlockedTowers) {
     p.towerXP[type + "Earned"] = 1000000000;
@@ -174,5 +227,61 @@ test("fully progressed profiles at schema bounds remain writable", async () => {
   for (const k of ["revision", "wins", "waves", "damage", "armor", "kills"])
     p.statistics[k] = 1000000000;
   p.statistics.ledger = "|" + ("x".repeat(96) + "|").repeat(1980);
+  await assertSucceeds(
+    setDoc(ref(db, "full-bounds-short-history"), {
+      ...p,
+      statistics: { ...p.statistics, ledger: "" },
+    }),
+  );
   await assertSucceeds(setDoc(ref(db, "full-bounds"), p));
+  const legacy = {
+    ...p,
+    schemaVersion: 1,
+    towerXP: { ...p.towerXP },
+    unlockedUpgrades: { ...p.unlockedUpgrades },
+    completedMaps: ["emerald", "amber", "moon"],
+    mapStars: { emerald: 3, amber: 3, moon: 3 },
+    unlockedTowers: p.unlockedTowers.filter((t) => t !== "grove"),
+  };
+  delete legacy.towerXP.groveEarned;
+  delete legacy.towerXP.groveSpent;
+  delete legacy.unlockedUpgrades.grove;
+  await assertSucceeds(setDoc(ref(db, "legacy-full-bounds"), legacy));
+  await assertSucceeds(
+    updateDoc(ref(db, "legacy-full-bounds"), {
+      nickname: "Legacy still playable",
+      updatedAt: serverTimestamp(),
+    }),
+  );
+});
+
+test("legacy v3 profiles migrate to schema 2 with Grove and garden, but older clients cannot downgrade them", async () => {
+  const db = database("parentA");
+  const legacy = payload();
+  legacy.schemaVersion = 1;
+  delete legacy.towerXP.groveEarned;
+  delete legacy.towerXP.groveSpent;
+  delete legacy.unlockedUpgrades.grove;
+  const target = ref(db, "legacy-migration");
+  await assertSucceeds(setDoc(target, legacy));
+  const upgraded = migrateProfile((await getDoc(target)).data());
+  upgraded.unlockedTowers.push("grove");
+  upgraded.completedMaps.push("garden");
+  upgraded.mapStars.garden = 3;
+  await assertSucceeds(
+    setDoc(target, cloudProfile({ ...upgraded, updatedAt: serverTimestamp() })),
+  );
+  await assertFails(setDoc(target, legacy));
+  for (const mutate of [
+    (p) => (p.towerXP.groveSpent = 1),
+    (p) => (p.unlockedUpgrades.grove = [1, 4, 1]),
+    (p) => (p.mapStars.garden = 4),
+    (p) => (p.towerXP.groveEarned = "99"),
+    (p) => delete p.towerXP.groveSpent,
+  ]) {
+    const data = payload();
+    mutate(data);
+    await assertFails(setDoc(ref(db, "bad-grove"), data));
+    await assertFails(setDoc(target, data));
+  }
 });

@@ -1,8 +1,8 @@
 rules_version = '2';
-// Parent-owned profiles: users/{uid}/profiles/{profileId}, schema 1.
+// Parent-owned profiles: users/{uid}/profiles/{profileId}, schemas 1 (v3) and 2 (Grove update).
 // No parent document, nested collection, public read or user-assigned role.
 // nickname: 1..32 characters; avatar: predefined fantasy ID; crowns: bounded int.
-// towerXP: ten class Earned/Spent integer fields; unlockedUpgrades: five 3-tier lists.
+// towerXP: ten/twelve class Earned/Spent integer fields; unlockedUpgrades: five/six 3-tier lists.
 // completedMaps/mapStars/achievements: fixed known IDs; settings: two booleans.
 // statistics: bounded counters/revision and bounded delimiter-encoded reward IDs.
 // updatedAt must be a server timestamp on every create AND update.
@@ -10,20 +10,37 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function owner(uid) { return request.auth != null && request.auth.uid == uid; }
     function number(n) { return n is int && n >= 0 && n <= 1000000000; }
-    function xp(e,s) { return e is int && s is int && s >= 0 && s <= e && e <= 1000000000; }
-    function allXP(x) {
-      return x is map && x.size() == 10 && x.keys().hasOnly(['archerEarned','archerSpent','cannonEarned','cannonSpent','frostEarned','frostSpent','fireEarned','fireSpent','lightningEarned','lightningSpent'])
-        && xp(x.archerEarned,x.archerSpent) && xp(x.cannonEarned,x.cannonSpent)
-        && xp(x.frostEarned,x.frostSpent) && xp(x.fireEarned,x.fireSpent) && xp(x.lightningEarned,x.lightningSpent);
+    // Validate flat fields directly. Scalar helper arguments expand the same
+    // field lookup repeatedly and exceeded the 1000-expression rule budget.
+    function allXP(x,v) {
+      return x is map && x.size() == (v == 1 ? 10 : 12)
+        && (x.archerEarned is int && x.archerSpent is int && x.archerSpent >= 0 && x.archerSpent <= x.archerEarned && x.archerEarned <= 1000000000)
+        && (x.cannonEarned is int && x.cannonSpent is int && x.cannonSpent >= 0 && x.cannonSpent <= x.cannonEarned && x.cannonEarned <= 1000000000)
+        && (x.frostEarned is int && x.frostSpent is int && x.frostSpent >= 0 && x.frostSpent <= x.frostEarned && x.frostEarned <= 1000000000)
+        && (x.fireEarned is int && x.fireSpent is int && x.fireSpent >= 0 && x.fireSpent <= x.fireEarned && x.fireEarned <= 1000000000)
+        && (x.lightningEarned is int && x.lightningSpent is int && x.lightningSpent >= 0 && x.lightningSpent <= x.lightningEarned && x.lightningEarned <= 1000000000)
+        && (v == 1 || (x.groveEarned is int && x.groveSpent is int && x.groveSpent >= 0 && x.groveSpent <= x.groveEarned && x.groveEarned <= 1000000000));
     }
     function paths(x) { return x is list && x.size() == 3 && x[0] is int && x[1] is int && x[2] is int && x.hasOnly([1,2,3]); }
-    function five(m) { return m is map && m.size() == 5 && m.keys().hasOnly(['archer','cannon','frost','fire','lightning']); }
-    function stars(m) { return m is map && m.keys().hasOnly(['emerald','amber','moon']) && (!('emerald' in m) || (number(m.emerald) && m.emerald <= 3)) && (!('amber' in m) || (number(m.amber) && m.amber <= 3)) && (!('moon' in m) || (number(m.moon) && m.moon <= 3)); }
-    function stats(s) { return s is map && s.size() == 7 && s.keys().hasOnly(['revision','ledger','wins','waves','damage','armor','kills']) && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
+    function classes(m,v) { return m is map && m.size() == (v == 1 ? 5 : 6); }
+    // Known optional star keys are enforced against completedMaps below.
+    // One bounded value-set check replaces four repeated scalar range calls;
+    // explicit per-key integer checks still reject doubles such as 1.0.
+    function stars(m) {
+      return m is map && m.values().hasOnly([0,1,2,3])
+        && (!('emerald' in m) || m.emerald is int)
+        && (!('amber' in m) || m.amber is int)
+        && (!('moon' in m) || m.moon is int)
+        && (!('garden' in m) || m.garden is int);
+    }
+    function nickname(n) { return n is string && n.size() >= 1 && n.size() <= 32; }
+    function stats(s) { return s is map && s.size() == 7 && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills) && s.ledger is string && s.ledger.size() <= 194000 && s.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$'); }
     function validProfile() {
       let d=request.resource.data;
-      let fields=['schemaVersion','nickname','avatar','crowns','towerXP','unlockedTowers','unlockedUpgrades','completedMaps','mapStars','achievements','statistics','settings','updatedAt'];
-      // Allowed keys + exact size are equivalent to requiring every field.
+      let v=d.schemaVersion;
+      // Exact map sizes + reads/type checks of EVERY named required field
+      // enforce the complete allowlist without re-enumerating it. A missing
+      // required lookup denies the write, including same-size replacement attacks.
       // Cache nested maps to stay within Firestore's 1000-expression budget.
       let x=d.towerXP;
       let u=d.unlockedUpgrades;
@@ -33,24 +50,29 @@ service cloud.firestore {
       let achievements=d.achievements;
       let statistics=d.statistics;
       let settings=d.settings;
-      return d.size() == 13 && d.keys().hasOnly(fields)
-        && d.schemaVersion == 1 && d.schemaVersion is int
-        && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 32
+      return d.size() == 13
+        && v in [1,2] && v is int
+        && nickname(d.nickname)
         && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn']
         && number(d.crowns)
-        && allXP(x)
-        && five(u) && paths(u.archer) && paths(u.cannon) && paths(u.frost) && paths(u.fire) && paths(u.lightning)
-        && towers is list && towers.size() <= 5 && towers.hasAll(['archer','cannon','frost']) && towers.hasOnly(['archer','cannon','frost','fire','lightning']) && towers.toSet().size() == towers.size()
-        && maps is list && maps.size() <= 3 && maps.hasOnly(['emerald','amber','moon']) && maps.toSet().size() == maps.size()
+        && allXP(x,v)
+        && classes(u,v) && paths(u.archer) && paths(u.cannon) && paths(u.frost) && paths(u.fire) && paths(u.lightning) && (v == 1 || paths(u.grove))
+        && towers is list && towers.size() <= 6 && towers.hasAll(['archer','cannon','frost']) && towers.hasOnly(['archer','cannon','frost','fire','lightning','grove']) && (v == 2 || !towers.hasAny(['grove'])) && towers.toSet().size() == towers.size()
+        && maps is list && maps.size() <= 4 && maps.hasOnly(['emerald','amber','moon','garden']) && (v == 2 || !maps.hasAny(['garden'])) && maps.toSet().size() == maps.size()
         && stars(mapStars) && mapStars.keys().hasOnly(maps)
         && achievements is list && achievements.size() <= 3 && achievements.hasOnly(['first-clear','three-kingdoms','evolution']) && achievements.toSet().size() == achievements.size()
         && stats(statistics)
-        && settings is map && settings.size() == 2 && settings.keys().hasOnly(['sound','reducedEffects']) && settings.sound is bool && settings.reducedEffects is bool
+        && settings is map && settings.size() == 2 && settings.sound is bool && settings.reducedEffects is bool
         && d.updatedAt is timestamp && d.updatedAt == request.time;
     }
     match /users/{uid}/profiles/{profileId} {
       allow get, list: if owner(uid);
-      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$') && validProfile();
+      // Keep one validator for both methods: Firestore may evaluate both while
+      // resolving writes. Never duplicate the complete schema evaluation.
+      // On create resource is null; old cached clients cannot downgrade updates.
+      allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$')
+        && (resource == null || request.resource.data.schemaVersion >= resource.data.schemaVersion)
+        && validProfile();
       allow delete: if owner(uid);
     }
     match /{document=**} { allow read, write: if false; }

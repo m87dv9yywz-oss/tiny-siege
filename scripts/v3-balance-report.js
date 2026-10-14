@@ -109,6 +109,36 @@ for (const strategy of ["mixed", "physical", "control"]) {
         unlock(t, path, tier);
     }
 }
+// The new tower is purchased with previously earned Crowns. Its higher paths
+// unlock only after meaningful participation in further successful garden runs.
+profile = applyOperation(profile, {
+  id: "unlockgrove",
+  type: "tower",
+  tower: "grove",
+});
+for (let path = 0; path < 3; path++) {
+  const roster = [
+    ["grove", path],
+    ["archer", 0],
+    ["cannon", 0],
+    ["frost", 0],
+    ["grove", path],
+    ["cannon", 1],
+    ["archer", 1],
+    ["grove", path],
+    ["fire", 0],
+    ["cannon", 0],
+    ["archer", 0],
+    ["frost", 1],
+  ];
+  run("garden", roster, `Garden: earned Grove path ${path}, introductory run`);
+  unlock("grove", path, 2);
+  run("garden", roster, `Garden: Grove path ${path}, earned Tier 2`);
+  if (profile.towerXP.grove.earned - profile.towerXP.grove.spent < 500)
+    run("garden", roster, `Garden: Grove path ${path}, saving XP`);
+  unlock("grove", path, 3);
+  run("garden", roster, `Garden: Grove path ${path}, earned ultimate`);
+}
 writeFileSync(
   "docs/v3-balance-results.json",
   JSON.stringify(report, null, 2) + "\n",

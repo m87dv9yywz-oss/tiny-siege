@@ -190,7 +190,7 @@ test("rotation retains the campaign and accurately maps touch coordinates", asyn
   expect(Math.abs(t.x - 342)).toBeLessThan(1);
   expect(Math.abs(t.y - 263)).toBeLessThan(1);
 });
-test("all fifteen ultimate silhouettes and a busy magical battlefield render with bounded effects", async ({
+test("all eighteen ultimate silhouettes and a busy magical battlefield render with bounded effects", async ({
   page,
 }) => {
   test.setTimeout(60000);
@@ -199,7 +199,7 @@ test("all fifteen ultimate silhouettes and a busy magical battlefield render wit
   await open(page);
   const art = await page.evaluate(async () => {
     const { model: g, ui } = window.__tinySiege,
-      types = ["archer", "cannon", "frost", "fire", "lightning"],
+      types = ["archer", "cannon", "frost", "fire", "lightning", "grove"],
       art = [];
     g.gold = 100000;
     for (const type of types)
@@ -228,7 +228,7 @@ test("all fifteen ultimate silhouettes and a busy magical battlefield render wit
     for (const e of g.enemies) Object.assign(e, path.onPath(e.progress));
     return art;
   });
-  expect(new Set(art.map((a) => a.name)).size).toBe(15);
+  expect(new Set(art.map((a) => a.name)).size).toBe(18);
   await page.waitForTimeout(1000);
   await page.screenshot({ path: "test-results/evolution-combat.png" });
   const samples = await page.evaluate(async () => {
@@ -260,7 +260,7 @@ test("all fifteen ultimate silhouettes and a busy magical battlefield render wit
     const sheet = document.createElement("div");
     sheet.id = "art-sheet";
     sheet.style =
-      "position:fixed;inset:0;z-index:20;background:#213f3c;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);gap:8px;padding:15px";
+      "position:fixed;inset:0;z-index:20;background:#213f3c;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);gap:8px;padding:15px";
     sheet.innerHTML = art
       .map(
         (a) =>
@@ -269,7 +269,7 @@ test("all fifteen ultimate silhouettes and a busy magical battlefield render wit
       .join("");
     document.body.append(sheet);
   }, art);
-  await page.screenshot({ path: "test-results/fifteen-evolutions.png" });
+  await page.screenshot({ path: "test-results/eighteen-evolutions.png" });
   expect(errors).toEqual([]);
   console.log(
     "Headless Canvas stress sample:",

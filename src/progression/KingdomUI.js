@@ -1,3 +1,4 @@
+import { guideHTML } from "../upgradeGuide.js";
 import { CAMPAIGNS } from "../data/waves.js";
 import { TOWERS, towerName } from "../data/towers.js";
 import {
@@ -48,7 +49,15 @@ export class KingdomUI {
   }
   portrait(t) {
     const path = t.paths.findIndex((n) => n >= 2);
-    return `${import.meta.env.BASE_URL}portraits/${t.type}-${path < 0 ? "base" : path}.svg`;
+    const variant =
+      path < 0
+        ? t.paths.some(Boolean)
+          ? `tier1-${t.paths.findIndex(Boolean)}`
+          : "base"
+        : t.paths[path] === 2
+          ? `tier2-${path}`
+          : path;
+    return `${import.meta.env.BASE_URL}portraits/${t.type}-${variant}.svg`;
   }
   visibleProfiles() {
     return Object.entries(this.store.data.profiles).filter(
@@ -61,31 +70,20 @@ export class KingdomUI {
       entry && (!entry.owner || entry.owner === this.cloud?.uid)
         ? entry.profile
         : null;
+    const maps = Object.values(CAMPAIGNS).filter((m) => m.id !== "classic");
+    const recommended =
+      maps.find((m) => !p?.completedMaps.includes(m.id)) || maps[0];
     this.ui
-      .modal(`<img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="Tiny Siege dragon castle"><div class="eyebrow">THE KINGDOM ADVENTURE</div><h1 id="modal-title">Tiny <span>Siege</span></h1><p>Choose your hero. Grow a little kingdom.</p>
+      .modal(`<div class="home-heading"><img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="Tiny Siege dragon castle"><div><div class="eyebrow">YOUR LITTLE KINGDOM</div><h1 id="modal-title">Tiny <span>Siege</span></h1></div></div>
       <div class="profile-picker">${this.visibleProfiles()
         .map(
           ([id, e]) =>
-            `<button data-profile="${escape(id)}" class="profile-choice ${this.store.data.selected === id ? "chosen" : ""}">${AVATAR_ART[e.profile.avatar]} <b>${escape(e.profile.nickname)}</b><small>${e.owner ? "Cloud" : "Guest"} · ♛ ${e.profile.crowns}</small></button>`,
+            `<button data-profile="${escape(id)}" class="profile-choice ${this.store.data.selected === id ? "chosen" : ""}">${AVATAR_ART[e.profile.avatar]} <b>${escape(e.profile.nickname)}</b><small>♛ ${e.profile.crowns} · ${e.owner ? "Cloud" : "Guest"}</small></button>`,
         )
         .join("")}</div>
-      <button id="new-profile" class="secondary">＋ Create profile</button>${
-        p
-          ? `<button id="manage-profile" class="secondary">Manage ${escape(p.nickname)}</button><div class="map-picker">${Object.values(
-              CAMPAIGNS,
-            )
-              .filter((m) => m.id !== "classic")
-              .map(
-                (m) =>
-                  `<button data-map="${m.id}" class="map-choice biome-${m.biome}"><b>${m.name}</b><small>${m.waves.length} waves · ${p.mapStars[m.id] ? "★".repeat(p.mapStars[m.id]) : `First clear ♛ ${m.first}`}</small><span>${m.description}</span></button>`,
-              )
-              .join(
-                "",
-              )}</div><button id="collection" class="secondary">♛ Kingdom & tower collection</button>`
-          : "<p>Use a nickname and a fantasy avatar. No child’s email or real name needed.</p>"
-      }
-      <button id="play" class="primary">PLAY CAMPAIGN · CLASSIC →</button><small class="classic-note">The full v2 campaign, with all five towers and upgrades. No progression rewards.</small>
-      <button id="parent-cloud" class="secondary">${this.cloud?.uid ? "Parent cloud saves" : "Parent: Google Sign-In (optional)"}</button><button id="menu-help" class="secondary">How to play</button><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest play saves on this device.")}</p>`);
+      ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m, i) => `<button data-map="${m.id}" class="map-choice biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}"><span class="map-number">${i + 1}</span><div><b>${m.name.replace(" · Beginner", "")}</b><small>${["Beginner", "Intermediate", "Advanced", "Intermediate"][i]} · ${m.waves.length} waves</small></div><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span></button>`).join("")}</div><button id="collection" class="primary">Kingdom · Towers & upgrades</button>` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
+      <div class="home-actions"><button id="new-profile" class="secondary">＋ New hero</button>${p ? `<button id="manage-profile" class="secondary">Manage hero</button>` : ""}<button id="play" class="secondary" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button><button id="parent-cloud" class="secondary">${this.cloud?.uid ? "Cloud saves" : "Parent sign-in"}</button><button id="menu-help" class="secondary">How to play</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
+    $("modal").querySelector(".modal-card").classList.add("home-card");
     document.querySelectorAll("[data-profile]").forEach(
       (b) =>
         (b.onclick = () =>
@@ -271,53 +269,89 @@ export class KingdomUI {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  collection() {
+  collection(type = this.collectionType || "archer", state = null) {
+    this.collectionType = type;
     if (!this.store.current) {
       this.ui.menu();
       return;
     }
     const p = this.store.current;
-    this.wasPlaying = !this.ui.inMenu;
-    this.wasPaused = this.model.paused;
+    state ||= { playing: !this.ui.inMenu, paused: this.model.paused };
+    this.wasPlaying = state.playing;
+    this.wasPaused = state.paused;
     this.model.paused = true;
     this.ui.modal(
-      `<div class="eyebrow">${escape(p.nickname)}’S KINGDOM</div><h1 id="modal-title">♛ ${p.crowns} Crowns</h1><p>Permanent unlocks. Battle upgrades still cost gold.</p><div class="collection-grid">${TYPES.map(
-        (type) => {
+      `<div class="eyebrow">${escape(p.nickname)}’S KINGDOM</div><h1 id="modal-title">♛ ${p.crowns} Crowns</h1><p>Permanent unlocks. Battle upgrades still cost gold.</p><div class="collection-tabs" role="group" aria-label="Tower collection">${TYPES.map((t) => `<button data-collection="${t}" aria-pressed="${t === type}" style="--tower-color:${TOWERS[t].hex}"><img src="${this.portrait({ type: t, paths: [0, 0, 0] })}" alt=""><span>${TOWERS[t].name}</span></button>`).join("")}</div><div class="collection-grid">${[
+        type,
+      ]
+        .map((type) => {
           const def = TOWERS[type],
             xp = p.towerXP[type],
             owned = p.unlockedTowers.includes(type);
-          return `<section><img class="collection-art" src="${this.portrait({ type, paths: [0, 0, 0] })}" alt="${def.name}"><h2>${def.name}</h2>${owned ? `<small>${xp.earned - xp.spent} XP available · ${xp.earned} earned · ${xp.spent} spent</small>` : `<button data-unlock-tower="${type}" ${p.crowns < UNLOCK_COSTS[type] ? "disabled" : ""}>Unlock · ♛ ${UNLOCK_COSTS[type]}</button>`}${def.paths
+          return `<section><img class="collection-art" src="${this.portrait({ type, paths: [0, 0, 0] })}" alt="${def.name}"><h2>${def.name}</h2><button data-collection-tree="${type}" class="tree-link">Explore full tree</button>${owned ? `<small>${xp.earned - xp.spent} XP available · ${xp.earned} earned · ${xp.spent} spent</small>` : `<button data-unlock-tower="${type}" ${p.crowns < UNLOCK_COSTS[type] ? "disabled" : ""}>Unlock · ♛ ${UNLOCK_COSTS[type]}</button>`}${def.paths
             .map((path, i) => {
               const tier = p.unlockedUpgrades[type][i],
                 next = tier + 1;
-              return `<div class="collection-path"><b>${path.name}</b><small>${path.tiers[2].description}</small><span>Tier ${tier} permanently unlocked</span>${tier < 3 ? `<button data-unlock-path="${type}:${i}" ${!owned || xp.earned - xp.spent < XP_COSTS[next] ? "disabled" : ""}>Unlock Tier ${next} · ${XP_COSTS[next]} XP</button>` : "<strong>Evolution unlocked ★</strong>"}</div>`;
+              return `<div class="collection-path"><b>${path.name}</b><span>Tier ${tier} permanently unlocked</span>${tier < 3 ? `<button data-unlock-path="${type}:${i}" ${!owned || xp.earned - xp.spent < XP_COSTS[next] ? "disabled" : ""}>Unlock Tier ${next} · ${XP_COSTS[next]} XP</button>` : "<strong>Evolution unlocked ★</strong>"}</div>`;
             })
             .join("")}</section>`;
-        },
-      ).join(
-        "",
-      )}</div><button id="back" class="primary">${this.wasPlaying ? "Return to battle" : "Back to maps"}</button><p id="save-message" role="status"></p>`,
+        })
+        .join(
+          "",
+        )}</div><button id="back" class="primary">${this.wasPlaying ? "Return to battle" : "Back to maps"}</button><p id="save-message" role="status"></p>`,
+    );
+    $("modal").querySelector(".modal-card").classList.add("collection-card");
+    document.querySelectorAll("[data-collection]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          this.collection(b.dataset.collection, state);
+        }),
+    );
+    document.querySelectorAll("[data-collection-tree]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          const draw = (p) => {
+            this.ui.modal(
+              guideHTML(
+                { type, paths: [0, 0, 0] },
+                p,
+                this.portrait({
+                  type,
+                  paths: [0, 0, 0].map((n, i) => (i === p ? 3 : 0)),
+                }),
+              ),
+            );
+            $("modal").querySelector(".modal-card").classList.add("tree-card");
+            document
+              .querySelectorAll("[data-guide-path]")
+              .forEach(
+                (b) => (b.onclick = () => draw(Number(b.dataset.guidePath))),
+              );
+            $("close-guide").onclick = () => {
+              this.collection(type, state);
+            };
+            this.ui.overlayClose = $("close-guide").onclick;
+          };
+          draw(0);
+        }),
     );
     const resume = () => {
-      this.model.paused = this.wasPaused;
-      if (this.wasPlaying) {
+      this.model.paused = state.paused;
+      if (state.playing) {
         $("modal").hidden = true;
         $("app").inert = false;
         this.ui.refresh(true);
       } else this.menu();
     };
     $("back").onclick = resume;
+    this.ui.overlayClose = resume;
     const purchase = (op) =>
       this.safe(() => {
         this.store.commit({ id: crypto.randomUUID(), ...op });
         this.model.profile =
           this.model.campaign.id === "classic" ? null : this.store.current;
         this.cloud?.sync();
-        const wasPlaying = this.wasPlaying,
-          wasPaused = this.wasPaused;
-        this.collection();
-        this.wasPlaying = wasPlaying;
-        this.wasPaused = wasPaused;
+        this.collection(type, state);
       });
     document
       .querySelectorAll("[data-unlock-tower]")

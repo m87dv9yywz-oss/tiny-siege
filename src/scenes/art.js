@@ -12,6 +12,7 @@ export function textures(scene) {
   const g = scene.make.graphics({ x: 0, y: 0 }, false);
   for (const [type, def] of Object.entries(TOWERS))
     for (let level = 1; level <= 3; level++) {
+      if (type === "grove") continue;
       g.clear();
       g.fillStyle(0x1c3e32, 0.28);
       g.fillEllipse(42, 68, 65, 19);
@@ -337,6 +338,7 @@ export function textures(scene) {
   g.generateTexture("spark", 8, 8);
   evolutionArt(g);
   specialEnemies(g);
+  groveArt(g);
   g.destroy();
 }
 export function battlefield(
@@ -366,7 +368,17 @@ export function battlefield(
             0x619558: 0x82959b,
             0x89b46c: 0xb9cbd0,
           }
-        : {};
+        : biome === "garden"
+          ? {
+              0x76a77a: 0x9dbb72,
+              0x6b9c70: 0x8baa68,
+              0x8ab787: 0xc6d788,
+              0x355e45: 0x4b7241,
+              0x477d52: 0x5e964d,
+              0x619558: 0x8eb65c,
+              0x89b46c: 0xe4d477,
+            }
+          : {};
   const childrenBefore = new Set(scene.children.list);
   const g = scene.add.graphics().setDepth(0);
   g.fillStyle(palette[0x76a77a] || 0x76a77a);
@@ -390,6 +402,22 @@ export function battlefield(
       y = random() * 640;
     g.lineStyle(1, i % 2 ? 0x4e8a59 : 0xa6c58d, 0.35);
     g.lineBetween(x, y, x + 2, y - 3);
+  }
+  if (biome === "garden") {
+    for (let i = 0; i < 35; i++) {
+      const x = 35 + random() * 890,
+        y = 40 + random() * 540;
+      if (distanceToPath(x, y) < 65) continue;
+      g.lineStyle(3, 0x6b8944);
+      g.lineBetween(x, y, x, y + 15);
+      g.fillStyle(0xffdf76);
+      for (let n = 0; n < 7; n++) {
+        const a = (n * Math.PI * 2) / 7;
+        g.fillCircle(x + Math.cos(a) * 6, y + Math.sin(a) * 6, 4);
+      }
+      g.fillStyle(0x916e36);
+      g.fillCircle(x, y, 4);
+    }
   }
   const line = (width, color, offset = 0) => {
     g.lineStyle(width, color, 1);
@@ -526,7 +554,13 @@ export function battlefield(
       0x72b4c0,
     );
   });
-  // Entrance banner and the kingdom's gate.
+  // Entrance and home follow each map's shared spline.
+  const entranceOffset = trail.onPath ? trail.onPath(65).y - 170 : 0;
+  const homeOffset = trail.onPath
+    ? trail.onPath(trail.PATH_LENGTH - 65).y - 270
+    : 0;
+  g.save();
+  g.translateCanvas(0, entranceOffset);
   g.fillStyle(palette[0x715f45] || 0x715f45);
   g.fillRect(33, 112, 5, 45);
   polygon(
@@ -542,6 +576,9 @@ export function battlefield(
   );
   g.fillStyle(palette[0xede0ab] || 0xede0ab);
   g.fillCircle(49, 122, 3);
+  g.restore();
+  g.save();
+  g.translateCanvas(0, homeOffset);
   g.fillStyle(palette[0x647a72] || 0x647a72);
   g.fillRoundedRect(910, 209, 35, 33, 4);
   g.fillStyle(palette[0xa1afa0] || 0xa1afa0);
@@ -572,6 +609,7 @@ export function battlefield(
   // tessellated and redrawn on the GPU every frame.
   if (scene.textures.exists("emerald-trail"))
     scene.textures.remove("emerald-trail");
+  g.restore();
   g.generateTexture("emerald-trail", 960, 640);
   scene.add.image(0, 0, "emerald-trail").setOrigin(0).setDepth(0);
   g.destroy();
@@ -584,7 +622,7 @@ export function battlefield(
     })
     .setDepth(1);
   scene.add
-    .text(912, 299, "HOME", {
+    .text(912, 299 + homeOffset, "HOME", {
       fontFamily: "sans-serif",
       fontSize: "10px",
       color: "#486443",
@@ -669,6 +707,7 @@ function evolutionArt(g) {
   for (const [type, def] of Object.entries(TOWERS))
     for (let p = 0; p < 3; p++)
       for (const tier of [2, 3]) {
+        if (type === "grove") continue;
         g.clear();
         const ultimate = tier === 3;
         stone(ultimate ? 68 : 52);
@@ -1098,4 +1137,89 @@ function specialEnemies(g) {
       g.fillCircle(x + 5, y - 4, 1);
       g.generateTexture(`enemy-${type}-${state}`, 80, 85);
     }
+}
+
+function groveArt(g) {
+  const draw = (path, tier, key) => {
+    g.clear();
+    const ultimate = tier === 3;
+    g.fillStyle(0x315444, 0.25);
+    g.fillEllipse(48, 88, 78, 17);
+    g.fillStyle(0x69805b);
+    g.fillRoundedRect(17, 68, 62, 20, 7);
+    g.fillStyle(0xc5c697);
+    g.fillRoundedRect(17, 66, 62, 10, 5);
+    g.lineStyle(ultimate ? 14 : 10, 0x805733);
+    g.lineBetween(48, 72, 48, 30);
+    g.lineStyle(3, 0xc09759);
+    g.lineBetween(45, 67, 43, 35);
+    if (path === 0) {
+      g.lineStyle(ultimate ? 9 : 6, 0x537347);
+      g.lineBetween(48, 52, 15, 30);
+      g.lineBetween(48, 52, 81, 30);
+      g.fillStyle(0xe68598);
+      for (const x of [15, 48, 81]) {
+        g.fillCircle(x, x === 48 ? 22 : 30, ultimate ? 10 : 7);
+        g.fillStyle(0xf7bec2);
+        g.fillCircle(x - 2, x === 48 ? 19 : 27, 4);
+        g.fillStyle(0xe68598);
+      }
+      g.fillStyle(0xf7dfac);
+      g.fillTriangle(48, 3, 41, 22, 55, 22);
+      if (ultimate) {
+        g.lineStyle(4, 0xabbb82);
+        g.lineBetween(14, 62, 48, 39);
+        g.lineBetween(82, 62, 48, 39);
+        g.fillStyle(0xe86986);
+        g.fillTriangle(13, 22, 8, 37, 21, 37);
+        g.fillTriangle(83, 22, 75, 37, 90, 37);
+      }
+    } else if (path === 1) {
+      g.fillStyle(0x649b54);
+      g.fillEllipse(48, 30, ultimate ? 79 : 60, 44);
+      g.fillStyle(0x91c46c);
+      g.fillEllipse(36, 23, 45, 31);
+      g.fillEllipse(68, 28, 36, 30);
+      g.fillStyle(0xf5d36d);
+      for (const [x, y] of [
+        [26, 30],
+        [48, 18],
+        [70, 30],
+      ])
+        g.fillEllipse(x, y, ultimate ? 17 : 12, 20);
+      g.lineStyle(3, 0xffefaa);
+      g.strokeCircle(48, 18, ultimate ? 9 : 6);
+      if (ultimate) {
+        g.fillStyle(0x9b7141);
+        g.fillRoundedRect(27, 47, 43, 16, 5);
+        g.fillStyle(0xffe188);
+        g.fillEllipse(48, 51, 26, 12);
+      }
+    } else {
+      g.lineStyle(7, 0x7a5838);
+      g.lineBetween(47, 61, 18, 40);
+      g.lineBetween(50, 58, 78, 36);
+      g.fillStyle(0x498864);
+      g.fillEllipse(48, 22, ultimate ? 75 : 56, 35);
+      g.fillStyle(0x79bc82);
+      g.fillEllipse(33, 16, 43, 27);
+      g.fillStyle(0xd2f3b0);
+      g.fillEllipse(40, 45, 5, 8);
+      g.fillEllipse(57, 45, 5, 8);
+      g.lineStyle(2, 0x365547);
+      g.lineBetween(42, 56, 55, 56);
+      if (ultimate) {
+        g.lineStyle(5, 0xa5c98d);
+        for (const x of [14, 27, 68, 82]) g.lineBetween(48, 73, x, 85);
+        g.fillStyle(0xbeefac);
+        g.fillCircle(17, 30, 5);
+        g.fillCircle(78, 25, 5);
+      }
+    }
+    g.generateTexture(key, 96, 100);
+  };
+  for (let tier = 1; tier <= 3; tier++) draw(2, tier, `tower-grove-${tier}`);
+  for (let path = 0; path < 3; path++)
+    for (const tier of [2, 3])
+      draw(path, tier, `evolution-grove-${path}-${tier}`);
 }

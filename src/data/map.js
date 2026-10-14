@@ -44,7 +44,7 @@ export function createTrail(points = knots) {
       PATH.push({ x: coordinate(0), y: coordinate(1) });
     }
   }
-  PATH.push({ x: 990, y: 270 });
+  PATH.push({ x: points.at(-1)[0], y: points.at(-1)[1] });
   const SEGMENTS = PATH.slice(1).map((b, i) => ({
     a: PATH[i],
     b,
@@ -89,6 +89,7 @@ export const TRAILS = {
   emerald: createTrail(),
   amber: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 140) * 32])),
   moon: createTrail(knots.map(([x, y]) => [x, 640 - y])),
+  garden: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 185) * 48])),
 };
 export const { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath } =
   TRAILS.classic;

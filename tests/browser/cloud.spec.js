@@ -99,6 +99,49 @@ test("Google emulator credential, guest migration, two browser sessions, offline
   expect(
     await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
   ).toBe(25);
+
+  await p.evaluate(async () => {
+    const { profiles, kingdom } = window.__tinySiege;
+    profiles.commit({
+      id: "garden-cloud",
+      type: "reward",
+      map: "garden",
+      win: true,
+      stars: 3,
+      xp: { grove: 350 },
+      stats: {},
+    });
+    profiles.commit({ id: "grove-cloud", type: "tower", tower: "grove" });
+    profiles.commit({
+      id: "grove-path-cloud",
+      type: "path",
+      tower: "grove",
+      path: 2,
+      tier: 2,
+    });
+    await kingdom.cloud.sync();
+  });
+  await q.evaluate(() => window.__tinySiege.kingdom.cloud.refresh());
+  expect(
+    await q.evaluate(() => ({
+      crowns: window.__tinySiege.profiles.current.crowns,
+      grove: window.__tinySiege.profiles.current.towerXP.grove,
+      stars: window.__tinySiege.profiles.current.mapStars.garden,
+    })),
+  ).toEqual({ crowns: 75, grove: { earned: 350, spent: 180 }, stars: 3 });
+  await q.evaluate(async () => {
+    const { profiles, kingdom } = window.__tinySiege;
+    profiles.commit({
+      id: "grove-second-client",
+      type: "tower",
+      tower: "grove",
+    });
+    await kingdom.cloud.sync();
+  });
+  await p.evaluate(() => window.__tinySiege.kingdom.cloud.refresh());
+  expect(
+    await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
+  ).toBe(75);
   await p.locator("#new-profile").click();
   await p.locator("#nickname").fill("Cloud Fox");
   await expect(p.locator("#profile-cloud")).toBeChecked();
