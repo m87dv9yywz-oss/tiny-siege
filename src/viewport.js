@@ -19,14 +19,15 @@ export function fitBattlefield(ui) {
     const portrait = matchMedia("(max-width:850px) and (orientation:portrait)").matches;
     const style = getComputedStyle(column);
     const border = parseFloat(getComputedStyle(frame).borderLeftWidth) * 2;
-    const chrome = [...column.children].filter(e => e !== frame &&
+    const flow = [...column.children].filter(e => e !== frame &&
       getComputedStyle(e).display !== "none" &&
-      !["absolute", "fixed"].includes(getComputedStyle(e).position))
-      .reduce((n, e) => n + e.getBoundingClientRect().height, 0);
+      !["absolute", "fixed"].includes(getComputedStyle(e).position));
+    const chrome = flow.reduce((n, e) => n + e.getBoundingClientRect().height, 0);
+    const gaps = (parseFloat(style.rowGap) || 0) * flow.length;
     const capacity = portrait
       ? document.querySelector("main").clientHeight - 162
       : column.clientHeight;
-    const available = Math.max(80, capacity - chrome - (portrait ? 20 : 0));
+    const available = Math.max(80, capacity - chrome - gaps - (portrait ? 5 : 0));
     const maximumWidth = Math.min(column.clientWidth, (available - border) * 1.5 + border);
     const innerWidth = Math.max(3, Math.floor((maximumWidth - border) / 3) * 3);
     const width = innerWidth + border, height = innerWidth / 1.5 + border;

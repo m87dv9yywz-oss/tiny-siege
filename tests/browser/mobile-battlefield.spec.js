@@ -57,6 +57,10 @@ test('large landscape map, opposite panels, paid artwork upgrades and live wave 
 for(const [width,height]of[[932,430],[740,360],[667,375],[390,844],[375,812],[768,1024],[1024,768],[1280,720],[1440,900]])
  test(`responsive board and usable shop/control targets ${width}×${height}`,async({page})=>{
    await ready(page,width,height);
+   if(await page.locator('.map-footer').isVisible()) {
+     const footer=await page.locator('.map-footer').boundingBox();
+     expect(footer.y+footer.height).toBeLessThanOrEqual(height);
+   }
    const r=await page.locator('canvas').boundingBox();
    expect(r.width/r.height).toBeCloseTo(1.5,2);
    expect(r.x).toBeGreaterThanOrEqual(0);expect(r.y).toBeGreaterThanOrEqual(0);
