@@ -60,6 +60,14 @@ jobs:
           path: |
             dist/
             docs/artwork/archer-prototype/
+      - name: Archive the mobile battlefield prototype for review (no deployment)
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/v5-mobile-battlefield-overhaul'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-battlefield-prototype-preview
+          path: |
+            dist/
+            docs/artwork/mobile-battlefield/
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:

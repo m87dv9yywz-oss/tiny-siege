@@ -84,7 +84,7 @@ export class UI {
           .composedPath()
           .some((node) =>
             node.matches?.(
-              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal, .battle-controls, .map-footer, .topbar",
+              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal, .battle-controls, .map-footer, .topbar, #hero-controls",
             ),
           )
       )
@@ -117,6 +117,13 @@ export class UI {
         : "♫ <span>Sound off</span>";
     };
     document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && $("battle-settings").open) {
+        e.preventDefault();
+        e.stopPropagation();
+        $("battle-settings").open = false;
+        $("battle-settings").querySelector("summary").focus();
+        return;
+      }
       if (
         e.key === "Escape" &&
         !$("modal").hidden &&
@@ -127,6 +134,10 @@ export class UI {
         if (this.overlayClose) this.overlayClose();
         else this.closeHelp();
       }
+    });
+    const settings = $("battle-settings");
+    document.addEventListener("pointerdown", (e) => {
+      if (settings.open && !settings.contains(e.target)) settings.open = false;
     });
     this.menu();
     this.refresh(true);
@@ -504,7 +515,7 @@ export class UI {
   help() {
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire, Lightning and Grove, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–6</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
+      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range and upgrades, or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire, Lightning and Grove, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–8</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
     );
     $("close-help").onclick = () => this.closeHelp();
   }
@@ -515,7 +526,7 @@ export class UI {
     else {
       $("modal").hidden = true;
       $("app").inert = false;
-      $("help-button").focus();
+      $("battle-settings").querySelector("summary").focus();
     }
     this.refresh(true);
   }

@@ -2638,3 +2638,198 @@ main:has(#selection-panel.open:not(.placing)) .map-frame {
     height: 22px;
   }
 }
+
+/* V5: overlay upgrades, stable board budget, and a compact settings drawer. */
+#battle-settings { position: relative; z-index: 30; }
+#battle-settings summary { list-style: none; cursor: pointer; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 4px; background: linear-gradient(#fff9df, #ebddb2); border: 2px solid #b8ac81; border-radius: 10px; padding: 6px 10px; font-size: 12px; }
+#battle-settings summary::-webkit-details-marker { display: none; }
+#battle-settings summary:focus-visible { outline: 3px solid #3275aa; }
+.settings-actions { position: absolute; top: 48px; right: 0; width: 172px; padding: 8px; display: grid; gap: 6px; border: 2px solid #b68d48; border-radius: 12px; background: #fff3cf; box-shadow: 0 5px 18px #244d4840; }
+.settings-actions button { min-height: 44px; }
+main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: minmax(0, 1fr) 132px; }
+.battle-column, main:has(#selection-panel.open:not(.placing)) .battle-column { grid-column: 1; }
+aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
+#selection-panel { left: 0; right: auto; top: 58px; bottom: 80px; width: 280px; z-index: 10; }
+#selection-panel[data-side="right"] { right: 142px; left: auto; }
+#selection-panel.open { animation: v5-panel-enter .16s ease-out; }
+@keyframes v5-panel-enter { from { opacity: .3; translate: 0 5px; } to { opacity: 1; translate: 0 0; } }
+#selection-panel.placing { top: auto; bottom: 80px; width: 220px; height: auto; padding: 8px; }
+#selection-panel.placing .empty-selection { display: none; }
+#selection-panel.placing .cancel-button { min-height: 44px; }
+
+@media (orientation: landscape) and (max-height: 600px) {
+  #app { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); gap: 0; }
+  main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: 124px minmax(0, 1fr) 124px; gap: 6px; height: 100%; }
+  .topbar { position: absolute; top: max(8px, env(safe-area-inset-top)); left: max(8px, env(safe-area-inset-left)); width: 124px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; z-index: 20; }
+  .brand, .topbar #sync-status { display: none; }
+  #kingdom-button { grid-column: 1/-1; min-height: 44px; padding: 4px; font-size: 11px; }
+  #leave-run, #battle-settings summary { min-height: 44px; font-size: 11px; padding: 4px; }
+  #battle-settings summary span { display: none; }
+  .settings-actions { left: 0; right: auto; }
+  .battle-column, main:has(#selection-panel.open:not(.placing)) .battle-column { grid-column: 2; height: 100%; justify-content: center; gap: 0; }
+  aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 3; grid-row: 1; padding: 4px; border-width: 2px; margin-bottom: 0; }
+  main:has(#hero-controls:not([hidden])) aside { margin-bottom: 98px; }
+  .hud { position: absolute; top: 108px; left: 0; width: 124px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 3px; }
+  .resource { gap: 3px; }
+  .resource > span { font-size: 17px; }
+  .resource b, .wave-counter b { font-size: 20px; }
+  .resource small, .wave-counter small, .remaining small { font-size: 8px; letter-spacing: 0; }
+  .wave-counter { margin-left: 0; }
+  .wave-counter em { font-size: 12px; }
+  .remaining { text-align: left; }
+  .remaining > span { font-size: 20px; }
+  .battle-controls { position: absolute; left: 0; bottom: 0; width: 124px; flex-direction: column; gap: 5px; margin: 0; }
+  .battle-controls > div { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .battle-controls .primary, .battle-controls .secondary { min-height: 44px; padding: 6px 3px; font-size: 12px; }
+  .battle-controls .secondary span { display: none; }
+  #start-wave { min-height: 48px; white-space: normal; }
+  #start-wave span { margin-left: 2px; }
+  .map-footer { position: absolute; left: 0; top: 218px; width: 124px; font-size: 10px; min-height: 0; }
+  .map-footer > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .map-frame { border-width: 3px; border-radius: 14px; }
+  .map-label { font-size: 8px; }
+  #tower-shop { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(44px, 1fr)); gap: 4px; }
+  .tower-card { padding: 2px; gap: 1px; min-height: 44px; }
+  .tower-icon, .tower-icon img { width: 42px; height: 38px; }
+  main:has(#hero-controls:not([hidden])) .tower-icon, main:has(#hero-controls:not([hidden])) .tower-icon img { height: 30px; }
+  .tower-card b { font-size: 9px; }
+  .tower-cost { font-size: 12px; }
+  #hero-controls { position: absolute; bottom: 0; right: 0; width: 124px; height: 94px; display: grid; grid-template-columns: 1fr; gap: 4px; }
+  #hero-icon { display: none; }
+  #hero-controls button { min-height: 44px; padding: 4px; font-size: 11px; }
+  #selection-panel { top: 0; bottom: 0; left: 130px; right: auto; width: 252px; padding: 5px; gap: 3px; border-radius: 13px; }
+  #selection-panel[data-side="right"] { left: auto; right: 130px; }
+  #selection-panel.open:not(.placing) { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 90px 44px minmax(0,1fr) 44px; }
+  #selection-panel .panel-title { position: absolute; top: 5px; left: 98px; right: 5px; height: 44px; }
+  #selection-panel .panel-title b { font-size: 13px; }
+  #close-panel { min-height: 44px; min-width: 44px; }
+  #selection-panel .tower-summary { grid-column: 1/-1; grid-row: 1; display: flex; height: 90px; min-height: 0; flex-direction: row; align-items: end; }
+  #selection-panel .tower-portrait { width: 90px; height: 90px; }
+  #selection-panel .stats { margin-bottom: 7px; }
+  #selection-panel .stats small { font-size: 8px; }
+  #selection-panel .stats b { font-size: 13px; }
+  #selection-panel .target-label { grid-column: 1; grid-row: 2; font-size: 10px; }
+  #selection-panel .target-label select { min-height: 44px; width: 78px; font-size: 11px; }
+  #selection-panel .tree-link { grid-column: 2; grid-row: 2; min-height: 44px; font-size: 11px; }
+  #selection-panel .properties { display: none; }
+  #selection-panel .upgrade-paths { grid-column: 1/-1; grid-row: 3; grid-template-rows: repeat(3,minmax(44px,1fr)); gap: 3px; }
+  #selection-panel .path { display: grid; grid-template-columns: 94px minmax(0,1fr); align-items: center; padding: 0; gap: 2px; border-width: 1px; }
+  #selection-panel .path-heading { flex-direction: column; gap: 0; }
+  #selection-panel .path-info { min-height: 44px; font-size: 10px; padding: 2px; width: 100%; }
+  #selection-panel .path-info span { flex-shrink: 1; }
+  #selection-panel .path-icon { width: 20px; height: 24px; }
+  #selection-panel .path-heading > span { position: absolute; pointer-events: none; transform: translateY(18px); }
+  #selection-panel .path-heading i { width: 9px; height: 4px; font-size: 0; }
+  #selection-panel .upgrade-button { min-height: 44px; height: 100%; font-size: 11px; padding: 4px; border-bottom-width: 2px; }
+  #selection-panel .sell-button { grid-column: 1/-1; grid-row: 4; min-height: 44px; font-size: 12px; }
+  #selection-panel.placing { left: auto; right: 134px; bottom: 8px; top: auto; width: 190px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: 108px minmax(0,1fr) 108px; }
+  .topbar, .hud, .battle-controls, .map-footer, #hero-controls { width: 108px; }
+  #selection-panel { left: 114px; width: 235px; }
+  #selection-panel[data-side="right"] { right: 114px; }
+  #selection-panel.open:not(.placing) { grid-template-rows: 66px 44px minmax(0,1fr) 44px; }
+  #selection-panel .tower-summary, #selection-panel .tower-portrait { height: 66px; }
+  .map-footer { display: none; }
+}
+@media (max-width: 850px) and (orientation: portrait) {
+  #app { gap: 6px; }
+  .topbar { min-height: 44px; }
+  #battle-settings summary { width: 44px; }
+  #battle-settings summary span { display: none; }
+  main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: 1fr; grid-template-rows: minmax(0,1fr) 124px; gap: 6px; }
+  .battle-column, main:has(#selection-panel.open:not(.placing)) .battle-column { grid-column: 1; grid-row: 1; height: 100%; gap: 5px; }
+  aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 1; grid-row: 2; }
+  #tower-shop { grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: repeat(2,minmax(44px,1fr)); gap: 4px; }
+  .tower-icon, .tower-icon img { width: 40px; height: 32px; }
+  .tower-card b { font-size: 10px; }
+  .tower-cost { font-size: 11px; }
+  .battle-controls { margin-top: auto; min-height: 44px; }
+  .battle-controls .primary, .battle-controls .secondary { min-height: 44px; font-size: 12px; }
+  .battle-controls .secondary { min-width: 44px; }
+  .map-footer { min-height: 24px; }
+  #selection-panel.open:not(.placing), #selection-panel[data-side="right"].open:not(.placing) { left: 0; right: auto; top: var(--sheet-top); bottom: auto; width: 100%; height: var(--sheet-height); max-height: var(--sheet-height); display: grid; grid-template-columns: 98px minmax(0,1fr); grid-template-rows: 44px minmax(0,1fr) 44px 44px; padding: 6px; gap: 3px; }
+  #selection-panel .panel-title { position: static; }
+  #selection-panel .tower-summary { height: auto; min-height: 0; }
+  #selection-panel .tower-portrait { height: 95px; }
+  #selection-panel .target-label select, #selection-panel .tree-link, #selection-panel .sell-button, #close-panel { min-height: 44px; }
+  #selection-panel .upgrade-paths { grid-template-rows: repeat(3,minmax(44px,1fr)); }
+  #selection-panel .path { padding: 2px; gap: 0; }
+  #selection-panel .path-info { min-height: 30px; }
+  #selection-panel .upgrade-button { min-height: 44px; font-size: 10px; }
+  #selection-panel.placing { left: auto; right: 0; bottom: 80px; width: 200px; }
+}
+@media (prefers-reduced-motion: reduce) { #selection-panel.open { animation: none; } }
+@media (max-width: 850px) and (orientation: portrait) {
+  #selection-panel .path { display: grid; grid-template-columns: 82px minmax(0,1fr); align-items: center; border-width: 1px; }
+  #selection-panel .path-heading { flex-direction: column; position: relative; }
+  #selection-panel .path-info { min-height: 44px; width: 100%; font-size: 10px; }
+  #selection-panel .path-icon { width: 18px; }
+  #selection-panel .path-info span { flex-shrink: 1; }
+  #selection-panel .path-heading > span { position: absolute; bottom: -2px; pointer-events: none; }
+  #selection-panel .path-heading i { width: 9px; height: 4px; font-size: 0; }
+  #selection-panel .upgrade-button { height: 100%; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  #selection-panel .path-heading { position: relative; }
+  #selection-panel .path-info { padding-bottom: 9px; }
+  #selection-panel .path-heading > span { bottom: 1px; transform: none; }
+}
+@media (orientation: landscape) and (max-width: 700px) {
+  main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: 108px minmax(0,1fr) 104px; }
+  .topbar, .hud, .battle-controls, .map-footer { width: 108px; }
+  #hero-controls { width: 104px; }
+  .tower-card b { display: none; }
+  #selection-panel { left: 114px; width: 208px; }
+  #selection-panel[data-side="right"] { right: 110px; }
+  #selection-panel .panel-title { left: 78px; }
+  #selection-panel .tower-portrait { width: 70px; }
+  #selection-panel .path { grid-template-columns: 75px minmax(0,1fr); }
+  #selection-panel .target-label { font-size: 0; }
+  #selection-panel .path-icon { display: none; }
+  #selection-panel .stats { gap: 1px; }
+  #selection-panel .stats div { min-width: 0; }
+}
+
+#close-panel { min-width: 44px; min-height: 44px; }
+#hero-controls button { min-height: 44px; }
+@media (max-width: 850px) and (orientation: portrait) {
+  main { grid-template-rows: auto 156px; align-content: start; }
+  main:has(#selection-panel.open:not(.placing)) { grid-template-rows: minmax(0,1fr) 156px; }
+  .battle-column { height: auto; }
+  main:has(#selection-panel.open:not(.placing)) .battle-column { height: 100%; }
+  .battle-controls { margin-top: 4px; }
+  main:has(#selection-panel.open:not(.placing)) .battle-controls { margin-top: auto; }
+  .map-footer { display: none; }
+  #selection-panel .tower-portrait { height: 80px; }
+  #selection-panel .tower-summary { gap: 3px; }
+  #selection-panel .upgrade-button { width: 100%; }
+  #selection-panel .path-heading { min-width: 0; }
+}
+.topbar #kingdom-button, .topbar #leave-run { min-height: 44px; }
+@media (min-width: 851px) and (min-height: 601px) {
+  #selection-panel.open:not(.placing) { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: clamp(100px,18dvh,150px) 44px 24px minmax(0,1fr) 44px; gap: 4px; padding: 6px; }
+  #selection-panel .panel-title { position: absolute; top: 6px; left: 138px; right: 6px; height: 44px; }
+  #selection-panel .panel-title b { font-size: 15px; }
+  #selection-panel .tower-summary { grid-column: 1/-1; grid-row: 1; flex-direction: row; align-items: end; height: 100%; }
+  #selection-panel .tower-portrait { width: 126px; height: 100%; }
+  #selection-panel .stats { margin-bottom: 8px; gap: 2px; }
+  #selection-panel .stats small { font-size: 8px; }
+  #selection-panel .stats b { font-size: 13px; }
+  #selection-panel .target-label { grid-column: 1; grid-row: 2; }
+  #selection-panel .target-label select { min-height: 44px; width: 78px; }
+  #selection-panel .tree-link { grid-column: 2; grid-row: 2; min-height: 44px; }
+  #selection-panel .properties { grid-column: 1/-1; grid-row: 3; }
+  #selection-panel .upgrade-paths { grid-column: 1/-1; grid-row: 4; }
+  #selection-panel .path { display: grid; grid-template-columns: 106px minmax(0,1fr); align-items: center; padding: 2px; border-width: 1px; }
+  #selection-panel .path-heading { flex-direction: column; position: relative; min-width: 0; }
+  #selection-panel .path-info { min-height: 44px; width: 100%; font-size: 11px; padding-bottom: 9px; }
+  #selection-panel .path-info span { flex-shrink: 1; }
+  #selection-panel .path-icon { width: 22px; height: 26px; }
+  #selection-panel .path-heading > span { position: absolute; bottom: 0; pointer-events: none; }
+  #selection-panel .path-heading i { width: 10px; height: 5px; font-size: 0; }
+  #selection-panel .upgrade-button { min-height: 44px; width: 100%; font-size: 11px; }
+  #selection-panel .sell-button { grid-column: 1/-1; grid-row: 5; min-height: 44px; }
+  .tower-icon, .tower-icon img { height: clamp(24px,calc((var(--app-height,100dvh) - 180px)/8 - 40px),50px); }
+}

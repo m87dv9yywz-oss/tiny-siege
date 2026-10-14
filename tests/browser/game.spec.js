@@ -40,6 +40,7 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
   await expect(page.locator("#selection-panel")).toContainText(
     "Armor-Piercing Bolts",
   );
+  await page.locator("#battle-settings summary").click();
   await page.locator("#mute").click();
   await expect(page.locator("#mute")).toContainText("Sound on");
   await page.getByRole("button", { name: "START WAVE 1" }).click();
@@ -75,6 +76,7 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
   expect(
     await page.evaluate(() => window.__tinySiege.model.towers.length),
   ).toBe(0);
+  await page.locator("#battle-settings summary").click();
   await page.locator("#restart").click();
   await expect(page.locator("#gold")).toHaveText("300");
   await expect(page.locator("#wave")).toHaveText("0");
