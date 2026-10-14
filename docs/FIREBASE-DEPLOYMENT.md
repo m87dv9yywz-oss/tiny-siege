@@ -1,10 +1,14 @@
 # Firebase rules deployment
 
-## Current status — 2026-10-14 UTC
+## Operation and activation
 
-**Candidate automation, not active. A staged bootstrap was explicitly approved by the owner; do not enable automatic releases until authenticated runner validation succeeds.**
+The main deployment workflow automatically publishes and verifies compatible Firestore rules before Pages whenever repository variable `FIREBASE_RULES_AUTOMATION_ENABLED=true`. Its absence/false value gates automatic Firebase/Pages publishing off; a manual main dispatch with `rules_only=true` can validate rules without hosting deployment. Codex Cloud needs only repository access. No recurring Firebase Console login is required once activation has succeeded.
 
-Resume status: v3.1 has now been independently released on main at `ea71c7a7d1c22fc8c65c16e7e5a5e7453d5ef2c2`. This infrastructure candidate is rebased onto that release and retains its exact rules blob `c6be375ae8402abcd26a3e023369de231fca7409`. The approved gated main-only bootstrap can proceed after fresh PR CI. V4 PR #11 remains separate and unmerged; its rules handoff is commit `2cdeace27ddbe0b7b93cbee9857e1075f0ebfece`, blob `5045957095d072a78943dfecb8ca4225a446334b`, SHA256 `bfeccbdc24efec515a2ad0a4b1614a4976e9a76a6afdecbfdd36cb2ec29fff29`. Complete the v3.1 bootstrap before staging v4 rules. The publisher now also refuses to remove an active v4 kingdom collection, preventing an unrelated v3.1 release from undoing a staged v4 rules publication.
+Use the actual repository variable and the latest authenticated runner evidence linked in [PR #8](https://github.com/m87dv9yywz-oss/tiny-siege/pull/8) as the activation record. Do not infer activation from this document being merged. The owner approved the staged bootstrap described below; automatic releases must stay disabled until actual runner publication/read-back succeeds.
+
+## Setup history — 2026-10-14 UTC
+
+Resume status: v3.1 has now been independently released on main at `ea71c7a7d1c22fc8c65c16e7e5a5e7453d5ef2c2`. This infrastructure candidate is rebased onto that release and includes only its infrastructure changes plus the exact tested, backward-compatible v4 rules from commit `2cdeace27ddbe0b7b93cbee9857e1075f0ebfece`, blob `5045957095d072a78943dfecb8ca4225a446334b`, SHA256 `bfeccbdc24efec515a2ad0a4b1614a4976e9a76a6afdecbfdd36cb2ec29fff29`. Original v4 CI `38550603769` validated legacy schemas and the new collections; infrastructure CI also validates the same rules against the live v3.1 code. The approved rules-only bootstrap publishes those v4 rules before the game PR merges, without deploying v4 code or modifying player documents. V4 PR #11 remains separate and unmerged. The publisher refuses to remove active v4 kingdom support.
 
 The existing project is `tiny-siege-game` (number `909962953566`), its STANDARD default database is free-tier eligible, and Firebase remains Spark with billing disabled.
 

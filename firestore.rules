@@ -72,9 +72,70 @@ service cloud.firestore {
       // On create resource is null; old cached clients cannot downgrade updates.
       allow create, update: if owner(uid) && profileId.matches('^[a-zA-Z0-9_-]{1,64}$')
         && (resource == null || request.resource.data.schemaVersion >= resource.data.schemaVersion)
+        && !exists(/databases/$(database)/documents/users/$(uid)/kingdoms/$(profileId))
         && validProfile();
       allow delete: if owner(uid);
     }
+    // v4 bounded documents. No unbounded reward arrays or ledgers in core.
+    function v4Read(uid,id) { return owner(uid) && exists(/databases/$(database)/documents/users/$(uid)/kingdoms/$(id)) && get(/databases/$(database)/documents/users/$(uid)/kingdoms/$(id)).data.status != 'deleted'; }
+    function v4Write(uid,id) { return owner(uid) && getAfter(/databases/$(database)/documents/users/$(uid)/kingdoms/$(id)).data.status in ['active','migrating']; }
+    function real(n,lo,hi) { return n is number && n >= lo && n <= hi; }
+    function v4Stamp(d) { return d.updatedAt is timestamp && d.updatedAt == request.time; }
+    function unique(a,keys,max) { return a is list && a.size() <= max && a.hasOnly(keys) && a.toSet().size() == a.size(); }
+    function towerIds() { return ['archer','cannon','frost','fire','lightning','grove','wind','rune']; }
+    function heroIds() { return ['dragon','dinosaur','tiger']; }
+    function relicIds() { return ['purse','banner','shield','lens','ember','crown']; }
+    function mapIds() { return ['emerald','amber','moon','garden','crystal','coast']; }
+    function v4Stats(s) { return s is map && s.size()==6 && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills); }
+    function v4Core(d) {
+      return d.size()==9 && d.schemaVersion==3 && d.schemaVersion is int && nickname(d.nickname)
+        && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn'] && number(d.crowns)
+        && v4Stats(d.statistics) && d.settings is map && d.settings.size()==2 && d.settings.sound is bool && d.settings.reducedEffects is bool
+        && unique(d.achievements,['first-clear','three-kingdoms','evolution'],3)
+        && d.status in ['active','migrating','deleted'] && v4Stamp(d);
+    }
+    function v4Tower(d,t) { return d.size()==5 && number(d.earned) && number(d.spent) && d.spent<=d.earned && d.unlocked is bool && (!(t in ['archer','cannon','frost']) || d.unlocked) && paths(d.paths) && v4Stamp(d); }
+    function v4Hero(d,h) { return d.size()==4 && number(d.xp) && d.unlocked is bool && d.equipped is bool && (!d.equipped || d.unlocked) && (h!='dragon' || d.unlocked) && v4Stamp(d); }
+    function v4Map(d) { return d.size()==9 && d.completed is bool && d.stars is int && d.stars>=0 && d.stars<=3 && (d.completed || d.stars==0) && d.easy is int && d.easy in [0,1,2,3] && d.medium is int && d.medium in [0,1,2,3] && d.hard is int && d.hard in [0,1,2,3] && d.easyClaims is int && d.easyClaims>=0 && d.easyClaims<=6 && d.mediumClaims is int && d.mediumClaims>=0 && d.mediumClaims<=6 && d.hardClaims is int && d.hardClaims>=0 && d.hardClaims<=6 && v4Stamp(d); }
+    function v4Relics(d) { return d.size()==3 && unique(d.unlocked,relicIds(),6) && unique(d.equipped,d.unlocked,2) && v4Stamp(d); }
+    function progress(m) { return m is map && m.size()==5 && real(m.time,0,1000000000) && real(m.damage,0,1000000000) && real(m.armor,0,1000000000) && real(m.control,0,1000000000) && real(m.kills,0,1000000000); }
+    function battleMetrics(d) { return d.size()==6 && real(d.time,0,1000000000) && real(d.damage,0,1000000000) && real(d.armor,0,1000000000) && real(d.control,0,1000000000) && real(d.kills,0,1000000000) && v4Stamp(d); }
+    function participation(m) { return m is map && m.size()==8 && progress(m.archer) && progress(m.cannon) && progress(m.frost) && progress(m.fire) && progress(m.lightning) && progress(m.grove) && progress(m.wind) && progress(m.rune); }
+    function grants(m) { return m is map && m.size()==8 && real(m.archer,0,800) && real(m.cannon,0,800) && real(m.frost,0,800) && real(m.fire,0,800) && real(m.lightning,0,800) && real(m.grove,0,800) && real(m.wind,0,800) && real(m.rune,0,800); }
+    function runState(r) { return r is map && r.size()==6 && r.id is string && r.id.matches('^[a-zA-Z0-9_-]{1,64}$') && r.profileId is string && r.profileId.size()>=1 && r.profileId.size()<=180 && r.finished==false && r.heroGranted is int && r.heroGranted>=0 && r.heroGranted<=300 && grants(r.granted) && r.stats is map && r.stats.size()==4 && number(r.stats.waves) && number(r.stats.damage) && number(r.stats.armor) && number(r.stats.kills); }
+    function animal(h) { return h==null || (h is map && h.size()==8 && h.type in heroIds() && real(h.x,0,960) && real(h.y,0,640) && h.level is int && h.level>=1 && h.level<=10 && real(h.cooldown,0,3) && real(h.abilityLeft,0,30) && number(h.attacks) && real(h.damage,0,1000000000)); }
+    function slots() { return ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79']; }
+    function checkpoint(c) {
+      return c is map && c.size()==15 && c.version==1 && c.version is int && c.map in mapIds() && c.difficulty in ['easy','medium','hard']
+        && c.wave is int && c.wave>=0 && c.wave<(c.difficulty=='easy'?20:c.difficulty=='medium'?40:100) && c.lives is int && c.lives>=1 && c.lives<=22
+        && number(c.gold) && number(c.kills) && number(c.earned) && number(c.id) && c.speed is int && c.speed in [1,2] && real(c.savedAt,0,1000000000000000)
+        && unique(c.relics,relicIds(),2) && runState(c.run) && animal(c.hero) && unique(c.towerSlots,slots(),80);
+    }
+    function v4Battle(d) { return d.present is bool && number(d.revision) && v4Stamp(d) && (d.present ? d.size()==4 && checkpoint(d.checkpoint) : d.size()==3); }
+    function battlePaths(p) { return p is list && p.size()==3 && p[0] is int && p[1] is int && p[2] is int && p.hasOnly([0,1,2,3]) && (p[0]==0 || p[1]==0 || p[2]==0) && p[0]+p[1]+p[2]<=4 && ((p[0]<=1 && p[1]<=1) || (p[0]<=1 && p[2]<=1) || (p[1]<=1 && p[2]<=1)); }
+    function tierCost(n,c) { return (n>=1?c[1]:0)+(n>=2?c[2]:0)+(n>=3?c[3]:0); }
+    function investment(t,p) {
+      let c={'archer':[75,100,260,650],'cannon':[160,210,480,1150],'frost':[130,160,360,880],'fire':[150,190,420,950],'lightning':[200,260,575,1350],'grove':[115,140,330,820],'wind':[145,180,390,980],'rune':[175,220,470,1100]}[t];
+      return c[0]+tierCost(p[0],c)+tierCost(p[1],c)+tierCost(p[2],c);
+    }
+    function placement(d) { return d.size()==11 && number(d.id) && d.id>0 && d.type in towerIds() && real(d.x,30,930) && real(d.y,60,610) && battlePaths(d.paths) && d.targeting in ['FIRST','LAST','STRONG','WEAK','SUPPORT'] && (d.targeting!='SUPPORT' || d.type=='archer' && d.paths[2]>=2) && d.invested==investment(d.type,d.paths) && d.invested is int && real(d.cooldown,0,10) && number(d.shots) && real(d.heat,0,10) && v4Stamp(d); }
+    function receipt(d,id) { return d.size()==3 && d.id==id && d.id is string && d.id.matches('^[a-zA-Z0-9_-]{1,96}$') && d.kind in ['reward','tower','path','hero','relic','rename','settings','battle','migration'] && d.at is timestamp && d.at==request.time; }
+    function origin(d) { return d.size()==2 && d.ledger is string && d.ledger.size()<=194000 && d.ledger.matches('^(\\|[a-zA-Z0-9_-]{1,96})*\\|?$') && v4Stamp(d); }
+    match /users/{uid}/kingdoms/{id} {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && id.matches('^[a-zA-Z0-9_-]{1,64}$') && v4Core(request.resource.data) && (resource==null || resource.data.status!='deleted' || request.resource.data.status=='deleted');
+      allow delete: if false;
+      match /towers/{t} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && t in towerIds() && v4Tower(request.resource.data,t); }
+      match /heroes/{h} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && h in heroIds() && v4Hero(request.resource.data,h); }
+      match /maps/{m} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && m in mapIds() && v4Map(request.resource.data); }
+      match /relics/{r} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && r=='loadout' && v4Relics(request.resource.data); }
+      match /battles/{b} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && b=='current' && v4Battle(request.resource.data); }
+      match /battleProgress/{t} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && t in towerIds() && battleMetrics(request.resource.data); }
+      match /placements/{slot} { allow read: if v4Read(uid,id); allow create,update: if v4Write(uid,id) && slot in slots() && placement(request.resource.data); }
+      match /receipts/{opId} { allow read: if v4Read(uid,id); allow create: if v4Write(uid,id) && receipt(request.resource.data,opId); allow update,delete: if false; }
+      match /history/{name} { allow read: if v4Read(uid,id); allow create: if v4Write(uid,id) && name=='origin' && origin(request.resource.data); allow update,delete: if false; }
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
