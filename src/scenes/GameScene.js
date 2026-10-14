@@ -1,4 +1,5 @@
 import { HEROES } from "../data/heroes.js";
+import { ARCHER_STATES, towerArtwork } from "../towerArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -18,6 +19,15 @@ export class GameScene extends Phaser.Scene {
   }
   preload() {
     const base = import.meta.env.BASE_URL;
+    for (const state of ARCHER_STATES)
+      this.load.image(
+        `v5-archer-${state}`,
+        base +
+          towerArtwork(
+            { type: "archer", paths: state.split("-").map(Number) },
+            "battlefield_256",
+          ),
+      );
     for (const type of ["wind", "rune"]) {
       for (const level of [1, 2, 3])
         this.load.svg(
@@ -151,16 +161,20 @@ export class GameScene extends Phaser.Scene {
       .map((t) => {
         const sprite = this.towerSprites.get(t.id),
           frame = this.textures.getFrame(towerTexture(t));
+        const illustrated = t.type === "archer";
         const x = sprite?.x ?? t.x,
-          y = sprite?.y ?? t.y - 13;
-        const width = sprite?.displayWidth || frame.width,
-          height = sprite?.displayHeight || frame.height;
-        const localX = ((point.x - x) / width) * frame.width + frame.width / 2;
-        const localY =
-          ((point.y - y) / height) * frame.height + frame.height / 2;
+          y = sprite?.y ?? t.y - (illustrated ? 0 : 13);
+        const width = sprite?.displayWidth || (illustrated ? 80 : frame.width),
+          height = sprite?.displayHeight || (illustrated ? 80 : frame.height);
+        const originX = sprite?.originX ?? 0.5,
+          originY = sprite?.originY ?? (illustrated ? 0.96 : 0.5);
+        const localX = ((point.x - x) / width + originX) * frame.width;
+        const localY = ((point.y - y) / height + originY) * frame.height;
         const inside =
-          Math.abs(point.x - x) <= width / 2 + 8 &&
-          Math.abs(point.y - y) <= height / 2 + 8;
+          point.x >= x - width * originX - 8 &&
+          point.x <= x + width * (1 - originX) + 8 &&
+          point.y >= y - height * originY - 8 &&
+          point.y <= y + height * (1 - originY) + 8;
         const opaque =
           inside &&
           localX >= 0 &&
@@ -315,8 +329,8 @@ export class GameScene extends Phaser.Scene {
       if (sprite && !this.tweens.isTweening(sprite))
         this.tweens.add({
           targets: sprite,
-          scaleX: 1.1,
-          scaleY: 0.92,
+          scaleX: sprite.scaleX * 1.1,
+          scaleY: sprite.scaleY * 0.92,
           duration: 80,
           yoyo: true,
         });
@@ -475,14 +489,19 @@ export class GameScene extends Phaser.Scene {
       let sprite = this.towerSprites.get(t.id);
       if (!sprite) {
         sprite = this.add.image(t.x, t.y - 13, towerTexture(t));
+        if (t.type === "archer")
+          sprite.setDisplaySize(80, 80).setOrigin(0.5, 0.96).setY(t.y);
         this.towerSprites.set(t.id, sprite);
       }
       sprite.setTexture(towerTexture(t)).setDepth(t.y + 40);
       if (!this.model.paused)
-        sprite.y = t.y - 13 + Math.sin(time * 0.002 + t.id) * 0.7;
+        sprite.y =
+          t.y -
+          (t.type === "archer" ? 0 : 13) +
+          Math.sin(time * 0.002 + t.id) * 0.7;
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)
-        if (t.paths[path]) {
+        if (t.type !== "archer" && t.paths[path]) {
           const v = attackVisual({
             ...t,
             paths: [0, 0, 0].map((n, p) => (p === path ? t.paths[path] : 0)),

@@ -1,0 +1,1012 @@
+{
+  "title": "Tiny Siege V5 artwork manifest",
+  "version": "2026-10-14",
+  "source_of_truth": "GitHub docs/V5_MASTER_PLAN.md + docs/artwork/ARTWORK_INDEX.md; art bytes backed up in Google Drive",
+  "archer_paths": [
+    "Siege Ballista",
+    "Arrowstorm",
+    "Deadeye"
+  ],
+  "archer_state_keys_present": [
+    "0-0-0",
+    "1-0-0",
+    "0-1-0",
+    "0-0-1",
+    "1-1-0",
+    "1-0-1",
+    "0-1-1",
+    "2-0-0",
+    "0-2-0",
+    "0-0-2",
+    "2-1-0",
+    "2-0-1",
+    "1-2-0",
+    "0-2-1",
+    "1-0-2",
+    "0-1-2"
+  ],
+  "archer_state_keys_missing": [
+    "3-0-0",
+    "0-3-0",
+    "0-0-3",
+    "3-1-0",
+    "3-0-1",
+    "1-3-0",
+    "0-3-1",
+    "1-0-3",
+    "0-1-3"
+  ],
+  "approved_archer_master_count": 16,
+  "blank_ui_template_count": 15,
+  "asset_files": [
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-0-0.png",
+      "purpose": "Archer 0-0-0 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1347632,
+      "sha256": "5482c3c6eae88b72db6e14fd2051529816864513643703f8be25840ccce35230",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-0-0.png",
+      "purpose": "Archer 0-0-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 282751,
+      "sha256": "fab5d85ae31ea34a39e68d864bde64d202d0415f9a3de5bc95d5a230bd3f231a",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-0-0.png",
+      "purpose": "Archer 0-0-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 89610,
+      "sha256": "cd29e3a971fc577b592c6c882bbf009196cd7bd84bba075881c2f8ef8f31e7d7",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-0-1.png",
+      "purpose": "Archer 0-0-1 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1338345,
+      "sha256": "b4b6b3b37f5d789ebbd7d08616c5178fd2b05332bbffd5740c4e6bb363f614cf",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-0-1.png",
+      "purpose": "Archer 0-0-1 card_512 export",
+      "status": "approved",
+      "size_bytes": 283174,
+      "sha256": "d035ed0b7b7a12810a3ef05103d6e95813723497315a25301dd96fa8da17cdcc",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-0-1.png",
+      "purpose": "Archer 0-0-1 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 88927,
+      "sha256": "fd8682e93635d37740903c355a9d9f1b46b08c3ccfd3878797c2dd94bc4f33a9",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-1-0.png",
+      "purpose": "Archer 0-1-0 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1388369,
+      "sha256": "35c453e801aa1d40eca9c01ced057bd7c98a2e9ea91a29a95c9419b0f86cedee",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-1-0.png",
+      "purpose": "Archer 0-1-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 297979,
+      "sha256": "bdfb59e60045b0ab731965cac641d0a87ff2f7919c5d2978a639d1fbc7a8db6f",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-1-0.png",
+      "purpose": "Archer 0-1-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 94366,
+      "sha256": "e690ef4b521d29594d166a9a70314819f1b424ff2f82cc48b56a194010ed35ca",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-1-1.png",
+      "purpose": "Archer 0-1-1 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1357182,
+      "sha256": "78b5fa600e17921e56676f4c77c5f8970cea0714f6f5a79434f5122663489de2",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-1-1.png",
+      "purpose": "Archer 0-1-1 card_512 export",
+      "status": "approved",
+      "size_bytes": 301656,
+      "sha256": "08fc8f3e2a846ae3fd0279012baec6529600fb69959bca3d16703e8ce6863d5a",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-1-1.png",
+      "purpose": "Archer 0-1-1 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 95193,
+      "sha256": "c207a4f72957cb314012e54b2cb7599bc1ef593d2ec2d99cf3579fd9a0513be6",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_1-0-0.png",
+      "purpose": "Archer 1-0-0 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1394116,
+      "sha256": "418c24e0eac5577741c1fb920a370869feb77936231a4b808b22ba28a7b40f38",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_1-0-0.png",
+      "purpose": "Archer 1-0-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 293976,
+      "sha256": "3bdb220fc4f11877a58d416de41b426a990e3c1cc5395e53ce59bbcb2b691596",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_1-0-0.png",
+      "purpose": "Archer 1-0-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 92098,
+      "sha256": "cc55eebdc9245c33e95b6e486362449849d0cfc49fd4a8e341eab9eaf049a185",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_1-0-1.png",
+      "purpose": "Archer 1-0-1 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1371479,
+      "sha256": "1a165533a0d2b15dae083707bd8bf31555c6b573d8f9f718caf0aded806fb153",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_1-0-1.png",
+      "purpose": "Archer 1-0-1 card_512 export",
+      "status": "approved",
+      "size_bytes": 299451,
+      "sha256": "8ab18a774a82e2bc41fefbe28bdefb08361aa783ab278ee5cb944e0ca28a9ae9",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_1-0-1.png",
+      "purpose": "Archer 1-0-1 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 93419,
+      "sha256": "5c5e28db5d4ed20da10a9a4ad04bd64ff3f654ea5d938bf32ccae22050139ced",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_1-1-0.png",
+      "purpose": "Archer 1-1-0 tower visual (Tier 0\u20131)",
+      "status": "approved",
+      "size_bytes": 1376982,
+      "sha256": "8adbe01db6bd8ff496e34e84f20bd3ab49ae4a46f5237017b048067d8f54acea",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_1-1-0.png",
+      "purpose": "Archer 1-1-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 301471,
+      "sha256": "eae9fc6067c1a30df27d1b68efc79ada5e676a0265d5060bab7e08c28035d2e4",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_1-1-0.png",
+      "purpose": "Archer 1-1-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 94448,
+      "sha256": "90d5076807ea4d0f5fd89c4e278d55b9348e7c56449474e05d6ecde67440fe72",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-0-2.png",
+      "purpose": "Archer 0-0-2 tower visual (Tier 2 primary)",
+      "status": "approved",
+      "size_bytes": 1452378,
+      "sha256": "2b91617811a99f16931a0017a110623e7ae51e673370050a3bbd8673edcfd524",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-0-2.png",
+      "purpose": "Archer 0-0-2 card_512 export",
+      "status": "approved",
+      "size_bytes": 316163,
+      "sha256": "1399329e26ad88462182b7a8488bda8848a9c695ff325b0b9fc8047872611cca",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-0-2.png",
+      "purpose": "Archer 0-0-2 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 98299,
+      "sha256": "a985fd8b39e18b66340f0e01128bc66ba85bf176bae3edbf12e9537fe7015b8e",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-2-0.png",
+      "purpose": "Archer 0-2-0 tower visual (Tier 2 primary)",
+      "status": "approved",
+      "size_bytes": 1611094,
+      "sha256": "9318a21940f06440f71f6acfbff327b80ff5e8b71cfcec1eb642c0564bfafdee",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-2-0.png",
+      "purpose": "Archer 0-2-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 352563,
+      "sha256": "e54e1f25669f4c93a1f8c3ecdc549cf03095033b184064668732f07d67e751d8",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-2-0.png",
+      "purpose": "Archer 0-2-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 109782,
+      "sha256": "adad972a3993125d9f1cd138ab9c23e7525378f1b7c73069edc14db61978993c",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_2-0-0.png",
+      "purpose": "Archer 2-0-0 tower visual (Tier 2 primary)",
+      "status": "approved",
+      "size_bytes": 1456204,
+      "sha256": "a914f840734a48c6c6caea9476eaf96fe00c262fe9a218f098f75810808b0138",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_2-0-0.png",
+      "purpose": "Archer 2-0-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 313785,
+      "sha256": "460a5d85d2e55919128b13d7d618485c012dac4fca3cd33822dca94624783ca4",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_2-0-0.png",
+      "purpose": "Archer 2-0-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 96433,
+      "sha256": "73244b232e0eba5acf7220b1b24a88c47bc459fa048e4f01185ce3b38c22e98c",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-1-2.png",
+      "purpose": "Archer 0-1-2 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1486722,
+      "sha256": "1c8918c96ea8c9b8d52a1f33a63418b6015ed4f9ce9ad66369fa3d032a0d88c5",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-1-2.png",
+      "purpose": "Archer 0-1-2 card_512 export",
+      "status": "approved",
+      "size_bytes": 323867,
+      "sha256": "07322068f0099bbb0480fd306ce810b7ae91147168221f4ad0f0c90535f32f0f",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-1-2.png",
+      "purpose": "Archer 0-1-2 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 100347,
+      "sha256": "6ff08b252afa8a51ed15bef5bc5132449834c37e14e4a9bb6beb2ad4df43aa44",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_0-2-1.png",
+      "purpose": "Archer 0-2-1 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1683496,
+      "sha256": "df21a2f7aede58e530b8f74db94087062f821703d8bf881544e86754806ffcab",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_0-2-1.png",
+      "purpose": "Archer 0-2-1 card_512 export",
+      "status": "approved",
+      "size_bytes": 365825,
+      "sha256": "96872c7827baf12402f32c9dda1cdaa2e4cbb6372c6be0c082dc57ad0df36927",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_0-2-1.png",
+      "purpose": "Archer 0-2-1 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 112769,
+      "sha256": "7af296549f10c5624c2eaf2ebc3afe655e48e759a86accc7d2118eb127e85dcc",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_1-0-2.png",
+      "purpose": "Archer 1-0-2 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1480374,
+      "sha256": "3bceb13497c147c39fafe2a0cf6f6cebda2d5e0b930e8c7e08337af28323cd69",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_1-0-2.png",
+      "purpose": "Archer 1-0-2 card_512 export",
+      "status": "approved",
+      "size_bytes": 322350,
+      "sha256": "2ffc097b48add8b8dc9037351c3169d25088bb97418e62a021f73f88afa92de9",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_1-0-2.png",
+      "purpose": "Archer 1-0-2 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 99812,
+      "sha256": "2cfb3a523d8f204d13548365f9119bc5d96a4b978665b1bfb952cfe8e978408c",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_1-2-0.png",
+      "purpose": "Archer 1-2-0 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1646660,
+      "sha256": "54e38c8b1fb429ec09e363bdfae7d7265ef309f4716dd30c896157de99a17a87",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_1-2-0.png",
+      "purpose": "Archer 1-2-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 359514,
+      "sha256": "48ae6a3c7cfcd2f917b1fd43655bc064e86ba68a84d10b2dbd3e9fd91d58457b",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_1-2-0.png",
+      "purpose": "Archer 1-2-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 111034,
+      "sha256": "e4abbfd179db9e30d4be8fd7567ac74aeab6ea37e706ca8b4b5bc1d2e89587c3",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_2-0-1.png",
+      "purpose": "Archer 2-0-1 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1499436,
+      "sha256": "802efc19c708e36435b3cffb2b375ba0349033db66b0dbf0227bbc98b761062e",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_2-0-1.png",
+      "purpose": "Archer 2-0-1 card_512 export",
+      "status": "approved",
+      "size_bytes": 325174,
+      "sha256": "96d7dd4578bf72869002507bab9c356e023829dd238429e83e8aa58baca8a946",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_2-0-1.png",
+      "purpose": "Archer 2-0-1 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 99999,
+      "sha256": "9bfb039b32b1dfc757adf8f99045f2ef6a71f15361366eb47fcfc6dfca92f46b",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/states/archer_2-1-0.png",
+      "purpose": "Archer 2-1-0 tower visual (Tier 2 combination)",
+      "status": "approved",
+      "size_bytes": 1507116,
+      "sha256": "f418ed30a114859613b55abc2d18f800b58fd1fb4f31ddfdc2f7a9bb11f7f209",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/card_512/archer_2-1-0.png",
+      "purpose": "Archer 2-1-0 card_512 export",
+      "status": "approved",
+      "size_bytes": 327306,
+      "sha256": "d9c6543325d14bc21287bc99f49b4659915662f3d879c43a27b5dcfda6b73b00",
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/archer/exports/battlefield_256/archer_2-1-0.png",
+      "purpose": "Archer 2-1-0 battlefield_256 export",
+      "status": "approved",
+      "size_bytes": 100513,
+      "sha256": "aa723a4d9547c850c0c5800ab3a4598790540fede2018d8efe2088006765474d",
+      "dimensions": [
+        256,
+        256
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/badges/cost_badge_crown.png",
+      "purpose": "Reusable UI template: cost badge crown",
+      "status": "approved",
+      "size_bytes": 1253250,
+      "sha256": "0f0d2fe790ae5b53313911f0ec071ea8a7a609f3cade9369a443d7a165134978",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/badges/level_badge_emerald.png",
+      "purpose": "Reusable UI template: level badge emerald",
+      "status": "approved",
+      "size_bytes": 1582227,
+      "sha256": "405e4bc3132aa2186399725dd516645683a5f13e31ad18c5f5557b0d0c146485",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/bars/xp_bar_frame.png",
+      "purpose": "Reusable UI template: xp bar frame",
+      "status": "approved",
+      "size_bytes": 1039718,
+      "sha256": "e0c6beb3868fb6f8aee46f8e03483bdfec72ba5cd052785dfe38c171fcce3cbc",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/buttons/primary_button_selected_green.png",
+      "purpose": "Reusable UI template: primary button selected green",
+      "status": "approved",
+      "size_bytes": 1586636,
+      "sha256": "88b3b520ba313b19861d9b248010394f311daa06e4f3211284dfe4dbc9e6a6b7",
+      "dimensions": [
+        1983,
+        793
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/buttons/secondary_button_neutral.png",
+      "purpose": "Reusable UI template: secondary button neutral",
+      "status": "approved",
+      "size_bytes": 1195017,
+      "sha256": "5c66239e6943480fe510822021c43717253b5de9ceddeb4e4e195f723e57c72b",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/cards/hero_card_selected.png",
+      "purpose": "Reusable UI template: hero card selected",
+      "status": "approved",
+      "size_bytes": 1837004,
+      "sha256": "40d667a6f98bd6896d7ecc44210df03475e194d93db42c8f0ff1635f88a09fdd",
+      "dimensions": [
+        1086,
+        1448
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/cards/hero_card_unselected.png",
+      "purpose": "Reusable UI template: hero card unselected",
+      "status": "approved",
+      "size_bytes": 1624089,
+      "sha256": "81f66c34fca9a2dcffd191c087a32135efbbc12acac99cdfc6312050ddc114d3",
+      "dimensions": [
+        1086,
+        1448
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/cards/tower_card_selected.png",
+      "purpose": "Reusable UI template: tower card selected",
+      "status": "approved",
+      "size_bytes": 2059820,
+      "sha256": "33640f51649d83fc8de9490d687f9189b2ef0dbfd95625d46d7cccad7ab84b7d",
+      "dimensions": [
+        1086,
+        1448
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/cards/tower_card_unselected.png",
+      "purpose": "Reusable UI template: tower card unselected",
+      "status": "approved",
+      "size_bytes": 1745483,
+      "sha256": "254129b37a41d18f143d40f346b83ba440d0f5ab1cb02bd3905701e1447ca46f",
+      "dimensions": [
+        1086,
+        1448
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/panels/section_header_banner.png",
+      "purpose": "Reusable UI template: section header banner",
+      "status": "approved",
+      "size_bytes": 1263110,
+      "sha256": "ad43b6a1cabe227db02c5812285c294531cbfa87c2ce6e38aef15abe590fff3a",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/panels/stat_chip_hud_bar.png",
+      "purpose": "Reusable UI template: stat chip hud bar",
+      "status": "approved",
+      "size_bytes": 1192386,
+      "sha256": "f4b99bc6af78d089cf9dbab074c506f2d6df67307508cc57197918fd901a59b4",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/slots/icon_socket_round.png",
+      "purpose": "Reusable UI template: icon socket round",
+      "status": "approved",
+      "size_bytes": 1545165,
+      "sha256": "1a47f6168ecd3201ceeb50d1ca5a18cce93e18576698053b6aff5d20cf913d50",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/slots/upgrade_panel_triple.png",
+      "purpose": "Reusable UI template: upgrade panel triple",
+      "status": "approved",
+      "size_bytes": 1560473,
+      "sha256": "8ed126c75d44b344afb6a7b3260975b32cf1fbc4d943f2528828a7ef5a53b7d3",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/tabs/tab_selected_green.png",
+      "purpose": "Reusable UI template: tab selected green",
+      "status": "approved",
+      "size_bytes": 1396532,
+      "sha256": "354a4d4d35f38547714885f8e7a46b2ba1e92f8889eeea276ba5fec07e7d13c9",
+      "dimensions": [
+        1983,
+        793
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/ui/tabs/tab_unselected_cream.png",
+      "purpose": "Reusable UI template: tab unselected cream",
+      "status": "approved",
+      "size_bytes": 1131221,
+      "sha256": "65c38436d96792853f9e57745231360be447698425a874ab1c7de6674e9e3eaa",
+      "dimensions": [
+        1983,
+        793
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/shop_icons/archer/archer_shop_icon.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1134395,
+      "sha256": "38f5379d1330bb687919e681cecb9cbbc1a6e906fc6953e2b100325b27d98a76",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/shop_icons/frost/frost_shop_icon.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1070017,
+      "sha256": "a21e474047d64431630b0ee97d70184880b33e16158709e952f2123151732d96",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/towers/shop_icons/cannon/cannon_shop_icon.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1324037,
+      "sha256": "6e8b5a5b774c656a0fa680a8337c9f2589c8da6377dd6a90ab8e695bda52a4b8",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/ember/ember_battlefield_sprite.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1019125,
+      "sha256": "deacb06f509a7d653b8a14dca1be65b4d4c92149560df2b77f5ee39a978ae15a",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/ember/ember_menu_portrait.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1293983,
+      "sha256": "e263d03811ffc5e58aac7785b85321207929dad6e695f78b80463b38714c6bc8",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/rex/rex_menu_portrait.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1073782,
+      "sha256": "dc815eaf854c6d42870ed638914b2f1ee17080034815a75eb17f3c0ea2ba9cb6",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/rex/rex_battlefield_sprite.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 867381,
+      "sha256": "f4e2359cbfc0b8b67a55f064878379d37c3f5912f44fc06f34ab5bd0114e4e0f",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/stripe/stripe_menu_portrait.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1346306,
+      "sha256": "32fd87089c169466e2345326612d078d8416578a58a57ad460ac56ff231a6bb7",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "artwork/heroes/stripe/stripe_battlefield_sprite.png",
+      "purpose": "Hero/tower static illustration (not evolved Archer state)",
+      "status": "initial art; visual approval for deployment pending",
+      "size_bytes": 1009172,
+      "sha256": "833d651abe228bbc6fa37a5387719480bbc1f20f24aea19b8f8b41432ef94921",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "transparent_background": true
+    },
+    {
+      "relative_path": "references/mockups/04_menu_animal_heroes.png",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 2026931,
+      "sha256": "21a277f5544cc52ad26e7d741faf9efe3a8814668827a7ddcfb9db0c512a779c"
+    },
+    {
+      "relative_path": "references/mockups/02_gameplay_cannon_placement.png",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 2041929,
+      "sha256": "385d2861381a5e41559f3dea3ace19f915855d421280a563484f0790c91dae28"
+    },
+    {
+      "relative_path": "references/mockups/03_menu_adventure_selection.png",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 2260381,
+      "sha256": "7d5fbc45c5ff87b420fc70fd9860a8bc06d2213e8b76802813d317ed2bec25a0"
+    },
+    {
+      "relative_path": "references/mockups/01_gameplay_upgrade_opposite_side.png",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 2278966,
+      "sha256": "f751ab2775fcbe83c0954a5a09b818e98f1352a8dcce7983b29d95c0456fd264"
+    },
+    {
+      "relative_path": "references/screenshots/11_tiny_siege_main_menu.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 195491,
+      "sha256": "6ee96884e004d8d4ac16c1565e6877fcc3b61e3e0e433a6b7fa09aea63441bb3"
+    },
+    {
+      "relative_path": "references/screenshots/06_bloons_upgrade_right_playing.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 463122,
+      "sha256": "ea8141eb97a69bd62908ff5e0ccf241f2a8e96b11b4c3bdf72fd40221dd564e4"
+    },
+    {
+      "relative_path": "references/screenshots/07_tiny_siege_small_battlefield.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 176015,
+      "sha256": "4f6d1f63299c62842c91d99466ba1f13da6de007d5b56d9d1319bb2567965f63"
+    },
+    {
+      "relative_path": "references/screenshots/04_bloons_upgrade_left_dart.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 457764,
+      "sha256": "837ea42275e73e48685dcf3f56636f40faaf4497a96c1999717e801d667b38bf"
+    },
+    {
+      "relative_path": "references/screenshots/02_bloons_upgrade_left.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 333515,
+      "sha256": "eebfe6c4d21dd07aaf5917158b0a7babaa1adf529479831779c2c65b611cdedc"
+    },
+    {
+      "relative_path": "references/screenshots/01_bloons_shop_fullscreen.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 307441,
+      "sha256": "cc5434aa3f7f73aecc82ba359569d023c0ad65bacd901a52e4f51778e1aae733"
+    },
+    {
+      "relative_path": "references/screenshots/10_tiny_siege_cannon_placement_overlay.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 197246,
+      "sha256": "46d190fbbd4ed2cfd7cfbcac13f4913617e7d6e8f0b5b5aac29d5baffaa0f40d"
+    },
+    {
+      "relative_path": "references/screenshots/09_tiny_siege_hero_move.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 179126,
+      "sha256": "97266d66d5016a614465eeb5669d4068eeffc3fd330e12f09b7a981c23a5b122"
+    },
+    {
+      "relative_path": "references/screenshots/08_tiny_siege_hero_art.png",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 525552,
+      "sha256": "23986bafa89c1fdb256efbdadf096af868b48c9af2654ecaab243815ed9a35ad"
+    },
+    {
+      "relative_path": "references/screenshots/03_bloons_map_fullscreen.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 481199,
+      "sha256": "40155639340077088a7ab03bfa8e2cafae703f7e8100b19052ff5f9e798513c4"
+    },
+    {
+      "relative_path": "references/screenshots/05_bloons_upgrade_right_dart.jpeg",
+      "purpose": "Visual reference only; not a game asset",
+      "status": "reference-only",
+      "size_bytes": 461307,
+      "sha256": "0a0e6d3879ff943aff3831a3102edb313eb35ad80c2e31d2d74677bb3bb97677"
+    }
+  ]
+}

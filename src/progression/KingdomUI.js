@@ -1,4 +1,5 @@
 import { HEROES, heroLevel } from "../data/heroes.js";
+import { towerArtwork } from "../towerArtwork.js";
 import { RELICS } from "../data/relics.js";
 import { DIFFICULTIES } from "../data/difficulties.js";
 import {
@@ -57,6 +58,8 @@ export class KingdomUI {
     $("kingdom-button").onclick = () => this.collection();
   }
   portrait(t) {
+    const illustrated = towerArtwork(t);
+    if (illustrated) return import.meta.env.BASE_URL + illustrated;
     const path = t.paths.findIndex((n) => n >= 2);
     const variant =
       path < 0
