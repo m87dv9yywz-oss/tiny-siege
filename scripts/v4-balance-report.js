@@ -157,6 +157,7 @@ function campaign(profile, map, mode, hero, style = "mixed") {
     relics: profile.relics.equipped,
   });
   const rows = [];
+  const previousTowers = new Map();
   let saved = profile;
   let granted = Object.fromEntries(TYPES.map((k) => [k, 0])),
     stats = { waves: 0, damage: 0, armor: 0, kills: 0 },
@@ -208,12 +209,18 @@ function campaign(profile, map, mode, hero, style = "mixed") {
       earned: g.earned,
       time,
       escaped,
-      towers: g.towers.map((t) => ({
-        type: t.type,
-        paths: t.paths,
-        invested: t.invested,
-      })),
+      towerCount: g.towers.length,
+      spent: g.towers.reduce((n, t) => n + t.invested, 0),
+      towerChanges: g.towers
+        .filter((t) => previousTowers.get(t.id) !== t.paths.join(","))
+        .map((t) => ({
+          id: t.id,
+          type: t.type,
+          paths: [...t.paths],
+          invested: t.invested,
+        })),
     });
+    for (const t of g.towers) previousTowers.set(t.id, t.paths.join(","));
     if (wave <= 3)
       assert.equal(
         g.lives,
@@ -235,6 +242,14 @@ function campaign(profile, map, mode, hero, style = "mixed") {
       earned: g.earned,
       spent: g.towers.reduce((n, t) => n + t.invested, 0),
       waves: rows,
+      finalTowers: g.towers.map((t) => ({
+        type: t.type,
+        x: t.x,
+        y: t.y,
+        paths: t.paths,
+        invested: t.invested,
+        targeting: t.targeting,
+      })),
     },
   };
 }

@@ -132,7 +132,8 @@ export function validateProfile(p) {
   )
     return false;
   if (
-    !p.mapStars || Array.isArray(p.mapStars) ||
+    !p.mapStars ||
+    Array.isArray(p.mapStars) ||
     Object.keys(p.mapStars).some(
       (m) => !p.completedMaps.includes(m) || !integer(p.mapStars[m], 3),
     )
@@ -189,6 +190,7 @@ export function validateProfile(p) {
       return false;
     if (
       !p.mapProgress ||
+      Array.isArray(p.mapProgress) ||
       Object.keys(p.mapProgress).some((k) => !MAP_IDS.includes(k))
     )
       return false;

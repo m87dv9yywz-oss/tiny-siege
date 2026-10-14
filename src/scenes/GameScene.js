@@ -226,7 +226,9 @@ export class GameScene extends Phaser.Scene {
         radius: event.radius,
       });
       this.effects.push({
-        type: "seedBounce",
+        type:
+          h.type === "dragon" ? "jet" : h.type === "tiger" ? "claws" : "tail",
+        heat: event.ability ? 2 : 1,
         points: [
           { x: h.x, y: h.y - 20 },
           { x: event.target.x, y: event.target.y },
@@ -639,10 +641,44 @@ export class GameScene extends Phaser.Scene {
       }
     }
     for (const z of this.model.zones) {
-      g.fillStyle(z.type === "grove" ? 0x4ba875 : 0xed6d35, 0.22);
+      const kind = z.source || z.type;
+      const color =
+        kind === "wind"
+          ? 0x82dcd6
+          : kind === "rune"
+            ? 0xb293eb
+            : kind === "grove"
+              ? 0x4ba875
+              : 0xed6d35;
+      g.fillStyle(color, 0.22);
       g.fillEllipse(z.x, z.y, z.radius * 2, z.radius * 1.35);
-      g.lineStyle(2, z.type === "grove" ? 0xb0efa1 : 0xffc061, 0.4);
+      g.lineStyle(2, kind === "grove" ? 0xb0efa1 : color, 0.6);
       g.strokeEllipse(z.x, z.y, z.radius * 1.65, z.radius);
+      if (kind === "wind") {
+        for (let i = 0; i < 3; i++) {
+          const angle = time * 0.004 + (i * Math.PI * 2) / 3;
+          g.beginPath();
+          g.arc(
+            z.x,
+            z.y - i * 7,
+            z.radius * (0.35 + i * 0.2),
+            angle,
+            angle + Math.PI,
+          );
+          g.strokePath();
+        }
+      } else if (kind === "rune") {
+        const r = z.radius * 0.6;
+        g.strokeTriangle(
+          z.x,
+          z.y - r,
+          z.x - r,
+          z.y + r * 0.5,
+          z.x + r,
+          z.y + r * 0.5,
+        );
+        g.strokeCircle(z.x, z.y, r * 0.75);
+      }
     }
     for (const p of this.model.projectiles) {
       const v = p.visual || {
@@ -802,6 +838,31 @@ export class GameScene extends Phaser.Scene {
           a.y + (b.y - a.y) * (1 - alpha),
           5,
         );
+      }
+      if (e.type === "claws" || e.type === "tail") {
+        const [a, b] = e.points;
+        g.lineStyle(e.type === "tail" ? 7 : 3, e.color, alpha);
+        if (e.type === "tail") {
+          g.beginPath();
+          g.arc(
+            a.x,
+            a.y,
+            Math.hypot(b.x - a.x, b.y - a.y),
+            Math.atan2(b.y - a.y, b.x - a.x) - 0.4,
+            Math.atan2(b.y - a.y, b.x - a.x) + 0.4,
+          );
+          g.strokePath();
+        } else {
+          for (let i = -1; i <= 1; i++)
+            g.lineBetween(
+              b.x - 14 + i * 6,
+              b.y - 16,
+              b.x + 8 + i * 6,
+              b.y + 14,
+            );
+          g.lineStyle(2, 0xfff2a2, alpha * 0.5);
+          g.lineBetween(a.x, a.y, b.x, b.y);
+        }
       }
       if (e.type === "bolt") {
         for (let i = 1; i < e.points.length; i++) {

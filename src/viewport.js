@@ -18,11 +18,15 @@ export function fitBattlefield(ui) {
     const border = parseFloat(getComputedStyle(frame).borderLeftWidth) * 2;
     const gap = parseFloat(style.rowGap) || 0;
     const available = Math.max(80, column.clientHeight - chrome - gap * 5 - 10);
-    const width = Math.min(
+    const maximumWidth = Math.min(
       column.clientWidth,
       (available - border) * 1.5 + border,
     );
-    const height = (width - border) / 1.5 + border;
+    // Integer 3:2 dimensions prevent Phaser's rounded canvas size from
+    // overflowing a fractional CSS frame after tablet/phone rotation.
+    const innerWidth = Math.floor((maximumWidth - border) / 3) * 3;
+    const width = innerWidth + border;
+    const height = (innerWidth / 3) * 2 + border;
     if (
       Math.abs(frame.getBoundingClientRect().width - width) > 0.5 ||
       Math.abs(frame.getBoundingClientRect().height - height) > 0.5
@@ -39,7 +43,7 @@ export function fitBattlefield(ui) {
     if (portrait && open) {
       const overlap = Math.min(65, (height - border) * 0.2);
       const panelHeight = Math.min(
-        315,
+        window.innerWidth >= 600 ? 360 : 315,
         Math.max(210, available - height + overlap),
       );
       panel.style.setProperty(

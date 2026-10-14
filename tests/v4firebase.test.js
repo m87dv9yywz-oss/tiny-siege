@@ -36,6 +36,61 @@ before(
     })),
 );
 after(async () => env?.cleanup());
+test("maximum-size segmented checkpoints stay within the security-rule evaluation budget", async () => {
+  const own = db("v4Parent"),
+    adapter = new FirebaseAdapter({ db: own }),
+    profile = freshProfile();
+  await adapter.sync("v4Parent", "maximum-battle", profile, [], null);
+  const game = new Game(() => {}, {
+    map: "crystal",
+    difficulty: "hard",
+    profile,
+    hero: "dragon",
+  });
+  // Fund a schema-limit fixture; earned campaign balance is tested separately.
+  game.gold = 100000;
+  for (let y = 65; y <= 610 && game.towers.length < 80; y += 53)
+    for (let x = 30; x <= 930 && game.towers.length < 80; x += 53)
+      if (!game.canPlace("archer", x, y)) game.place("archer", x, y);
+  assert.equal(game.towers.length, 80);
+  const checkpoint = battleCheckpoint(game, {
+    id: "maximum-run",
+    profileId: "maximum-battle",
+    finished: false,
+    heroGranted: 0,
+    granted: Object.fromEntries(TYPES.map((k) => [k, 0])),
+    stats: { waves: 0, damage: 0, armor: 0, kills: 0 },
+  });
+  await adapter.sync(
+    "v4Parent",
+    "maximum-battle",
+    profile,
+    [
+      {
+        id: "maximum-checkpoint",
+        type: "battle",
+        battle: checkpoint,
+        expectedBattleRevision: 0,
+      },
+    ],
+    0,
+  );
+  const saved = (await adapter.list("v4Parent")).find(
+    (r) => r.id === "maximum-battle",
+  );
+  assert.equal(saved.battle.towers.length, 80);
+  assert.deepEqual(saved.battle.towers, checkpoint.towers);
+  const metrics = battleDocuments(checkpoint, serverTimestamp(), 2)[
+    "battleProgress/archer"
+  ];
+  await assertFails(
+    setDoc(part(own, "maximum-battle", "battleProgress/archer"), {
+      ...metrics,
+      damage: "invalid",
+      updatedAt: serverTimestamp(),
+    }),
+  );
+});
 const db = (uid) =>
   uid
     ? env.authenticatedContext(uid).firestore()

@@ -41,9 +41,9 @@ export function validateBattle(b) {
     !b ||
     Object.keys(b).length !== 16 ||
     b.version !== 1 ||
-    !Object.hasOwn(CAMPAIGNS,b.map) ||
+    !Object.hasOwn(CAMPAIGNS, b.map) ||
     b.map === "classic" ||
-    !Object.hasOwn(DIFFICULTIES,b.difficulty) ||
+    !Object.hasOwn(DIFFICULTIES, b.difficulty) ||
     !Number.isInteger(b.wave) ||
     b.wave < 0 ||
     b.wave >= DIFFICULTIES[b.difficulty].waves ||
@@ -52,6 +52,7 @@ export function validateBattle(b) {
     b.lives < 1 ||
     b.lives > 22 ||
     !["gold", "kills", "earned", "id"].every((k) => finite(b[k])) ||
+    !Number.isInteger(b.id) ||
     !finite(b.savedAt, 1e15) ||
     !Array.isArray(b.towers) ||
     b.towers.length > 80
@@ -61,15 +62,16 @@ export function validateBattle(b) {
     !Array.isArray(b.relics) ||
     b.relics.length > 2 ||
     new Set(b.relics).size !== b.relics.length ||
-    !b.relics.every((k) => Object.hasOwn(RELICS,k))
+    !b.relics.every((k) => Object.hasOwn(RELICS, k))
   )
     return false;
   const seen = new Set();
   for (const t of b.towers) {
     if (
-      !Object.hasOwn(TOWERS,t.type) ||
+      !Object.hasOwn(TOWERS, t.type) ||
       !Number.isInteger(t.id) ||
       t.id < 1 ||
+      t.id > b.id ||
       seen.has(t.id) ||
       !Number.isFinite(t.x) ||
       !Number.isFinite(t.y) ||
@@ -118,7 +120,7 @@ export function validateBattle(b) {
   if (b.hero) {
     const h = b.hero;
     if (
-      !Object.hasOwn(HEROES,h.type) ||
+      !Object.hasOwn(HEROES, h.type) ||
       !Number.isFinite(h.x) ||
       !Number.isFinite(h.y) ||
       h.x < 0 ||
@@ -127,7 +129,9 @@ export function validateBattle(b) {
       h.y > 640 ||
       !finite(h.abilityLeft, 30) ||
       !finite(h.cooldown, 3) ||
-      !finite(h.level, 10) ||
+      !Number.isInteger(h.level) ||
+      h.level < 1 ||
+      h.level > 10 ||
       !finite(h.damage) ||
       !finite(h.attacks) ||
       !Array.isArray(h.route) ||

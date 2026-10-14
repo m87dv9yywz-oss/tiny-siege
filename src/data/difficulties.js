@@ -50,7 +50,7 @@ export function campaignFor(map, mode) {
           bossHealth:
             mode === "easy"
               ? 4800
-              : 11000 + stage * (mode === "hard" ? 48000 : 14000),
+              : 11000 + stage * (mode === "hard" ? 40000 : 14000),
         }),
         g(theme || "armored", 10 + stage * 4, 0.7),
         g("runner", 12 + stage * 3, 0.4),
