@@ -2864,3 +2864,50 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   .hud { top: 98px; row-gap: 3px; }
   .hud .resource b, .hud .wave-counter b { font-size: 18px; }
 }
+
+/* Sky-writing Easter egg: golden firework letters, temporary */
+.skywriting {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.08em;
+  pointer-events: none;
+  z-index: 9999;
+  animation: skywriting-fade 6s ease forwards;
+}
+.skywriting span {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: clamp(48px, 12vw, 120px);
+  color: #ffd94d;
+  text-shadow:
+    0 0 18px #ff9d2e,
+    0 0 45px #ff7b1c,
+    0 3px 0 #b25b12,
+    0 6px 18px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(30px) scale(0.6);
+  animation: skywriting-letter 1s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+@keyframes skywriting-letter {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes skywriting-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.sky-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffe27a;
+  box-shadow: 0 0 12px 4px rgba(255, 180, 60, 0.8);
+  animation: sky-spark 1.2s ease-out forwards;
+}
+@keyframes sky-spark {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.2) translateY(-40px); }
+}

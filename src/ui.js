@@ -529,6 +529,11 @@ export class UI {
     }
     requestAnimationFrame(() => $("modal").querySelector("button")?.focus());
   }
+  closeModal() {
+    $("modal").hidden = true;
+    $("app").inert = false;
+    this.refresh(true);
+  }
   menu() {
     if (this.kingdom) {
       this.inMenu = true;

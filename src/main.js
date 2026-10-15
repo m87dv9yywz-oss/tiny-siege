@@ -6,6 +6,7 @@ import { ProfileStore } from "./progression/profiles.js";
 import { KingdomUI } from "./progression/KingdomUI.js";
 import { UI } from "./ui.js";
 import { fitBattlefield } from "./viewport.js";
+import { initCheats } from "./cheats.js";
 let ui;
 const model = new Game((event) => ui?.event(event));
 const profiles = new ProfileStore(localStorage);
@@ -31,6 +32,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [new GameScene(model, ui)],
 });
-// Local browser tests can inspect the simulation without shipping a production cheat API.
+initCheats(ui, () => model);
+ // Local browser tests can inspect the simulation without shipping a production cheat API.
 if (import.meta.env.DEV)
   window.__tinySiege = { model, ui, game, profiles, kingdom };
