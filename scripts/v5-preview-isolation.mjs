@@ -50,10 +50,11 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await page.screenshot({path:`test-results/public-preview/${name}-portrait-battle.png`});
     await page.locator('#close-panel').tap();
+    const beforePlacement=Number(await page.locator('#gold').textContent());
     await page.locator('[data-tower="archer"]').tap();
     b=await page.locator('canvas').boundingBox();
-    await page.touchscreen.tap(b.x+b.width*320/960,b.y+b.height*280/640);
-    await page.waitForFunction(()=>document.querySelector('#gold').textContent!=='125');
+    await page.touchscreen.tap(b.x+b.width*745/960,b.y+b.height*330/640);
+    await page.waitForFunction(expected=>Number(document.querySelector('#gold').textContent)===expected,beforePlacement-75);
     await page.waitForTimeout(1500);
     const safety=await page.evaluate(()=>({keys:Object.keys(localStorage),original:localStorage.getItem('tiny-siege-profiles-v3'),csp:document.querySelector('meta[http-equiv="Content-Security-Policy"]').content,dev:typeof window.__tinySiege}));
     assert.equal(safety.original,'PRODUCTION_SENTINEL_DO_NOT_TOUCH');

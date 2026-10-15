@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PREVIEW_URL: https://tiny-siege-v5-pr17-preview-gr5zdgp6e-krumsick.vercel.app/
+      PREVIEW_URL: https://tiny-siege-v5-pr17-preview.vercel.app/
       PLAYWRIGHT_USE_BUNDLED: '1'
     steps:
       - uses: actions/checkout@v4
