@@ -12,6 +12,7 @@ import {
   enemyDisplaySize,
   enemyTexture,
 } from "../enemyArtwork.js";
+import { MAP_IDS, mapArtwork, mapTexture } from "../mapArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -43,6 +44,8 @@ export class GameScene extends Phaser.Scene {
         );
     for (const type of ENEMY_TYPES)
       this.load.image(enemyTexture(type), base + enemyArtwork(type));
+    for (const id of MAP_IDS)
+      this.load.image(mapTexture(id), base + mapArtwork(id));
     for (const type of ["wind", "rune"]) {
       for (const level of [1, 2, 3])
         this.load.svg(
@@ -66,10 +69,19 @@ export class GameScene extends Phaser.Scene {
   }
   create() {
     textures(this);
+    // Hand-painted map behind the procedural battlefield details.
+    const mapTex = mapTexture(this.model.campaign.id);
+    if (mapTex && this.textures.exists(mapTex)) {
+      this.mapImage = this.add
+        .image(480, 320, mapTex)
+        .setDisplaySize(960, 640)
+        .setDepth(-10);
+    }
     this.battlefieldObjects = battlefield(
       this,
       this.model.trail,
       this.model.campaign.biome,
+      !!mapTex,
     );
     this.currentMap = this.model.campaign.id;
     this.dynamic = this.add.graphics().setDepth(900);
@@ -222,10 +234,17 @@ export class GameScene extends Phaser.Scene {
   effect(event) {
     if (event.type === "reset" && this.currentMap !== this.model.campaign.id) {
       this.battlefieldObjects?.forEach((o) => o.destroy());
+      const resetMapTex = mapTexture(this.model.campaign.id);
+      if (this.mapImage) {
+        if (resetMapTex && this.textures.exists(resetMapTex))
+          this.mapImage.setTexture(resetMapTex);
+        else this.mapImage.setVisible(false);
+      }
       this.battlefieldObjects = battlefield(
         this,
         this.model.trail,
         this.model.campaign.biome,
+        !!resetMapTex && this.textures.exists(resetMapTex),
       );
       this.currentMap = this.model.campaign.id;
     }

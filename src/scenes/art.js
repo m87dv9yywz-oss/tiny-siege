@@ -358,6 +358,7 @@ export function battlefield(
   scene,
   trail = { PATH, distanceToPath },
   biome = "emerald",
+  painted = false,
 ) {
   const { PATH, distanceToPath } = trail;
   const palette =
@@ -394,8 +395,10 @@ export function battlefield(
           : {};
   const childrenBefore = new Set(scene.children.list);
   const g = scene.add.graphics().setDepth(0);
-  g.fillStyle(palette[0x76a77a] || 0x76a77a);
-  g.fillRect(0, 0, 960, 640);
+  if (!painted) {
+    g.fillStyle(palette[0x76a77a] || 0x76a77a);
+    g.fillRect(0, 0, 960, 640);
+  }
   let seed = 722;
   const random = () => {
     seed = (seed * 1664525 + 1013904223) >>> 0;
@@ -441,10 +444,12 @@ export function battlefield(
     PATH.slice(1).forEach((p) => g.lineTo(p.x, p.y + offset));
     g.strokePath();
   };
-  line(56, 0x4e8057, 4);
-  line(51, 0xa99b69);
-  line(43, 0xd6bf87);
-  line(33, 0xe0c892);
+  if (!painted) {
+    line(56, 0x4e8057, 4);
+    line(51, 0xa99b69);
+    line(43, 0xd6bf87);
+    line(33, 0xe0c892);
+  }
   for (let i = 5; i < PATH.length; i += 4) {
     const p = PATH[i];
     g.fillStyle(palette[0xb2a078] || 0xb2a078, 0.4);
