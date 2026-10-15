@@ -145,8 +145,17 @@ export class UI {
     document.addEventListener("pointerdown", (e) => {
       if (settings.open && !settings.contains(e.target)) settings.open = false;
     });
+    $("game").setAttribute("aria-busy", "true");
     this.menu();
     this.refresh(true);
+  }
+  battlefieldReady() {
+    $("game").setAttribute("aria-busy", "false");
+    document.querySelectorAll("[data-waiting-for-scene]").forEach(button => {
+      button.disabled = false;
+      delete button.dataset.waitingForScene;
+    });
+    $("battlefield-loading")?.remove();
   }
   hydrateShop() {
     for (const [key, def] of Object.entries(TOWERS))
@@ -484,6 +493,7 @@ export class UI {
     this.refresh(true);
   }
   restart() {
+    if (!this.scene) return; // Never enter a battle before Phaser attaches input.
     this.drag = null;
     clearTimeout(this.toastTimer);
     $("toast").classList.remove("visible");
@@ -506,6 +516,17 @@ export class UI {
     $("app").inert = true;
     $("modal").innerHTML = `<div class="modal-card">${html}</div>`;
     $("modal").hidden = false;
+    if (!this.scene) {
+      const entry = $("modal").querySelectorAll("#play, #begin-adventure, #continue-battle");
+      for (const button of entry) {
+        if (!button.disabled) {
+          button.dataset.waitingForScene = "true";
+          button.disabled = true;
+        }
+      }
+      if (entry.length)
+        entry[0].insertAdjacentHTML("beforebegin", '<p id="battlefield-loading" role="status">Preparing battlefield artwork…</p>');
+    }
     requestAnimationFrame(() => $("modal").querySelector("button")?.focus());
   }
   menu() {

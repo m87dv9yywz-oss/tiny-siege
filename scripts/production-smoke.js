@@ -21,7 +21,7 @@ try {
   const response = await page.goto(target.href);
   assert.equal(response.status(), 200);
   await page.waitForFunction(
-    () => document.querySelector("canvas") && document.querySelector("#play"),
+    () => document.querySelector("#game")?.getAttribute("aria-busy") === "false" && document.querySelector("#play"),
   );
   assert.equal(
     await page.evaluate(() => typeof window.__tinySiege),
@@ -155,6 +155,7 @@ try {
     const live = await browser.newPage({ viewport: { width, height }, hasTouch: true });
     live.on("pageerror", e => errors.push(e.message));
     await live.goto(target.href);
+    await live.waitForFunction(() => document.querySelector("#game")?.getAttribute("aria-busy") === "false");
     await live.locator("#play").tap();
     const world = async (x, y) => {
       const board = await live.locator("canvas").boundingBox();
@@ -204,6 +205,10 @@ try {
   console.log(
     `Verified V5 artwork, enlarged battlefield, adaptive panels, confirmed Menu restart and Cancel at five viewports; production icons, touch placement, paid upgrades, targeting, hero, combat, saved XP and resume at ${url}`,
   );
+} catch (error) {
+  const last = browser.contexts().flatMap(context => context.pages()).at(-1);
+  if (last) await last.screenshot({ path: "test-results/production-failure.png" }).catch(() => {});
+  throw error;
 } finally {
   await browser.close();
 }
