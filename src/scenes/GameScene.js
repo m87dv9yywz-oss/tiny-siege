@@ -452,6 +452,10 @@ export class GameScene extends Phaser.Scene {
             enemyTexture(enemy.type) || `enemy-${enemy.type}`,
           )
           .setDepth(enemy.y + 30);
+        if (enemyTexture(enemy.type)) {
+          const gd = enemyDisplaySize((ENEMIES[enemy.type] || {}).radius || 12);
+          ghost.setDisplaySize(gd, gd);
+        }
         this.effects.push({ type: "death", text: ghost, age: 0, life: 0.24 });
       }
       if (this.effects.filter((e) => e.type === "gold").length < 20) {

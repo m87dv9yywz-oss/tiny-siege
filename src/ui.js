@@ -6,6 +6,12 @@ import { guideHTML } from "./upgradeGuide.js";
 import { UNLOCK_COSTS } from "./progression/profiles.js";
 import { WAVE_HINTS } from "./data/waves.js";
 const $ = (id) => document.getElementById(id);
+const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
+const HERO_CARD_ART = {
+  dragon: "hero_dragon_adult.png",
+  dinosaur: "hero_dino_adult.png",
+  tiger: "hero_tiger_adult.png",
+};
 export class UI {
   constructor(model, kingdom = null) {
     this.kingdom = kingdom;
@@ -23,7 +29,7 @@ export class UI {
     $("tower-shop").innerHTML = Object.entries(TOWERS)
       .map(
         ([key, t], i) =>
-          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
+          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span class="tower-lock" aria-hidden="true"><img src="${V5UI("ui_icon_lock.png")}" alt=""></span><span><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
       )
       .join("");
     document.querySelectorAll("[data-tower]").forEach(
@@ -361,8 +367,9 @@ export class UI {
     this.model.paused = true;
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="restart" class="danger">Restart Battle</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="keep-playing" class="v5-btn v5-btn-primary">Resume Battle</button><button id="battle-settings-open" class="v5-btn v5-btn-secondary">Settings</button><button id="battle-how" class="v5-btn v5-btn-secondary">How to Play</button><button id="confirm-leave" class="v5-btn v5-btn-secondary">Save & Main Menu</button><button id="restart" class="v5-btn v5-btn-secondary">Restart Battle</button><button id="abandon-battle" class="v5-btn v5-btn-danger">Abandon Battle</button>`,
     );
+    $("modal").querySelector(".modal-card").classList.add("v5-dialog-card");
     $("keep-playing").onclick = () => {
       this.helpOpen = false;
       this.model.paused = paused;
@@ -372,10 +379,34 @@ export class UI {
     };
     this.overlayClose = $("keep-playing").onclick;
     const returnToBattle = this.overlayClose;
+    const returnToMenu = () => {
+      this.leaveRun();
+      // leaveRun re-captures the (menu-paused) state; restore the original.
+      this.model.paused = true;
+      $("keep-playing").onclick = returnToBattle;
+      this.overlayClose = returnToBattle;
+    };
+    $("battle-settings-open").onclick = () => {
+      this.helpOpen = false;
+      this.model.paused = paused;
+      $("modal").hidden = true;
+      $("app").inert = false;
+      $("battle-settings").open = true;
+      this.refresh(true);
+    };
+    $("battle-how").onclick = () => {
+      this.help();
+      $("close-help").onclick = () => {
+        this.helpOpen = false;
+        returnToMenu();
+      };
+      this.overlayClose = $("close-help").onclick;
+    };
     $("restart").onclick = () => {
       this.modal(
-        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="primary">Cancel</button><button id="confirm-restart" class="danger">Yes, Restart</button>`,
+        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="v5-btn v5-btn-primary">Cancel</button><button id="confirm-restart" class="v5-btn v5-btn-danger">Yes, Restart</button>`,
       );
+      $("modal").querySelector(".modal-card").classList.add("v5-dialog-card");
       this.overlayClose = returnToBattle;
       $("cancel-restart").onclick = returnToBattle;
       $("confirm-restart").onclick = () => this.restart();
@@ -460,7 +491,9 @@ export class UI {
             "",
           )}</div><button id="intro-ready" class="primary">Ready · start wave ${this.model.wave + 1}</button><button id="intro-back" class="secondary">Prepare my defense</button>`,
       );
-      $("modal").querySelector(".modal-card").classList.add("intro-card");
+      $("modal")
+        .querySelector(".modal-card")
+        .classList.add("intro-card", "v5-dialog-card");
       const close = () => {
         this.helpOpen = false;
         $("modal").hidden = true;
@@ -574,9 +607,13 @@ export class UI {
   result(result) {
     const win = result === "victory";
     const rewards = this.kingdom?.finishRun();
+    const stars = win ? (this.model.lives >= 18 ? 3 : this.model.lives >= 10 ? 2 : 1) : 0;
     this.modal(
-      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
+      `<div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><div class="v5-stars" role="img" aria-label="${stars} of 3 stars">${[1, 2, 3].map((n) => `<img src="${V5UI(n <= stars ? "ui_icon_star.png" : "ui_icon_star_empty.png")}" alt="">`).join("")}</div><p>${win ? this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="v5-btn v5-btn-primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="v5-btn v5-btn-secondary">Main menu</button>`,
     );
+    $("modal")
+      .querySelector(".modal-card")
+      .classList.add("v5-dialog-card", "result-card", win ? "is-victory" : "is-defeat");
     if (rewards)
       $("again").insertAdjacentHTML(
         "beforebegin",
@@ -629,9 +666,10 @@ export class UI {
     $("pause").disabled = this.inMenu || !!m.ended;
     $("speed").disabled = this.inMenu || !!m.ended;
     $("pause").innerHTML = m.paused
-      ? "▶ <span>Resume</span>"
-      : "II <span>Pause</span>";
-    $("speed").innerHTML = `${m.speed}× <span>Speed</span>`;
+      ? `<img src="${V5UI("ui_icon_play.png")}" alt=""> <span>Resume</span>`
+      : `<img src="${V5UI("ui_icon_pause.png")}" alt=""> <span>Pause</span>`;
+    $("speed").innerHTML =
+      `<img src="${V5UI("ui_icon_speed.png")}" alt=""> ${m.speed}× <span>Speed</span>`;
     $("pause-shade").hidden = !m.paused;
     $("start-wave").disabled = m.active || m.paused || !!m.ended || this.inMenu;
     $("start-wave").innerHTML = m.ended
@@ -652,9 +690,10 @@ export class UI {
         def = TOWERS[type],
         unlocked = m.available(type),
         crowns = UNLOCK_COSTS[type];
-      b.querySelector(".tower-cost").textContent = unlocked
+      b.querySelector(".tower-cost").innerHTML = unlocked
         ? def.cost
-        : `♛ ${crowns}`;
+        : `<img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${crowns}`;
+      b.classList.toggle("locked", !unlocked);
       b.title = unlocked
         ? `${def.name}: ${def.subtitle}`
         : `Unlock ${def.name} in Kingdom for ${crowns} Crowns`;
@@ -676,7 +715,9 @@ export class UI {
     const h = m.hero;
     $("hero-controls").hidden = !h || this.inMenu;
     if (h) {
-      $("hero-icon").src = `${import.meta.env.BASE_URL}heroes/${h.type}.svg`;
+      $("hero-icon").src = HERO_CARD_ART[h.type]
+        ? `${import.meta.env.BASE_URL}assets/v5/heroes/card_512/${HERO_CARD_ART[h.type]}`
+        : `${import.meta.env.BASE_URL}heroes/${h.type}.svg`;
       $("hero-icon").alt = HEROES[h.type].name;
       $("hero-move").textContent = this.heroMoving
         ? "Cancel move"
@@ -787,7 +828,7 @@ export class UI {
       panel.scrollTop = scroll;
     } else if (this.placing) {
       const def = TOWERS[this.placing];
-      panel.innerHTML = `<div class="empty-selection"><span style="color:${def.hex}">${def.icon}</span><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
+      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
       $("cancel").onclick = () => this.cancel();
     } else
       panel.innerHTML =
