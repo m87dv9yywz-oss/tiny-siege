@@ -1,4 +1,5 @@
 import { HEROES, heroLevel } from "../data/heroes.js";
+import { heroStage } from "../heroArtwork.js";
 import { OBSTACLES } from "../data/map.js";
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export function heroStart(game, type, xp = 0) {
@@ -109,10 +110,11 @@ export function heroAttack(game, ability = false) {
     (ability && h.abilityLeft > 0)
   )
     return false;
+  // Adult heroes (level 7+) strike farther with their ability.
+  const adult = heroStage(h.level) === "adult",
+    range = def.range * (ability ? (adult ? 2 : 1.65) : 1);
   const targets = game.enemies
-    .filter(
-      (e) => e.alive && distance(e, h) <= def.range * (ability ? 1.65 : 1),
-    )
+    .filter((e) => e.alive && distance(e, h) <= range)
     .sort((a, b) => b.progress - a.progress || a.id - b.id);
   if (!targets.length) return false;
   const strength =
@@ -155,12 +157,15 @@ export function heroAttack(game, ability = false) {
   }
   h.attacks++;
   if (ability)
-    h.abilityLeft = def.cooldown * (game.relics.includes("crown") ? 0.9 : 1);
+    h.abilityLeft =
+      def.cooldown *
+      (adult ? 0.8 : 1) *
+      (game.relics.includes("crown") ? 0.9 : 1);
   game.emit("heroAttack", {
     hero: h,
     target: targets[0],
     ability,
-    radius: ability ? def.range * 1.65 : 50,
+    radius: ability ? range : 50,
   });
   return true;
 }

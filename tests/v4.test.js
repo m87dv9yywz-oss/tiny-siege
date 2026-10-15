@@ -354,3 +354,45 @@ test("bounded document codec preserves progress while local receipt storage prev
   delete missing["towers/wind"];
   assert.throws(() => assembleProfile(core, missing));
 });
+test("hero auras strengthen from Teen (level 4)", () => {
+  const klass = { dragon: "fire", dinosaur: "cannon", tiger: "archer" };
+  for (const [type, towerType] of Object.entries(klass)) {
+    const g = new Game(() => {}, {
+      map: "emerald",
+      difficulty: "easy",
+      hero: type,
+    });
+    const t = { type: towerType, x: g.hero.x, y: g.hero.y, paths: [0, 0, 0] };
+    const base = towerStats(t);
+    const baby = g.effectiveStats(t);
+    g.hero.level = 4;
+    const teen = g.effectiveStats(t);
+    if (type === "dragon") {
+      assert.equal(baby.damage, base.damage * 1.15);
+      assert.equal(teen.damage, base.damage * 1.2);
+    } else if (type === "dinosaur") {
+      assert.equal(baby.armorDamage, (base.armorDamage || 0) * 1.25);
+      assert.equal(teen.armorDamage, (base.armorDamage || 0) * 1.3);
+    } else {
+      assert.equal(baby.cooldown, base.cooldown * (1 - 0.12));
+      assert.equal(teen.cooldown, base.cooldown * (1 - 0.16));
+    }
+  }
+});
+test("adult heroes (level 7) gain a wider, faster-recharging ability", () => {
+  const g = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "easy",
+    hero: "dragon",
+  });
+  g.active = true;
+  const e = g.spawn("brute");
+  // 240 from the hero: beyond Teen reach (135 * 1.65 = 222.75),
+  // inside Adult reach (135 * 2 = 270).
+  Object.assign(e, { x: g.hero.x + 240, y: g.hero.y, progress: 100 });
+  g.hero.level = 6;
+  assert(!g.heroAbility());
+  g.hero.level = 7;
+  assert(g.heroAbility());
+  assert.equal(g.hero.abilityLeft, 28 * 0.8);
+});
