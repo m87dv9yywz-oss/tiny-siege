@@ -12,7 +12,7 @@ import {
   enemyDisplaySize,
   enemyTexture,
 } from "../enemyArtwork.js";
-import { MAP_IDS, mapArtwork, mapTexture } from "../mapArtwork.js";
+import { mapArtwork, mapTexture } from "../mapArtwork.js";
 import { heroArtwork, heroTexture } from "../heroArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
@@ -45,8 +45,9 @@ export class GameScene extends Phaser.Scene {
         );
     for (const type of ENEMY_TYPES)
       this.load.image(enemyTexture(type), base + enemyArtwork(type));
-    for (const id of MAP_IDS)
-      this.load.image(mapTexture(id), base + mapArtwork(id));
+    const startMap = mapTexture(this.model.campaign.id);
+    if (startMap)
+      this.load.image(startMap, base + mapArtwork(this.model.campaign.id));
     for (const type of ["wind", "rune"]) {
       for (const level of [1, 2, 3])
         this.load.svg(
@@ -241,8 +242,19 @@ export class GameScene extends Phaser.Scene {
       const resetMapTex = mapTexture(this.model.campaign.id);
       if (this.mapImage) {
         if (resetMapTex && this.textures.exists(resetMapTex))
-          this.mapImage.setTexture(resetMapTex);
-        else this.mapImage.setVisible(false);
+          this.mapImage.setTexture(resetMapTex).setVisible(true);
+        else if (resetMapTex) {
+          this.mapImage.setVisible(false);
+          this.load.image(
+            resetMapTex,
+            import.meta.env.BASE_URL + mapArtwork(this.model.campaign.id),
+          );
+          this.load.once("complete", () => {
+            if (this.mapImage && this.currentMap === this.model.campaign.id)
+              this.mapImage.setTexture(resetMapTex).setVisible(true);
+          });
+          this.load.start();
+        } else this.mapImage.setVisible(false);
       }
       this.battlefieldObjects = battlefield(
         this,
