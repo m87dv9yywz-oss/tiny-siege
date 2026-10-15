@@ -15,7 +15,7 @@ for(const[width,height]of[[375,680],[390,730],[844,330],[844,390],[932,360],[667
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Phone playtest');
  await textFits(page,'#profile-form .v5-btn,.modal-card > .v5-btn');
  await page.screenshot({path:`test-results/phone-feedback/profile-${width}x${height}.png`});
- await page.locator('#profile-form button').tap();await page.locator('[data-map="emerald"]').tap();
+ await page.locator('#profile-form button').tap();await textFits(page,'.home-actions .v5-btn,.kingdom-actions .v5-btn');await page.locator('[data-map="emerald"]').tap();
  await textFits(page,'.difficulty-picker .v5-btn,.v5-prep-actions .v5-btn,#choose-hero');
  await expect(page.locator('.v5-relic-line')).not.toContainText('14 gentle waves');
  await page.screenshot({path:`test-results/phone-feedback/preparation-${width}x${height}.png`});

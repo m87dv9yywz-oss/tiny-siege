@@ -187,11 +187,26 @@ test("Google emulator credential, guest migration, two browser sessions, offline
     relics: ["lens", "crown"],
     stars: 3,
   });
+  // Keep the submitted emulator fixture available if the server rejects it.
+  // No tokens or real accounts are involved; don't hide permission failures.
+  await p.evaluate(() => {
+    const adapter = window.__tinySiege.kingdom.cloud.adapter;
+    const original = adapter.sync.bind(adapter);
+    adapter.sync = async (...args) => {
+      window.__cloudCreateFixture = structuredClone({uid: args[0], id: args[1], profile: args[2], operations: args[3]});
+      return original(...args);
+    };
+  });
   await p.locator("#new-profile").click();
   await p.locator("#nickname").fill("Cloud Fox");
   await expect(p.locator("#profile-cloud")).toBeChecked();
   await p.locator("#profile-form button").click();
-  await expect(p.locator(".profile-choice.chosen")).toContainText("Cloud Fox");
+  try {
+    await expect(p.locator(".profile-choice.chosen")).toContainText("Cloud Fox");
+  } catch (error) {
+    console.log("Rejected emulator create fixture:", JSON.stringify(await p.evaluate(() => ({fixture: window.__cloudCreateFixture, message: document.querySelector("#save-message")?.textContent}))));
+    throw error;
+  }
   expect(
     await p.evaluate(() => window.__tinySiege.profiles.current.crowns),
   ).toBe(0);
