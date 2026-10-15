@@ -99,12 +99,34 @@ export class UI {
         ? "Effects: gentle"
         : "Effects: full";
     };
-    $("start-wave").onclick = () => this.beginWave();
+    // Tap Play to start one wave; HOLD Play to toggle auto waves. The
+    // click that follows a long-press is swallowed so it cannot also
+    // start a wave.
+    let playHeld = false,
+      playHoldTimer = null;
+    $("start-wave").addEventListener("pointerdown", () => {
+      playHeld = false;
+      clearTimeout(playHoldTimer);
+      playHoldTimer = setTimeout(() => {
+        playHeld = true;
+        this.toggleAutoWave();
+      }, 550);
+    });
+    for (const ev of ["pointerup", "pointerleave", "pointercancel"])
+      $("start-wave").addEventListener(ev, () => clearTimeout(playHoldTimer));
+    $("start-wave").onclick = () => {
+      if (playHeld) {
+        playHeld = false;
+        return;
+      }
+      this.beginWave();
+    };
     $("pause").onclick = () => this.togglePause();
     $("speed").onclick = () => {
-      this.model.speed = this.model.speed === 1 ? 2 : 1;
+      this.model.speed = this.model.speed === 1 ? 2 : this.model.speed === 2 ? 3 : 1;
       this.refresh(true);
     };
+    $("auto-wave").onclick = () => this.toggleAutoWave();
     $("leave-run").onclick = () => this.leaveRun();
     $("help-button").onclick = () => this.help();
     document.querySelector(".brand").onclick = (e) => {
@@ -308,11 +330,32 @@ export class UI {
         this.kingdom.checkpoint();
         this.kingdom.saveBattle();
       });
-    if (event.type === "clear")
-      this.toast(`Wave ${this.model.wave} cleared · +${event.bonus} gold`);
+    if (event.type === "clear") {
+      // A leak that ends the wave fires autoOff first; keep that warning
+      // on screen instead of replacing it with the wave-clear toast.
+      if (!(this.autoOffAt && Date.now() - this.autoOffAt < 2000))
+        this.toast(`Wave ${this.model.wave} cleared · +${event.bonus} gold`);
+    }
     if (event.type === "escape")
       this.toast(
-        `A visitor got through! −${event.enemy.lives} ${event.enemy.lives === 1 ? "life" : "lives"}`,
+        event.enemy.golden
+          ? "The Golden Sproutling got away…"
+          : `A visitor got through! −${event.enemy.lives} ${event.enemy.lives === 1 ? "life" : "lives"}`,
+      );
+    if (event.type === "goldenPop")
+      this.toast("Golden Sproutling popped! +250 gold");
+    if (event.type === "autoOff") {
+      this.autoOffAt = Date.now();
+      this.toast("Auto waves off — an enemy got through. Your move!");
+    }
+    if (
+      event.type === "wave" &&
+      this.model.campaign.mode &&
+      this.model.wave > 1 &&
+      (this.model.wave - 1) % 20 === 0
+    )
+      this.toast(
+        `Stage ${Math.floor((this.model.wave - 1) / 20) + 1} — the enemies are growing bigger and bolder!`,
       );
     if (event.type === "end") {
       this.placing = null;
@@ -523,11 +566,29 @@ export class UI {
     }
     if (this.model.startWave()) {
       this.resumeAudio();
-      this.toast(
-        (this.model.campaign.hints || WAVE_HINTS)[this.model.wave - 1],
-      );
+      // A new 20-wave stage opening takes the toast: it is the moment the
+      // enemies visibly change, so it outranks the usual wave hint.
+      if (
+        !(
+          this.model.campaign.mode &&
+          this.model.wave > 1 &&
+          (this.model.wave - 1) % 20 === 0
+        )
+      )
+        this.toast(
+          (this.model.campaign.hints || WAVE_HINTS)[this.model.wave - 1],
+        );
       this.refresh(true);
     }
+  }
+  toggleAutoWave() {
+    this.model.autoWave = !this.model.autoWave;
+    this.toast(
+      this.model.autoWave
+        ? "Auto waves on — each wave starts by itself. Losing a life turns it off."
+        : "Auto waves off.",
+    );
+    this.refresh(true);
   }
   togglePause() {
     if (this.inMenu || this.model.ended || this.helpOpen) return;
@@ -682,13 +743,17 @@ export class UI {
       : `<img src="${V5UI("ui_icon_pause.png")}" alt=""> <span>Pause</span>`;
     $("speed").innerHTML =
       `<img src="${V5UI("ui_icon_speed.png")}" alt=""> ${m.speed}× <span>Speed</span>`;
+    $("auto-wave").textContent = `Auto waves: ${m.autoWave ? "on" : "off"}`;
+    $("auto-wave").classList.toggle("is-on", !!m.autoWave);
     $("pause-shade").hidden = !m.paused;
     $("start-wave").disabled = m.active || m.paused || !!m.ended || this.inMenu;
     $("start-wave").innerHTML = m.ended
       ? "BATTLE COMPLETE"
       : m.active
         ? "WAVE IN PROGRESS"
-        : `START WAVE ${m.wave + 1} <span>→</span>`;
+        : m.autoWave
+          ? `AUTO · WAVE ${m.wave + 1} NEXT <span>→</span>`
+          : `START WAVE ${m.wave + 1} <span>→</span>`;
     $("wave-hint").textContent =
       m.ended === "victory"
         ? "The little kingdom stands."
@@ -831,8 +896,28 @@ export class UI {
           }),
       );
       $("sell").onclick = () => {
-        m.sell(t.id);
-        this.refresh(true);
+        // Selling is permanent and refunds only 70% — confirm first, with
+        // Cancel as the safe default, like the restart confirmation.
+        const wasPaused = m.paused;
+        m.paused = true;
+        const value = Math.floor(t.invested * 0.7);
+        this.modal(
+          `<div class="eyebrow">SELL TOWER</div><h1 id="modal-title">Sell this ${TOWERS[t.type].name}?</h1><p>You will get back ${value} gold. The tower and its upgrades will be gone.</p><button id="cancel-sell" class="v5-btn v5-btn-primary">Cancel</button><button id="confirm-sell" class="v5-btn v5-btn-danger">Yes, Sell</button>`,
+        );
+        const close = () => {
+          this.overlayClose = null;
+          $("modal").hidden = true;
+          $("app").inert = false;
+          m.paused = wasPaused;
+          this.refresh(true);
+        };
+        this.overlayClose = close;
+        $("cancel-sell").onclick = close;
+        $("confirm-sell").onclick = () => {
+          close();
+          m.sell(t.id);
+          this.refresh(true);
+        };
       };
       panel.querySelector(".properties").open = detailsOpen;
       panel.scrollTop = scroll;

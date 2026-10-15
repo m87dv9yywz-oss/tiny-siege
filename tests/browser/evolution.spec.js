@@ -104,6 +104,7 @@ for (const [width, height] of viewports)
     });
     await tapMap(page, 145, 105);
     await page.locator("#sell").tap();
+    await page.locator("#confirm-sell").tap();
     await expect(page.locator("#gold")).toHaveText("217");
     await page.locator("#leave-run").tap();
     await page.locator("#restart").tap();

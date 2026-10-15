@@ -26,7 +26,7 @@ for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, po
   await page.screenshot({path:`${out}/towers/${type}-${state}.png`,clip:{x:b.x+b.width*100/960,y:b.y+b.height*15/640,width:b.width*90/960,height:b.height*110/640}});
   if(state==='3-1-0')await page.screenshot({path:`${out}/tower-${type}-ultimate.png`});
   await page.locator('#close-panel').tap();await world(page,145,90);await expect(page.locator('#selection-panel')).toBeVisible();
-  await page.locator('#sell').tap();await expect(page.locator('#gold')).toHaveText(String(10000-spent+Math.floor(spent*.7)));
+  await page.locator('#sell').tap();await page.locator('#confirm-sell').tap();await expect(page.locator('#gold')).toHaveText(String(10000-spent+Math.floor(spent*.7)));
  }
  expect(errors).toEqual([]);
 });
