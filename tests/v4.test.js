@@ -360,6 +360,92 @@ test("auto-start begins the next wave after a beat, never while paused; 3x tripl
   fast.update(1);
   assert(fast.waveTime > 2.9);
 });
+test("20-wave stages grow adventure enemies: health, speed and size step up, bosses exempt", () => {
+  const mk = (wave) => {
+    const g = new Game(() => {}, { map: "emerald", difficulty: "medium" });
+    g.wave = wave;
+    return g;
+  };
+  const s0 = mk(10).spawn("basic");
+  const s1 = mk(30).spawn("basic");
+  const s4 = mk(95).spawn("basic");
+  assert.equal(s0.stage, 0);
+  assert.equal(s1.stage, 1);
+  assert.equal(s4.stage, 4);
+  assert(s1.health > s0.health * 1.3, "stage health stacks on wave growth");
+  assert(Math.abs(s1.speed - 52 * 1.03) < 1e-9);
+  assert(Math.abs(s4.speed - 52 * 1.12) < 1e-9, "speed caps at +12%");
+  assert(Math.abs(s1.displayScale - 1.07) < 1e-9);
+  assert(Math.abs(s4.displayScale - 1.28) < 1e-9, "size caps at +28%");
+  const boss = mk(30).spawn("boss");
+  assert.equal(boss.displayScale, 1);
+  assert.equal(boss.speed, 29);
+  assert.equal(boss.health, 18000);
+  const classic = new Game(() => {}, {});
+  classic.wave = 10;
+  const c = classic.spawn("basic");
+  assert.equal(c.stage, 0);
+  assert.equal(c.displayScale, 1);
+  assert.equal(c.speed, 52);
+});
+test("auto waves switch off the moment a life is lost", () => {
+  const events = [];
+  const g = new Game((e) => events.push(e), {
+    map: "emerald",
+    difficulty: "easy",
+  });
+  g.autoWave = true;
+  g.startWave();
+  const e = g.spawn("basic");
+  e.progress = g.trail.PATH_LENGTH - 1;
+  g.enemies = [e];
+  g.queue = [];
+  g.update(0.1);
+  assert.equal(g.lives, 19);
+  assert.equal(g.autoWave, false);
+  assert(events.some((ev) => ev.type === "autoOff"));
+});
+test("golden sproutling: rare bonus runner worth 250, costs no life if it escapes", () => {
+  const original = Math.random;
+  Math.random = () => 0;
+  try {
+    const g = new Game(() => {}, { map: "emerald", difficulty: "medium" });
+    g.wave = 14;
+    assert(g.startWave());
+    assert(
+      g.queue.some((q) => q.golden),
+      "golden entry is queued on an eligible wave",
+    );
+    const e = g.spawn("sprout", { golden: true });
+    assert.equal(e.name, "Golden Sproutling");
+    assert.equal(e.reward, 250);
+    assert.equal(e.lives, 0);
+    assert(e.speed >= 115, "faster than a Fleetfoot");
+    const lives = g.lives;
+    e.progress = g.trail.PATH_LENGTH - 1;
+    g.enemies = [e];
+    g.queue = [];
+    g.update(0.1);
+    assert.equal(g.lives, lives, "escaping costs no life");
+    const bossWave = new Game(() => {}, {
+      map: "emerald",
+      difficulty: "medium",
+    });
+    bossWave.wave = 19;
+    bossWave.startWave();
+    assert(!bossWave.queue.some((q) => q.golden), "never on a boss wave");
+    const once = new Game(() => {}, { map: "emerald", difficulty: "medium" });
+    once.wave = 14;
+    once.startWave();
+    assert(once.queue.some((q) => q.golden));
+    once.active = false;
+    once.wave = 15;
+    once.startWave();
+    assert(!once.queue.some((q) => q.golden), "at most once per run");
+  } finally {
+    Math.random = original;
+  }
+});
 test("bounded document codec preserves progress while local receipt storage prevents ancient reward replay", () => {
   const store = new ProfileStore(disk());
   store.create("Long journey");

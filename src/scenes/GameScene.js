@@ -12,6 +12,7 @@ import {
   enemyArtwork,
   enemyDisplaySize,
   enemyTexture,
+  stageTint,
 } from "../enemyArtwork.js";
 import { mapArtwork, mapTexture } from "../mapArtwork.js";
 import { heroArtwork, heroTexture, heroStage } from "../heroArtwork.js";
@@ -636,7 +637,9 @@ export class GameScene extends Phaser.Scene {
         const tex = enemyTexture(e.type) || `enemy-${e.type}`;
         sprite = this.add.image(e.x, e.y, tex);
         if (enemyTexture(e.type)) {
-          const d = enemyDisplaySize((ENEMIES[e.type] || {}).radius || 12);
+          const d =
+            enemyDisplaySize((ENEMIES[e.type] || {}).radius || 12) *
+            (e.displayScale || 1);
           sprite.setDisplaySize(d, d);
         }
         this.enemySprites.set(e.id, sprite);
@@ -657,10 +660,16 @@ export class GameScene extends Phaser.Scene {
         if (enemyTexture(e.type))
           sprite
             .setTexture(enemyTexture(e.type))
-            .setTint(max > 0 && state === "broken" ? 0xbbbbbb : max > 0 && state === "cracked" ? 0xdddddd : 0xffffff);
+            .setTint(max > 0 && state === "broken" ? 0xbbbbbb : max > 0 && state === "cracked" ? 0xdddddd : stageTint(e.stage));
         else sprite.setTexture(`enemy-${e.type}-${state}`);
+      else if (!e.boss)
+        sprite.setTint(e.golden ? 0xffbe3c : stageTint(e.stage));
+      if (e.golden) {
+        g.lineStyle(2, 0xffbe3c, 0.95);
+        g.strokeCircle(e.x, e.y - 8, 17 * (e.displayScale || 1));
+      }
       if (e.elite) {
-        sprite.setDisplaySize(enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3), enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3));
+        sprite.setDisplaySize(enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3 * (e.displayScale || 1)), enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3 * (e.displayScale || 1)));
         g.lineStyle(2, 0xe7be75);
         g.strokeCircle(e.x, e.y - 8, 23);
       }

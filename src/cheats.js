@@ -1,6 +1,13 @@
 // Hidden cheat codes and Easter eggs.
 // Access: tap the Tiny Siege logo 5x on the main menu, or tap the gold
 // counter 5x during a battle. Never visible in normal play.
+// Owner's rule (2026-10-15): codes are just for fun and carry NO penalty —
+// the 5-tap gesture is the safeguard, codes apply the moment they are
+// tapped (no warning/confirmation screen), and a gold code leaves the run
+// fully real: XP, Crowns, achievements, completion and checkpoints all
+// count exactly as if the gold had been earned. The one exception is the
+// wave skip: skipped waves themselves earn nothing, while every wave the
+// player actually plays counts in full.
 const TAP_WINDOW = 3000;
 const TAPS_NEEDED = 5;
 
@@ -39,48 +46,50 @@ function showCheatPanel(ui, getGame) {
     if (ui.inMenu) ui.menu();
     else ui.closeModal();
   };
-  const confirm = kind => {
-    ui.modal(`<h1 id="modal-title">${kind === "gold" ? "Add 10,000 gold?" : "Skip ahead 10 waves?"}</h1>
-      <p>${game.campaign.id === "classic" ? "Apply this code to your Classic practice battle?" : kind === "gold" ? "Play this adventure just for fun? No Crowns, XP, achievements or new checkpoint will be saved. Your normal checkpoint stays safe. Refreshing returns to that checkpoint." : "Skipped waves earn no gold or XP. Waves you play still count — and if you play the final waves and win, the adventure still completes."}</p>
-      <button id="cancel-cheat" class="primary">Cancel</button><button id="confirm-cheat" class="danger">${kind === "gold" ? "Yes, add gold" : "Yes, skip waves"}</button>`);
-    ui.overlayClose = close;
-    document.getElementById("cancel-cheat").onclick = close;
-    document.getElementById("confirm-cheat").onclick = () => {
-      if (kind === "gold") {
-        if (game.campaign.id !== "classic" && !ui.kingdom.practice) {
-          ui.kingdom.safe(() => ui.kingdom.saveBattle());
-          ui.kingdom.practice = true;
-        }
-        game.gold += 10000;
-        close();
-        ui.toast("Just for fun! Your normal progress stays safe.");
-        return;
-      }
-      // Wave skip: the run stays real. Skipped waves are recorded so reward
-      // math only ever credits waves the player actually played.
-      const target = Math.min(game.wave + 10, game.totalWaves);
-      game.skippedWaves =
-        (game.skippedWaves || 0) + Math.max(0, target - 1 - game.wave);
-      game.enemies = []; game.projectiles = []; game.queue = []; game.zones = [];
-      game.active = false; game.waveTime = 0; game.wave = target - 1;
+  const applyGold = () => {
+    game.gold += 10000;
+    close();
+    ui.toast("+10,000 gold — and the adventure still counts!");
+  };
+  const applyWaves = () => {
+    // Skip a full 10 waves: the wave counter advances by 10 and the player
+    // plays the wave after that. Near the end the skip lands ON the final
+    // wave instead, so the player always plays the ending themselves.
+    const target = Math.min(
+      game.wave + 10,
+      Math.max(game.wave, game.totalWaves - 1),
+    );
+    const skipped = Math.max(0, target - game.wave);
+    if (!skipped) {
       close();
-      ui.toast(
-        game.campaign.id === "classic"
-          ? "Skipped ahead!"
-          : "Skipped ahead — skipped waves earn nothing.",
-      );
-    };
+      ui.toast("You are already at the final wave — finish it!");
+      return;
+    }
+    // Skipped waves are recorded so reward math only ever credits waves
+    // the player actually played.
+    game.skippedWaves = (game.skippedWaves || 0) + skipped;
+    game.enemies = [];
+    game.projectiles = [];
+    game.queue = [];
+    game.zones = [];
+    game.active = false;
+    game.waveTime = 0;
+    game.wave = target;
+    close();
+    ui.toast(
+      `Skipped ahead ${skipped} ${skipped === 1 ? "wave" : "waves"} — played waves still count.`,
+    );
   };
   ui.modal(`<div class="eyebrow">A LITTLE SECRET</div><h1 id="modal-title">Fun codes</h1>
-    <p>Nothing happens until you choose and confirm a code.</p>
+    <p>Codes work right away, and your progress still counts. Only skipped waves earn nothing.</p>
     <button id="cheat-gold" class="primary" ${inBattle ? "" : "disabled"}>+10,000 Gold</button>
     <button id="cheat-waves" class="primary" ${inBattle ? "" : "disabled"}>+10 Waves</button>
     <button id="cheat-jackson" class="secondary">🎆 Jackson</button>
     <button id="cheat-luke" class="secondary">🎆 Luke</button>
     <button id="cheat-close" class="secondary">Close</button>`);
   ui.overlayClose = close;
-  document.getElementById("cheat-gold").onclick = () => confirm("gold");
-  document.getElementById("cheat-waves").onclick = () => confirm("waves");
+  document.getElementById("cheat-gold").onclick = applyGold;
+  document.getElementById("cheat-waves").onclick = applyWaves;
   for (const [id, name] of [["jackson", "JACKSON"], ["luke", "LUKE"]])
     document.getElementById(`cheat-${id}`).onclick = () => { close(); skyWrite(name); };
   document.getElementById("cheat-close").onclick = close;

@@ -30,3 +30,10 @@ export function enemyTexture(type) {
 export function enemyDisplaySize(radius) {
   return ((radius * 2) / SPRITE_FILL).toFixed(1) * 1;
 }
+// Warm tint per 20-wave adventure stage (stage 0 = untinted). Kept light:
+// the sprites are illustrated, so a heavy tint would muddy them and blur
+// enemy identity. The renderer combines this with armor-state greys.
+export const STAGE_TINTS = [0xffffff, 0xffeecf, 0xffdfae, 0xffc490, 0xffa8a0];
+export function stageTint(stage) {
+  return STAGE_TINTS[Math.min(stage || 0, STAGE_TINTS.length - 1)];
+}
