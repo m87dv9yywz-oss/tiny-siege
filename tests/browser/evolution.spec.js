@@ -48,7 +48,6 @@ for (const [width, height] of viewports)
       "#pause",
       "#speed",
       "#mute",
-      "#restart",
       "#help-button",
       '[data-tower="lightning"]',
     ]) {
@@ -106,8 +105,9 @@ for (const [width, height] of viewports)
     await tapMap(page, 145, 105);
     await page.locator("#sell").tap();
     await expect(page.locator("#gold")).toHaveText("217");
-    await page.locator("#battle-settings summary").tap();
+    await page.locator("#leave-run").tap();
     await page.locator("#restart").tap();
+    await page.locator("#confirm-restart").tap();
     await expect(page.locator("#gold")).toHaveText("300");
     expect(errors).toEqual([]);
   });

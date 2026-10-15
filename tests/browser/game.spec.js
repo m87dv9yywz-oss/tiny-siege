@@ -76,8 +76,9 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
   expect(
     await page.evaluate(() => window.__tinySiege.model.towers.length),
   ).toBe(0);
-  await page.locator("#battle-settings summary").click();
+  await page.locator("#leave-run").click();
   await page.locator("#restart").click();
+  await page.locator("#confirm-restart").click();
   await expect(page.locator("#gold")).toHaveText("300");
   await expect(page.locator("#wave")).toHaveText("0");
   expect(

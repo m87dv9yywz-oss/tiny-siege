@@ -146,5 +146,5 @@ jobs:
         if: always()
         with:
           name: live-game-verification
-          path: test-results/production-smoke.png
+          path: test-results/production*.png
           if-no-files-found: ignore

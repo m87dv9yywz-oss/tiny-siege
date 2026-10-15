@@ -103,7 +103,6 @@ export class UI {
       this.refresh(true);
     };
     $("leave-run").onclick = () => this.leaveRun();
-    $("restart").onclick = () => this.restart();
     $("help-button").onclick = () => this.help();
     document.querySelector(".brand").onclick = (e) => {
       e.preventDefault();
@@ -353,7 +352,7 @@ export class UI {
     this.model.paused = true;
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Leave this run?</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="restart" class="danger">Restart Battle</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
     );
     $("keep-playing").onclick = () => {
       this.helpOpen = false;
@@ -363,6 +362,15 @@ export class UI {
       this.refresh(true);
     };
     this.overlayClose = $("keep-playing").onclick;
+    const returnToBattle = this.overlayClose;
+    $("restart").onclick = () => {
+      this.modal(
+        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="primary">Cancel</button><button id="confirm-restart" class="danger">Yes, Restart</button>`,
+      );
+      this.overlayClose = returnToBattle;
+      $("cancel-restart").onclick = returnToBattle;
+      $("confirm-restart").onclick = () => this.restart();
+    };
     $("confirm-leave").onclick = () => {
       this.kingdom?.safe(() => this.kingdom.saveBattle());
       this.helpOpen = false;
@@ -594,7 +602,6 @@ export class UI {
     $("remaining").textContent = m.remaining;
     $("pause").disabled = this.inMenu || !!m.ended;
     $("speed").disabled = this.inMenu || !!m.ended;
-    $("restart").disabled = this.inMenu;
     $("pause").innerHTML = m.paused
       ? "▶ <span>Resume</span>"
       : "II <span>Pause</span>";

@@ -9,6 +9,7 @@ const browser = await chromium.launch(
     : { executablePath: "/usr/bin/chromium", args: ["--no-sandbox"] },
 );
 try {
+  mkdirSync("test-results", { recursive: true });
   const page = await browser.newPage({
     viewport: { width: 390, height: 844 },
     hasTouch: true,
@@ -149,8 +150,59 @@ try {
   assert.deepEqual(errors, []);
   mkdirSync("test-results", { recursive: true });
   await page.screenshot({ path: "test-results/production-smoke.png" });
+  // Verify the released V5 interactions against the actual shipped app.
+  for (const [width, height] of [[844,390],[390,844],[1024,768],[768,1024],[1440,900]]) {
+    const live = await browser.newPage({ viewport: { width, height }, hasTouch: true });
+    live.on("pageerror", e => errors.push(e.message));
+    await live.goto(target.href);
+    await live.locator("#play").tap();
+    const world = async (x, y) => {
+      const board = await live.locator("canvas").boundingBox();
+      await live.touchscreen.tap(board.x + board.width * x / 960, board.y + board.height * y / 640);
+    };
+    const board = await live.locator("canvas").boundingBox();
+    assert.ok(Math.abs(board.width / board.height - 1.5) < 0.01);
+    if (width === 844) assert.ok(board.width >= 530, "V5 enlarged battlefield must be live");
+    await live.locator('[data-tower="archer"]').tap();
+    await world(145,105);
+    await live.waitForFunction(() => document.querySelector("#selection-panel").dataset.side === "right");
+    await live.locator('[data-upgrade="0"]').tap();
+    assert.equal(await live.locator("#gold").textContent(), "125");
+    assert.match(await live.locator("#selection-panel img").first().getAttribute("src"), /archer_1-0-0\.png/);
+    await live.locator("#close-panel").tap();
+    await live.locator('[data-tower="archer"]').tap();
+    await world(820,110);
+    await live.waitForFunction(() => document.querySelector("#selection-panel").dataset.side === "left");
+    await live.locator("#start-wave").tap();
+    assert.equal(await live.locator("#selection-panel").isVisible(), true);
+    await live.locator("#pause").tap();
+    await live.locator("#speed").tap();
+    assert.match(await live.locator("#speed").textContent(), /2×/);
+    assert.equal(await live.locator("#restart").count(), 0);
+    const snapshot = async () => JSON.stringify(await live.locator("#gold, #lives, #wave, #remaining, #speed").allTextContents());
+    const frozen = await snapshot();
+    await live.locator("#leave-run").tap();
+    await live.locator("#restart").tap();
+    assert.match(await live.locator("#modal").textContent(), /Restart this battle\? Your current battle progress will be lost\./);
+    await live.waitForFunction(() => document.activeElement?.id === "cancel-restart");
+    assert.equal(await snapshot(), frozen);
+    await live.screenshot({ path: `test-results/production-restart-${width}x${height}.png` });
+    await live.locator("#cancel-restart").tap();
+    assert.equal(await snapshot(), frozen);
+    assert.equal(await live.locator("#selection-panel").isVisible(), true);
+    await live.screenshot({ path: `test-results/production-v5-${width}x${height}.png` });
+    await live.locator("#leave-run").tap();
+    await live.locator("#restart").tap();
+    await live.locator("#confirm-restart").tap();
+    assert.equal(await live.locator("#gold").textContent(), "300");
+    assert.equal(await live.locator("#wave").textContent(), "0");
+    assert.equal(await live.locator("#lives").textContent(), "20");
+    assert.equal(await live.locator("#restart").count(), 0);
+    await live.close();
+  }
+  assert.deepEqual(errors, []);
   console.log(
-    `Verified Tiny Siege v4.0 production assets, icons, touch placement, paid upgrade, targeting, combat, pause and speed at ${url}`,
+    `Verified V5 artwork, enlarged battlefield, adaptive panels, confirmed Menu restart and Cancel at five viewports; production icons, touch placement, paid upgrades, targeting, hero, combat, saved XP and resume at ${url}`,
   );
 } finally {
   await browser.close();
