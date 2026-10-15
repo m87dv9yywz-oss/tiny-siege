@@ -17,7 +17,9 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     await context.addInitScript(() => localStorage.setItem('tiny-siege-profiles-v3','PRODUCTION_SENTINEL_DO_NOT_TOUCH'));
     const page=await context.newPage();
     page.setDefaultTimeout(60000);
-    const external=[],errors=[],bad=[];
+    const external=[],errors=[],bad=[],consoleErrors=[],failed=[];
+    page.on("console",m=>{if(m.type()==="error")consoleErrors.push(m.text());});
+    page.on("requestfailed",r=>failed.push([r.url(),r.failure()?.errorText]));
     page.on('pageerror',e=>errors.push(e.message));
     page.on('request',r=>{ if(new URL(r.url()).origin!==new URL(url).origin && /^https?:/.test(r.url())) external.push(r.url()); });
     page.on('response',r=>{if(r.status()>=400)bad.push([r.status(),r.url()]);});
@@ -64,6 +66,10 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     await page.locator('#confirm-leave').tap();
     await page.locator('[data-map="emerald"]').tap();
     await page.waitForLoadState('networkidle');
+    const prepStyles=await page.evaluate(async()=>{
+      const styles=['.modal-card','.v5-banner','.v5-banner h1'].map(selector=>{const e=document.querySelector(selector),s=getComputedStyle(e);return{selector,classes:e.className,background:s.backgroundImage,border:s.borderImageSource,font:s.fontSize};});
+      const images=await Promise.all(['ui_background_parchment.png','ui_section_header_banner.png'].map(async file=>{const i=new Image();i.src='/assets/v5/ui/'+file;try{await i.decode();return{file,width:i.naturalWidth,height:i.naturalHeight};}catch(e){return{file,error:String(e)};}}));return{styles,images};
+    });
     await page.screenshot({path:`test-results/public-preview/${name}-preparation.png`});
     await page.locator('#begin-adventure').tap();
     await page.waitForLoadState('networkidle');
@@ -86,7 +92,7 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     assert.deepEqual(external,[]);
     assert.deepEqual(errors,[]);
     assert.deepEqual(bad,[]);
-    reports.push({engine:name,metadata,canvas:b,safety,external,errors,bad});
+    reports.push({engine:name,metadata,canvas:b,safety,external,errors,bad,consoleErrors,failed,prepStyles});
     console.log(`${name}: public HTTPS, isolated saves, no Firebase, real placement/upgrade/combat/pause/rotation passed`);
   } finally {await browser.close();}
 }
