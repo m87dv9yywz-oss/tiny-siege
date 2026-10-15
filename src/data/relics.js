@@ -13,7 +13,7 @@ export const RELICS = {
   },
   shield: {
     name: "Guardian Shell",
-    description: "+2 starting lives (maximum 22).",
+    description: "+2 starting lives (max 22).",
     condition: "Earn three stars on any adventure.",
     unlock: (p) => Object.values(p.mapStars).some((n) => n === 3),
   },

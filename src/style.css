@@ -37,6 +37,22 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+/* No page zoom during play: rapid taps on towers, upgrades and buttons must
+   never trigger iOS Safari's double-tap zoom, and form fields stay at 16px
+   so focusing one cannot auto-zoom either. */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
+}
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
+}
 button {
   font: inherit;
   color: inherit;
@@ -4534,7 +4550,7 @@ h3,
   .hero-card.v5-screen .v5-hero-roster,
   .relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 6px; }
   .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
-  .relic-card.v5-screen .v5-relic-card { max-width: 105px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 118px; }
   .home-card.v5-home { gap: 2px; }
   .v5-home #save-message { margin: 0; line-height: 1.1; }
   .v5-home .home-heading .menu-icon { width: 24px; height: 24px; }
@@ -4543,7 +4559,8 @@ h3,
 }
 @media (max-width: 700px) and (orientation: portrait) {
   .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
-  .relic-card.v5-screen .v5-relic-card { max-width: 100px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 112px; }
+  .relic-card.v5-screen .relic-grid .v5-relic-card .v5-relic-desc { font-size: 8px; letter-spacing: -0.2px; }
 }
 /* Keep unsupported friends decorative; give playable hero actions real tap areas. */
 .hero-card.v5-screen .v5-hero-card:not(.is-locked) .v5-hero-action,
@@ -4600,11 +4617,11 @@ h3,
 .v5-relic-cell { min-width: 0; text-align: center; }
 .v5-relic-caption { font-size: 11px; font-weight: 800; line-height: 1.15; min-height: 26px; margin-top: 2px; }
 .relic-grid .v5-relic-card .v5-relic-name { white-space: nowrap; top: 56%; font-size: 12px; }
-.relic-grid .v5-relic-card .v5-relic-desc { top: 68%; margin: 0; display: block; font-size: 10px; line-height: 1.1; }
+.relic-grid .v5-relic-card .v5-relic-desc { top: 68.5%; left: 11%; right: 11%; margin: 0; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 9.5px; line-height: 1.15; }
 .relic-card.v5-screen .v5-relic-action:disabled { color: #746651; text-shadow: none; }
 .relic-grid .v5-relic-info::after { content: "ⓘ"; position: absolute; right: -4px; top: -2px; font-size: 14px; color: #264e42; }
 /* Percentage vertical padding resolved against width made these dialogs scroll. */
-.modal-card.v5-dialog-card { padding: clamp(40px,9vh,64px) clamp(24px,7vw,72px) clamp(24px,5vh,40px); }
+.modal-card.v5-dialog-card { padding: clamp(64px,min(24vw,20vh),132px) clamp(44px,13.5vw,118px) clamp(34px,11vw,84px); }
 .modal-card.v5-dialog-card h1 { margin: 0 0 8px; font-size: 26px; }
 .modal-card.v5-dialog-card p { margin: 8px 0; }
 @media (orientation: landscape) and (max-height: 600px) {
@@ -4660,7 +4677,9 @@ h3,
 .adventure-card > .v5-banner h1 { font-size: clamp(16px,2.5vw,20px); }
 .relic-card.v5-screen .v5-relic-card .v5-relic-action {
  display: flex; align-items: center; justify-content: center; padding: 0;
- top: calc(84% - 22px); bottom: auto; height: 44px;
+ /* The label belongs centered in the frame's bottom plaque (~85-94% of the
+    card), not on the engraved bar above it (~84%) where it was struck through. */
+ top: calc(89.5% - 22px); bottom: auto; height: 44px;
  color: #214e35; text-shadow: none;
 }
 .relic-card.v5-screen .v5-relic-card .v5-relic-action:disabled { opacity: 1; color: #746651; }

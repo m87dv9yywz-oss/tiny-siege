@@ -22,6 +22,10 @@ import {
 } from "./profiles.js";
 const $ = (id) => document.getElementById(id);
 const RELIC_LABELS = { purse: "Acorn", banner: "Banner", shield: "Shell", lens: "Lens", ember: "Charm", crown: "Crown" };
+// One-line card summaries: the frame only leaves a single readable line
+// between its name ribbon and the engraved slot, so the full description
+// lives in the tap-for-details modal instead.
+const RELIC_SHORT = { purse: "+25 starting gold", banner: "Buffs +20% reach", shield: "+2 lives (max 22)", lens: "+5% tower range", ember: "Hero attacks +10%", crown: "Recharge time -10%" };
 const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
 const heroCardArt = (id, level = 1) =>
   import.meta.env.BASE_URL + heroArtwork(id, heroStage(level), "card_512");
@@ -244,7 +248,7 @@ export class KingdomUI {
       )
         .map(
           ([id, r]) =>
-            `<div class="v5-relic-cell"><article class="v5-relic-card relic-${id} ${p.relics.equipped.includes(id) ? "is-equipped" : ""} ${p.relics.unlocked.includes(id) ? "" : "is-locked"}">${p.relics.equipped.includes(id) ? `<span class="v5-equipped-tag">Equipped</span>` : ""}<button class="v5-relic-info" data-relic-info="${id}" aria-label="About ${escape(r.name)}"><img class="v5-relic-art relic-art" src="${import.meta.env.BASE_URL}relics/${id}.svg" alt=""></button><div class="v5-relic-name">${RELIC_LABELS[id]}</div><p class="v5-relic-desc">Tap art ⓘ</p><button data-relic="${id}" class="v5-relic-action" ${p.relics.unlocked.includes(id) ? "" : "disabled"}>${p.relics.equipped.includes(id) ? "Unequip" : p.relics.unlocked.includes(id) ? "Equip" : "Locked"}</button></article><div class="v5-relic-caption">${escape(r.name)}</div></div>`,
+            `<div class="v5-relic-cell"><article class="v5-relic-card relic-${id} ${p.relics.equipped.includes(id) ? "is-equipped" : ""} ${p.relics.unlocked.includes(id) ? "" : "is-locked"}">${p.relics.equipped.includes(id) ? `<span class="v5-equipped-tag">Equipped</span>` : ""}<button class="v5-relic-info" data-relic-info="${id}" aria-label="About ${escape(r.name)}"><img class="v5-relic-art relic-art" src="${import.meta.env.BASE_URL}relics/${id}.svg" alt=""></button><div class="v5-relic-name">${RELIC_LABELS[id]}</div><p class="v5-relic-desc">${RELIC_SHORT[id]}</p><button data-relic="${id}" class="v5-relic-action" ${p.relics.unlocked.includes(id) ? "" : "disabled"}>${p.relics.equipped.includes(id) ? "Unequip" : p.relics.unlocked.includes(id) ? "Equip" : "Locked"}</button></article><div class="v5-relic-caption">${escape(r.name)}</div></div>`,
         )
         .join(
           "",

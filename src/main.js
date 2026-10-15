@@ -7,6 +7,21 @@ import { KingdomUI } from "./progression/KingdomUI.js";
 import { UI } from "./ui.js";
 import { fitBattlefield } from "./viewport.js";
 import { initCheats } from "./cheats.js";
+// The game is played at a fixed scale: swallow browser zoom gestures
+// (iOS pinch "gesture" events, double-tap double-clicks, two-finger moves)
+// so frantic tapping mid-round can never zoom the page and strand the player.
+for (const ev of ["gesturestart", "gesturechange", "gestureend"])
+  document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
+document.addEventListener("dblclick", (e) => e.preventDefault(), {
+  passive: false,
+});
+document.addEventListener(
+  "touchmove",
+  (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  },
+  { passive: false },
+);
 let ui;
 const model = new Game((event) => ui?.event(event));
 const profiles = new ProfileStore(localStorage);
