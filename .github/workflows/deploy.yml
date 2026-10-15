@@ -52,6 +52,14 @@ jobs:
             docs/v4-balance-results.json
           if-no-files-found: ignore
       - run: npm run build
+      - name: Archive the Archer prototype for review (no deployment)
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/v5-archer-art-prototype'
+        uses: actions/upload-artifact@v4
+        with:
+          name: archer-art-prototype-preview
+          path: |
+            dist/
+            docs/artwork/archer-prototype/
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:

@@ -199,7 +199,16 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
   await open(page);
   const art = await page.evaluate(async () => {
     const { model: g, ui } = window.__tinySiege,
-      types = ["archer", "cannon", "frost", "fire", "lightning", "grove", "wind", "rune"],
+      types = [
+        "archer",
+        "cannon",
+        "frost",
+        "fire",
+        "lightning",
+        "grove",
+        "wind",
+        "rune",
+      ],
       art = [];
     g.gold = 100000;
     for (const type of types)
@@ -210,7 +219,10 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
             if (!g.canPlace(type, x, y)) t = g.place(type, x, y);
         if (!t) throw Error("No legal test placement");
         for (let n = 0; n < 3; n++) g.upgrade(t.id, p);
-        const key = `evolution-${type}-${p}-3`;
+        const key =
+          type === "archer"
+            ? `v5-archer-${t.paths.map((n) => Math.min(n, 2)).join("-")}`
+            : `evolution-${type}-${p}-3`;
         art.push({
           name: ui.scene.textures.getBase64(key),
           label: type + " " + ["A", "B", "C"][p],

@@ -1,4 +1,5 @@
 import { HEROES } from "./data/heroes.js";
+import { towerArtwork } from "./towerArtwork.js";
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
 import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
 import { guideHTML } from "./upgradeGuide.js";
@@ -136,6 +137,8 @@ export class UI {
         `<img src="${this.portrait({ type: key, paths: [0, 0, 0] })}" alt="">`;
   }
   portrait(t) {
+    const illustrated = towerArtwork(t);
+    if (illustrated) return import.meta.env.BASE_URL + illustrated;
     if (this.kingdom) return this.kingdom.portrait(t);
     const p = t.paths.findIndex((n) => n >= 2);
     const key =
