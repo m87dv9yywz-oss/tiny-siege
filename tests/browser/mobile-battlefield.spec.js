@@ -11,7 +11,7 @@ async function tap(page,x,y) {
 }
 async function capture(page,name) {
   await page.waitForTimeout(220);
-  await page.screenshot({animations: "disabled", path:`docs/artwork/mobile-battlefield/${name}.png`});
+  await page.screenshot({animations: "disabled", path:`docs/qa/v5/rendered/${name}.png`});
 }
 test('large landscape map, opposite panels, paid artwork upgrades and live wave controls',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));

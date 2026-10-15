@@ -32,6 +32,7 @@ try {
       e.progress=100+i*16;Object.assign(e,onPath(e.progress));
     }
   });
+  await page.waitForFunction(() => window.__tinySiege.ui.scene.artLoads?.size === 0);
   await page.waitForTimeout(1000);
   const result = await page.evaluate(async () => {
     const {model,ui}=window.__tinySiege;
@@ -50,10 +51,10 @@ try {
     return {viewport:[innerWidth,innerHeight],worldCanvas:[canvas.width,canvas.height],
       displayedCanvas:[r.width,r.height],towers:model.towers.length,panelOpen:ui.upgradeOpen,
       samples:frames.length,medianFrameMs:sorted[Math.floor(sorted.length/2)],
-      p95FrameMs:sorted[Math.floor(sorted.length*.95)],maximumEntityCounts:limits,
+      p95FrameMs:sorted[Math.floor(sorted.length*.95)],worstFrameMs:sorted.at(-1),maximumEntityCounts:limits,
       browser:navigator.userAgent};
   });
   await page.screenshot({path:'test-results/v5-mobile-stress.png',animations:'disabled'});
-  await writeFile('docs/artwork/mobile-battlefield/performance.json',JSON.stringify(result,null,2)+'\n');
+  await writeFile('docs/qa/v5/performance-stress.json',JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify(result));
 } finally { await browser.close(); }

@@ -1,17 +1,14 @@
+import { heroArtwork, heroStage } from "./heroArtwork.js";
 import { HEROES } from "./data/heroes.js";
 import { towerArtwork } from "./towerArtwork.js";
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
 import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
 import { guideHTML } from "./upgradeGuide.js";
 import { UNLOCK_COSTS } from "./progression/profiles.js";
+import { ENEMIES } from "./data/enemies.js";
 import { WAVE_HINTS } from "./data/waves.js";
 const $ = (id) => document.getElementById(id);
 const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
-const HERO_CARD_ART = {
-  dragon: "hero_dragon_adult.png",
-  dinosaur: "hero_dino_adult.png",
-  tiger: "hero_tiger_adult.png",
-};
 export class UI {
   constructor(model, kingdom = null) {
     this.kingdom = kingdom;
@@ -156,6 +153,18 @@ export class UI {
     this.refresh(true);
   }
   battlefieldReady() {
+    if (this.scene?.bootFailures?.size) {
+      const status = $("battlefield-loading");
+      if (status) {
+        status.textContent = "Some pictures couldn't load. Check your connection, then retry.";
+        if (!$("retry-artwork")) status.insertAdjacentHTML("afterend", '<button id="retry-artwork" class="secondary">Retry pictures</button>');
+        const button = $("retry-artwork");
+        button.disabled = false;
+        button.onclick = () => { button.disabled = true; status.textContent = "Retrying pictures…"; this.scene.retryArtwork(); };
+      }
+      return;
+    }
+    $("retry-artwork")?.remove();
     $("game").setAttribute("aria-busy", "false");
     document.querySelectorAll("[data-waiting-for-scene]").forEach(button => {
       button.disabled = false;
@@ -166,10 +175,10 @@ export class UI {
   hydrateShop() {
     for (const [key, def] of Object.entries(TOWERS))
       document.querySelector(`[data-tower="${key}"] .tower-icon`).innerHTML =
-        `<img src="${this.portrait({ type: key, paths: [0, 0, 0] })}" alt="">`;
+        `<img src="${this.portrait({ type: key, paths: [0, 0, 0] }, "battlefield_256")}" alt="">`;
   }
-  portrait(t) {
-    const illustrated = towerArtwork(t);
+  portrait(t, usage = "card_512") {
+    const illustrated = towerArtwork(t, usage);
     if (illustrated) return import.meta.env.BASE_URL + illustrated;
     if (this.kingdom) return this.kingdom.portrait(t);
     const p = t.paths.findIndex((n) => n >= 2);
@@ -526,8 +535,10 @@ export class UI {
     this.refresh(true);
   }
   restart() {
-    if (!this.scene) return; // Never enter a battle before Phaser attaches input.
+    if (!this.scene || this.scene.bootFailures?.size) return; // Never enter a battle before Phaser attaches input.
     this.drag = null;
+    this.heroMoving = false;
+    this.canvasPointerDown = false;
     clearTimeout(this.toastTimer);
     $("toast").classList.remove("visible");
     $("toast").textContent = "";
@@ -549,8 +560,8 @@ export class UI {
     $("app").inert = true;
     $("modal").innerHTML = `<div class="modal-card">${html}</div>`;
     $("modal").hidden = false;
-    if (!this.scene) {
-      const entry = $("modal").querySelectorAll("#play, #begin-adventure, #continue-battle");
+    if (!this.scene || this.scene.bootFailures?.size) {
+      const entry = $("modal").querySelectorAll("#play, #play-adventure, #begin-adventure, #continue-battle");
       for (const button of entry) {
         if (!button.disabled) {
           button.dataset.waitingForScene = "true";
@@ -560,7 +571,8 @@ export class UI {
       if (entry.length)
         entry[0].insertAdjacentHTML("beforebegin", '<p id="battlefield-loading" role="status">Preparing battlefield artwork…</p>');
     }
-    requestAnimationFrame(() => $("modal").querySelector("button")?.focus());
+    if (this.scene?.bootFailures?.size) this.battlefieldReady();
+    requestAnimationFrame(() => $("modal").querySelector("button:not([disabled])")?.focus());
   }
   closeModal() {
     $("modal").hidden = true;
@@ -649,7 +661,7 @@ export class UI {
     $("boss-bar").hidden = !boss;
     if (boss)
       $("boss-bar").querySelector("span").textContent =
-        `THE THORN KING · PHASE ${boss.phase}`;
+        `${ENEMIES[boss.type].name.toUpperCase()} · PHASE ${boss.phase}`;
     if (boss)
       $("boss-bar").querySelector("i").style.width =
         `${(boss.health / boss.maxHealth) * 100}%`;
@@ -715,9 +727,7 @@ export class UI {
     const h = m.hero;
     $("hero-controls").hidden = !h || this.inMenu;
     if (h) {
-      $("hero-icon").src = HERO_CARD_ART[h.type]
-        ? `${import.meta.env.BASE_URL}assets/v5/heroes/card_512/${HERO_CARD_ART[h.type]}`
-        : `${import.meta.env.BASE_URL}heroes/${h.type}.svg`;
+      $("hero-icon").src = import.meta.env.BASE_URL + heroArtwork(h.type, heroStage(h.level), "card_512");
       $("hero-icon").alt = HEROES[h.type].name;
       $("hero-move").textContent = this.heroMoving
         ? "Cancel move"

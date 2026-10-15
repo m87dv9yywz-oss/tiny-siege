@@ -42,9 +42,9 @@ export function fitBattlefield(ui) {
       const main = document.querySelector("main").getBoundingClientRect();
       const board = frame.getBoundingClientRect();
       const bottom = controls.getBoundingClientRect().top - main.top - 6;
-      const top = Math.min(board.bottom - main.top - Math.min(96, innerWidth / 1.5 * .2), bottom - 280);
+      const top = Math.min(board.bottom - main.top - Math.min(96, innerWidth / 1.5 * .2), bottom - 264);
       panel.style.setProperty("--sheet-top", `${top}px`);
-      panel.style.setProperty("--sheet-height", `${Math.max(280, bottom - top)}px`);
+      panel.style.setProperty("--sheet-height", `${Math.max(264, bottom - top)}px`);
     }
     if (ui.scene) {
       ui.scene.scale.getParentBounds();

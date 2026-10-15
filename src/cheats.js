@@ -6,15 +6,14 @@ const TAPS_NEEDED = 5;
 
 export function initCheats(ui, getGame) {
   // One delegated listener: elements are re-rendered often, so count taps
-  // centrally. 5 taps, each within TAP_WINDOW of the previous, opens it.
+  // centrally. All five taps must fit within the deliberate secret gesture.
   const counters = new Map();
   const count = (key) => {
     const now = Date.now();
     const c = counters.get(key);
-    if (!c || now - c.last > TAP_WINDOW) counters.set(key, { n: 1, last: now });
+    if (!c || now - c.started > TAP_WINDOW) counters.set(key, { n: 1, started: now });
     else {
       c.n++;
-      c.last = now;
     }
     if (counters.get(key).n >= TAPS_NEEDED) {
       counters.delete(key);
@@ -29,50 +28,51 @@ export function initCheats(ui, getGame) {
 
 function showCheatPanel(ui, getGame) {
   const game = getGame();
-  const inBattle = game && !game.ended;
-  ui.modal(`
-    <div class="eyebrow">SHHH… SECRET</div>
-    <h1 id="modal-title">Cheat Codes</h1>
-    <p>For testing and for fun. Nobody will tell.</p>
+  const inBattle = game && !ui.inMenu && !game.ended;
+  const paused = game.paused;
+  const helpOpen = ui.helpOpen;
+  game.paused = true;
+  ui.helpOpen = true;
+  const close = () => {
+    game.paused = paused;
+    ui.helpOpen = helpOpen;
+    if (ui.inMenu) ui.menu();
+    else ui.closeModal();
+  };
+  const confirm = kind => {
+    ui.modal(`<h1 id="modal-title">${kind === "gold" ? "Add 10,000 gold?" : "Skip ahead 10 waves?"}</h1>
+      <p>${game.campaign.id === "classic" ? "Apply this code to your Classic practice battle?" : "Play this adventure just for fun? No Crowns, XP, achievements or new checkpoint will be saved. Your normal checkpoint stays safe. Refreshing returns to that checkpoint."}</p>
+      <button id="cancel-cheat" class="primary">Cancel</button><button id="confirm-cheat" class="danger">${kind === "gold" ? "Yes, add gold" : "Yes, skip waves"}</button>`);
+    ui.overlayClose = close;
+    document.getElementById("cancel-cheat").onclick = close;
+    document.getElementById("confirm-cheat").onclick = () => {
+      if (game.campaign.id !== "classic" && !ui.kingdom.practice) {
+        ui.kingdom.safe(() => ui.kingdom.saveBattle());
+        ui.kingdom.practice = true;
+      }
+      if (kind === "gold") game.gold += 10000;
+      else {
+        const target = Math.min(game.wave + 10, game.totalWaves);
+        game.enemies = []; game.projectiles = []; game.queue = []; game.zones = [];
+        game.active = false; game.waveTime = 0; game.wave = target - 1;
+      }
+      close();
+      ui.toast("Just for fun! Your normal progress stays safe.");
+    };
+  };
+  ui.modal(`<div class="eyebrow">A LITTLE SECRET</div><h1 id="modal-title">Fun codes</h1>
+    <p>Nothing happens until you choose and confirm a code.</p>
     <button id="cheat-gold" class="primary" ${inBattle ? "" : "disabled"}>+10,000 Gold</button>
     <button id="cheat-waves" class="primary" ${inBattle ? "" : "disabled"}>+10 Waves</button>
     <button id="cheat-jackson" class="secondary">🎆 Jackson</button>
     <button id="cheat-luke" class="secondary">🎆 Luke</button>
-    <button id="cheat-close" class="secondary">Close</button>
-  `);
-  if (inBattle) {
-    document.getElementById("cheat-gold").onclick = () => {
-      game.gold += 10000;
-      ui.refresh(true);
-      ui.toast("+10,000 gold ✨");
-      ui.closeModal();
-    };
-    document.getElementById("cheat-waves").onclick = () => {
-      const target = Math.min(game.wave + 10, game.totalWaves);
-      // Clear the battlefield and park just before the target wave.
-      game.enemies = [];
-      game.projectiles = [];
-      game.queue = [];
-      game.active = false;
-      game.wave = target - 1;
-      ui.refresh(true);
-      ui.toast(
-        target >= game.totalWaves
-          ? `Jumped to the final wave!`
-          : `Jumped to wave ${target}!`
-      );
-      ui.closeModal();
-    };
-  }
-  document.getElementById("cheat-jackson").onclick = () => {
-    ui.closeModal();
-    skyWrite("JACKSON");
-  };
-  document.getElementById("cheat-luke").onclick = () => {
-    ui.closeModal();
-    skyWrite("LUKE");
-  };
-  document.getElementById("cheat-close").onclick = () => ui.closeModal();
+    <button id="cheat-close" class="secondary">Close</button>`);
+  ui.overlayClose = close;
+  document.getElementById("cheat-gold").onclick = () => confirm("gold");
+  document.getElementById("cheat-waves").onclick = () => confirm("waves");
+  for (const [id, name] of [["jackson", "JACKSON"], ["luke", "LUKE"]])
+    document.getElementById(`cheat-${id}`).onclick = () => { close(); skyWrite(name); };
+  document.getElementById("cheat-close").onclick = close;
 }
 
 // Golden firework letters across the sky, temporary.
@@ -83,7 +83,9 @@ export function skyWrite(name) {
     .split("")
     .map((c, i) => `<span style="animation-delay:${i * 0.15}s">${c}</span>`)
     .join("");
-  document.getElementById("app").appendChild(overlay);
+  const old = document.querySelectorAll(".skywriting");
+  if (old.length >= 2) old[0].remove();
+  document.body.appendChild(overlay);
   // Firework sparkles
   for (let i = 0; i < 40; i++) {
     const s = document.createElement("div");

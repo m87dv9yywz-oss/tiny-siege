@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ARCHER_STATES } from "../../src/towerArtwork.js";
-test("all 16 illustrated states, immediate paid upgrade changes, Tier3 fallbacks and touch selection at iPhone landscape size", async ({
+test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appearances and touch selection at iPhone landscape size", async ({
   page,
 }) => {
   test.setTimeout(120000);
@@ -72,7 +72,7 @@ test("all 16 illustrated states, immediate paid upgrade changes, Tier3 fallbacks
       if (secondary >= 0)
         await page.locator(`[data-upgrade="${secondary}"]`).click();
       const expected = [0, 0, 0];
-      expected[p] = 2;
+      expected[p] = 3;
       if (secondary >= 0) expected[secondary] = 1;
       await expect(page.locator(".tower-portrait")).toHaveAttribute(
         "src",

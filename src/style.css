@@ -1,3 +1,5 @@
+@font-face { font-family:"Baloo 2"; font-style:normal; font-weight:400 800; font-display:swap; src:url("/tiny-siege/fonts/Baloo2.woff2") format("woff2"); }
+@font-face { font-family:"Nunito"; font-style:normal; font-weight:200 900; font-display:swap; src:url("/tiny-siege/fonts/Nunito.woff2") format("woff2"); }
 /* Tiny Siege: a single viewport, original storybook panels and touch-first controls. */
 :root {
   font-family:
@@ -4507,3 +4509,83 @@ h3,
     font-size: 11.5px;
   }
 }
+
+/* Audit: resource typography must fit six-digit gold and Hard 99/100. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hud { row-gap: 4px; }
+  .hud .resource { min-width: 0; padding: 2px 4px; gap: 2px; }
+  .hud .resource > img { width: 18px; height: 18px; }
+  .hud .resource small, .hud .remaining small { line-height: 1.1; }
+  .hud .resource b, .hud .remaining > span, .hud .wave-counter b { font-size: 20px; line-height: 1.1; }
+  .hud .wave-counter { line-height: 1.1; }
+}
+/* A framed card is sized from the available viewport, never its intrinsic image.
+   Six decorative hero cards must not make the three playable heroes inaccessible. */
+.hero-card.v5-screen .v5-hero-roster,
+.relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.hero-card.v5-screen .v5-hero-card { width: min(100%, 150px); margin-inline: auto; }
+.relic-card.v5-screen .v5-relic-card { width: min(100%, 130px); margin-inline: auto; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero-card.v5-screen, .relic-card.v5-screen { padding: 8px 12px; }
+  .hero-card.v5-screen .v5-hero-roster,
+  .relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 6px; }
+  .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 105px; }
+  .home-card.v5-home { gap: 2px; }
+  .v5-home #save-message { margin: 0; line-height: 1.1; }
+  .v5-home .home-heading .menu-icon { width: 24px; height: 24px; }
+  .v5-home .home-heading h1 { font-size: 22px; line-height: 1.05; }
+  .v5-home .home-section { line-height: 1.1; }
+}
+@media (max-width: 700px) and (orientation: portrait) {
+  .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 100px; }
+}
+/* Keep unsupported friends decorative; give playable hero actions real tap areas. */
+.hero-card.v5-screen .v5-hero-card:not(.is-locked) .v5-hero-action,
+.relic-card.v5-screen .v5-relic-action { height: 44px; min-height: 44px; padding-top: 22px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero-card.v5-screen .v5-hero-roster { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+  .hero-card.v5-screen .v5-hero-card:not(.is-locked) { max-width: 135px; }
+}
+.hero-card.v5-screen .v5-hero-card.is-locked {
+  width: 100%; max-width: 150px; height: 60px; aspect-ratio: auto;
+  background: none; opacity: .72; border: 1px solid #bda66e; border-radius: 10px;
+}
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-art { left: 4px; top: 4px; width: 35px; height: 44px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-name { left: 40px; right: 2px; top: 8px; font-size: 11px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-lock { width: 13px; height: 16px; left: 42px; top: 35px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-lock-note { left: 56px; right: 1px; top: 37px; font-size: 9px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-action { display: none; }
+/* Supersede legacy article padding/background/display, not just the new class. */
+.hero-roster .v5-hero-card:not(.is-locked) {
+  display: block; padding: 0; border: 0; border-radius: 0;
+  background: url('/tiny-siege/assets/v5/ui/ui_card_hero_unselected.png') center / 100% 100% no-repeat;
+}
+.hero-roster .v5-hero-card.is-equipped {
+  background-image: url('/tiny-siege/assets/v5/ui/ui_card_hero_selected.png');
+}
+.relic-grid .v5-relic-card {
+  display: block; padding: 0; border: 0; border-radius: 0;
+  background: url('/tiny-siege/assets/v5/ui/ui_card_relic_frame.png') center / 100% 100% no-repeat;
+}
+.v5-hero-cell { min-width: 0; width: min(100%,150px); margin-inline: auto; }
+.v5-hero-caption { display: block; margin: 0; line-height: 1.1; font-size: 10px; text-transform: capitalize; color: #315343; }
+.hero-roster .v5-hero-card .v5-hero-name { font-size: 13px; top: 58%; white-space: nowrap; }
+.hero-roster .v5-hero-card .v5-hero-action { white-space: nowrap; font-size: 11px; padding: 22px 0 0; line-height: 1; gap: 3px; }
+.hero-roster .v5-hero-card .v5-hero-action img { width: 15px; height: 15px; }
+.hero-card .v5-screen-head .v5-banner { padding-inline: 8%; }
+.hero-card .v5-screen-head .v5-banner h1 { font-size: clamp(16px,4vw,24px); white-space: nowrap; }
+.relic-grid .v5-relic-info { position: absolute; left: 22%; top: 13%; width: 56%; height: 30%; min-height: 44px; border: 0; padding: 0; background: none; cursor: pointer; }
+.relic-grid .v5-relic-info .v5-relic-art { position: static; width: 100%; height: 100%; }
+.relic-grid .v5-relic-name { font-size: 12px; line-height: 1.05; }
+.relic-grid .v5-relic-desc { font-size: 10px; line-height: 1.1; }
+.relic-grid .v5-relic-action { font-size: 11px; white-space: nowrap; line-height: 1; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-hero-cell { max-width: 128px; }
+  .hero-card .v5-screen-head .v5-banner { min-height: 44px; }
+}
+
+/* Placement hints must never swallow a valid battlefield tap. */
+#selection-panel.placing { pointer-events: none; }
+#selection-panel.placing .cancel-button { pointer-events: auto; }

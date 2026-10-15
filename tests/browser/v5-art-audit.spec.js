@@ -1,0 +1,41 @@
+import {test,expect} from '@playwright/test';
+import {TOWER_TYPES,TOWER_STATES} from '../../src/towerArtwork.js';
+import {TOWERS,towerStats} from '../../src/data/towers.js';
+const out='docs/qa/v5/rendered';
+async function ready(page,w=844,h=390){await page.setViewportSize({width:w,height:h});await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.evaluate(()=>document.fonts.ready);}
+async function world(page,x,y){const b=await page.locator('canvas').boundingBox();await page.touchscreen.tap(b.x+b.width*x/960,b.y+b.height*y/640);}
+for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, portraits, stats and touch hitboxes`,async({page})=>{
+ test.setTimeout(180000);await ready(page);await page.locator('#play').tap();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ for(const state of TOWER_STATES){
+  // Deliberate UI fixture, not a funded campaign: enough gold to inspect each state.
+  await page.evaluate(type=>{const{model:g,ui}=window.__tinySiege;g.reset();g.gold=10000;ui.selectTower(g.place(type,145,105));},type);
+  const tiers=state.split('-').map(Number);
+  for(let p=0;p<3;p++)for(let n=0;n<tiers[p];n++)await page.locator(`[data-upgrade="${p}"]`).tap();
+  const spent=TOWERS[type].cost+tiers.reduce((sum,tier)=>sum+TOWERS[type].prices.slice(0,tier).reduce((a,b)=>a+b,0),0);
+  await expect(page.locator('#gold')).toHaveText(String(10000-spent));
+  await expect(page.locator('.tower-portrait')).toHaveAttribute('src',new RegExp(`${type}_${state}\\.png$`));
+  await page.waitForFunction(({type,state})=>{const{model,ui}=window.__tinySiege;return ui.scene.towerSprites.get(model.towers[0].id)?.texture.key===`v5-${type}-${state}`},{type,state});
+  await expect.poll(()=>page.locator('.tower-portrait').evaluate(i=>i.complete&&i.naturalWidth===512)).toBe(true);
+  const actual=await page.evaluate(()=>{const{model,ui}=window.__tinySiege,t=model.towers[0],s=ui.scene.towerSprites.get(t.id);return {paths:t.paths,width:s.displayWidth,height:s.displayHeight,origin:[s.originX,s.originY],stats:model.stats?model.stats(t):null};});
+  expect(actual.paths).toEqual(tiers);expect(actual.width).toBe(80);expect(actual.height).toBe(80);expect(actual.origin).toEqual([.5,.96]);
+  await page.locator('#targeting').selectOption('STRONG');
+  expect(await page.evaluate(()=>window.__tinySiege.model.towers[0].targeting)).toBe('STRONG');
+  const b=await page.locator('canvas').boundingBox();
+  await page.screenshot({path:`${out}/towers/${type}-${state}.png`,clip:{x:b.x+b.width*100/960,y:b.y+b.height*15/640,width:b.width*90/960,height:b.height*110/640}});
+  if(state==='3-1-0')await page.screenshot({path:`${out}/tower-${type}-ultimate.png`});
+  await page.locator('#close-panel').tap();await world(page,145,90);await expect(page.locator('#selection-panel')).toBeVisible();
+  await page.locator('#sell').tap();await expect(page.locator('#gold')).toHaveText(String(10000-spent+Math.floor(spent*.7)));
+ }
+ expect(errors).toEqual([]);
+});
+
+test('cold start requests only base tower textures and menu thumbnails; scene input waits for real assets',async({page})=>{
+ const requests=[];page.on('request',r=>requests.push(r.url()));await ready(page);
+ expect(new Set(requests.filter(u=>u.includes('/battlefield_256/')&&u.includes('/towers/'))).size).toBe(8);
+ expect(requests.filter(u=>u.includes('/towers/')&&u.includes('/card_512/'))).toHaveLength(0);
+ expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
+ await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Cold Knight');await page.locator('#profile-form button').tap();
+ await expect(page.locator('#play-adventure')).toBeVisible();await page.locator('#play-adventure').tap();await expect(page.locator('#begin-adventure')).toBeVisible();
+ expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
+ await page.locator('#begin-adventure').tap();await page.locator('[data-tower="archer"]').tap();await world(page,145,105);await expect(page.locator('#gold')).toHaveText('225');
+});

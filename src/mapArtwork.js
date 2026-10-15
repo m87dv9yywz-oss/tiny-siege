@@ -15,3 +15,7 @@ export function mapArtwork(id) {
 export function mapTexture(id) {
   return MAP_IDS.includes(id) ? `v5-map-${id}` : null;
 }
+
+export function mapThumbnail(id) {
+  return MAP_IDS.includes(id) ? `assets/v5/maps/thumbnails/map_${id}.webp` : null;
+}

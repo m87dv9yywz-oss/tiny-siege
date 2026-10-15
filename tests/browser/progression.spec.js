@@ -105,10 +105,11 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
     await expect(page.locator(".map-label")).toContainText(
       map === "emerald" ? "Emerald" : map === "amber" ? "Amber" : "Moonlit",
     );
+    await page.waitForFunction(map => window.__tinySiege.ui.scene.mapImage?.texture.key === `v5-map-${map}`, map);
     const pixel = await page.evaluate(() => {
       const { ui } = window.__tinySiege;
       return Array.from(
-        ui.scene.textures.getPixel(400, 100, "emerald-trail").rgba || [],
+        ui.scene.textures.getPixel(400, 100, ui.scene.mapImage.texture.key).rgba || [],
       );
     });
     await page.screenshot({ path: `test-results/v3-map-${map}.png` });
@@ -128,7 +129,7 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
   });
   await expect(page.locator(".tower-portrait")).toHaveAttribute(
     "src",
-    /lightning-2\.svg/,
+    /lightning_0-0-3\.png/,
   );
   await expect(page.locator(".panel-title")).toContainText("Stormcaller");
   await page.screenshot({ path: "test-results/v3-evolution-desktop.png" });

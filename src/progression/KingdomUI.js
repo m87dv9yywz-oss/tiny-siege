@@ -1,3 +1,4 @@
+import { heroArtwork, heroStage } from "../heroArtwork.js";
 import { HEROES, heroLevel } from "../data/heroes.js";
 import { towerArtwork } from "../towerArtwork.js";
 import { RELICS } from "../data/relics.js";
@@ -8,7 +9,7 @@ import {
   restoreBattle,
 } from "../systems/checkpoint.js";
 import { guideHTML } from "../upgradeGuide.js";
-import { mapArtwork } from "../mapArtwork.js";
+import { mapArtwork, mapThumbnail } from "../mapArtwork.js";
 import { CAMPAIGNS } from "../data/waves.js";
 import { TOWERS, towerName } from "../data/towers.js";
 import {
@@ -21,13 +22,8 @@ import {
 } from "./profiles.js";
 const $ = (id) => document.getElementById(id);
 const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
-const HERO_ART_FILES = {
-  dragon: "hero_dragon_adult.png",
-  dinosaur: "hero_dino_adult.png",
-  tiger: "hero_tiger_adult.png",
-};
-const heroCardArt = (id) =>
-  `${import.meta.env.BASE_URL}assets/v5/heroes/card_512/${HERO_ART_FILES[id]}`;
+const heroCardArt = (id, level = 1) =>
+  import.meta.env.BASE_URL + heroArtwork(id, heroStage(level), "card_512");
 // Illustrated heroes whose sprites exist but are not playable yet:
 // shown in the collection as locked, decorative cards.
 const LOCKED_HEROES = [
@@ -70,11 +66,11 @@ export class KingdomUI {
   hud() {
     $("kingdom-crowns").textContent = this.store.current?.crowns || 0;
     $("sync-status").textContent =
-      this.store.warning || this.cloud?.status || "Guest · saved locally";
+      this.practice ? "Just for fun · normal checkpoint safe" : this.store.warning || this.cloud?.status || "Guest · saved locally";
     $("kingdom-button").onclick = () => this.collection();
   }
-  portrait(t) {
-    const illustrated = towerArtwork(t);
+  portrait(t, usage = "card_512") {
+    const illustrated = towerArtwork(t, usage);
     if (illustrated) return import.meta.env.BASE_URL + illustrated;
     const path = t.paths.findIndex((n) => n >= 2);
     const variant =
@@ -109,8 +105,8 @@ export class KingdomUI {
         )
         .join("")}</div>${p ? `<span class="v5-crown-chip"><img class="v5-icon" src="${V5UI("ui_icon_crown.png")}" alt="">${p.crowns}</span>` : ""}</div>
       <div class="home-heading"><img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="Tiny Siege dragon castle"><div><div class="eyebrow">YOUR LITTLE KINGDOM</div><h1 id="modal-title">Tiny <span>Siege</span></h1></div></div>
-      ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m) => `<button data-map="${m.id}" class="map-choice v5-map-card biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}" aria-label="${escape(m.name.replace(" · Beginner", ""))} adventure"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapArtwork(m.id)}" alt=""><span class="v5-map-waves">20 / 40 / 100</span><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span><span class="v5-map-stars">${[1, 2, 3].map((n) => `<img src="${V5UI(n <= (p.mapStars[m.id] || 0) ? "ui_icon_star.png" : "ui_icon_star_empty.png")}" alt="">`).join("")}</span><span class="v5-map-name">${escape(m.name.replace(" · Beginner", ""))}</span></button>`).join("")}</div><div class="v5-play-row">${entry?.battle ? `<button id="continue-battle" class="v5-btn v5-btn-start">Continue ${escape(CAMPAIGNS[entry.battle.map]?.name || "battle")} · Wave ${entry.battle.wave + 1}</button>` : `<button id="play" class="v5-btn v5-btn-start" aria-label="PLAY CAMPAIGN">Play</button>`}</div><div class="kingdom-actions"><button id="collection" class="v5-btn v5-btn-primary v5-btn-sm">Towers & upgrades</button><button id="heroes" class="v5-btn v5-btn-primary v5-btn-sm">Animal heroes</button><button id="relics" class="v5-btn v5-btn-primary v5-btn-sm">Relics · ${p.relics.equipped.length}/2</button></div>` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
-      <div class="home-actions"><button id="new-profile" class="v5-btn v5-btn-secondary v5-btn-sm">＋ New hero</button>${p ? `<button id="manage-profile" class="v5-btn v5-btn-secondary v5-btn-sm">Manage hero</button>${entry?.battle ? `<button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button>` : ""}` : `<button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button>`}<button id="parent-cloud" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_cloud.png")}" alt="">${this.cloud?.uid ? "Cloud saves" : "Parent sign-in"}</button><button id="menu-help" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_help.png")}" alt="">How to play</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
+      ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m) => `<button data-map="${m.id}" class="map-choice v5-map-card biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}" aria-label="${escape(m.name.replace(" · Beginner", ""))} adventure"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapThumbnail(m.id)}" alt=""><span class="v5-map-waves">20 / 40 / 100</span><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span><span class="v5-map-stars">${[1, 2, 3].map((n) => `<img src="${V5UI(n <= (p.mapStars[m.id] || 0) ? "ui_icon_star.png" : "ui_icon_star_empty.png")}" alt="">`).join("")}</span><span class="v5-map-name">${escape(m.name.replace(" · Beginner", ""))}</span></button>`).join("")}</div><div class="v5-play-row">${entry?.battle ? `<button id="continue-battle" class="v5-btn v5-btn-start">Continue ${escape(CAMPAIGNS[entry.battle.map]?.name || "battle")} · Wave ${entry.battle.wave + 1}</button>` : `<button id="play-adventure" class="v5-btn v5-btn-start">Play adventure</button>`}</div><div class="kingdom-actions"><button id="collection" class="v5-btn v5-btn-primary v5-btn-sm">Towers & upgrades</button><button id="heroes" class="v5-btn v5-btn-primary v5-btn-sm">Animal heroes</button><button id="relics" class="v5-btn v5-btn-primary v5-btn-sm">Relics · ${p.relics.equipped.length}/2</button></div>` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
+      <div class="home-actions"><button id="new-profile" class="v5-btn v5-btn-secondary v5-btn-sm">＋ New hero</button>${p ? `<button id="manage-profile" class="v5-btn v5-btn-secondary v5-btn-sm">Manage hero</button><button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button>` : `<button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN">Classic · all unlocked</button>`}<button id="parent-cloud" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_cloud.png")}" alt="">${this.cloud?.uid ? "Cloud saves" : "Parent sign-in"}</button><button id="menu-help" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_help.png")}" alt="">How to play</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
     $("modal")
       .querySelector(".modal-card")
       .classList.add("home-card", "v5-home");
@@ -136,6 +132,7 @@ export class KingdomUI {
       .querySelectorAll("[data-map]")
       .forEach((b) => (b.onclick = () => this.prepare(b.dataset.map)));
     $("play").onclick = () => this.start("classic");
+    if ($("play-adventure")) $("play-adventure").onclick = () => this.prepare(recommended.id);
     $("menu-help").onclick = () => this.ui.help();
     $("parent-cloud").onclick = () => this.parent();
     this.hud();
@@ -156,7 +153,7 @@ export class KingdomUI {
   prepare(map) {
     if (!this.store.current) return this.editProfile();
     this.ui.modal(
-      `<div class="v5-banner"><h1 id="modal-title">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</h1></div><div class="v5-prep"><div class="v5-map-card" aria-hidden="true"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapArtwork(map)}" alt=""><span class="v5-map-name">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</span></div><div class="v5-prep-side"><div class="difficulty-picker">${Object.entries(
+      `<div class="v5-banner"><h1 id="modal-title">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</h1></div><div class="v5-prep"><div class="v5-map-card" aria-hidden="true"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapThumbnail(map)}" alt=""><span class="v5-map-name">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</span></div><div class="v5-prep-side"><div class="difficulty-picker">${Object.entries(
         DIFFICULTIES,
       )
         .map(
@@ -165,7 +162,7 @@ export class KingdomUI {
         )
         .join(
           "",
-        )}</div><div class="v5-hero-row"><img src="${heroCardArt(this.store.current.heroes.equipped)}" alt=""><div class="v5-hero-meta"><b>${HEROES[this.store.current.heroes.equipped].name}</b><small>Level ${heroLevel(this.store.current.heroes.xp[this.store.current.heroes.equipped])} · your battle hero</small></div><button id="choose-hero" class="v5-btn v5-btn-secondary v5-btn-sm">Change hero</button></div><p class="v5-relic-line">${escape(CAMPAIGNS[map].description)}<br>Relics: ${this.store.current.relics.equipped.map((k) => RELICS[k].name).join(", ") || "None equipped"}</p></div></div><div class="v5-prep-actions"><button id="begin-adventure" class="v5-btn v5-btn-start">Begin ${DIFFICULTIES[this.difficulty].name} · ${DIFFICULTIES[this.difficulty].waves} waves</button><button id="back" class="v5-btn v5-btn-secondary">Back</button></div>`,
+        )}</div><div class="v5-hero-row"><img src="${heroCardArt(this.store.current.heroes.equipped, heroLevel(this.store.current.heroes.xp[this.store.current.heroes.equipped]))}" alt=""><div class="v5-hero-meta"><b>${HEROES[this.store.current.heroes.equipped].name}</b><small>Level ${heroLevel(this.store.current.heroes.xp[this.store.current.heroes.equipped])} · your battle hero</small></div><button id="choose-hero" class="v5-btn v5-btn-secondary v5-btn-sm">Change hero</button></div><p class="v5-relic-line">${escape(CAMPAIGNS[map].description)}<br>Relics: ${this.store.current.relics.equipped.map((k) => RELICS[k].name).join(", ") || "None equipped"}</p></div></div><div class="v5-prep-actions"><button id="begin-adventure" class="v5-btn v5-btn-start">Begin ${DIFFICULTIES[this.difficulty].name} · ${DIFFICULTIES[this.difficulty].waves} waves</button><button id="back" class="v5-btn v5-btn-secondary">Back</button></div>`,
     );
     document
       .querySelector(".modal-card")
@@ -212,7 +209,7 @@ export class KingdomUI {
                 ? 100
                 : Math.round(((xp - base) / (80 * level ** 2 - base)) * 100),
             [short, species] = h.name.split(" · ");
-          return `<article class="v5-hero-card ${p.heroes.equipped === id ? "is-equipped" : ""}"><img class="v5-hero-art" src="${heroCardArt(id)}" alt="${escape(h.name)}"><div class="v5-hero-level"><img src="${V5UI("ui_badge_level_emerald.png")}" alt=""><span>Lv ${level}</span></div><div class="v5-hero-name">${escape(short)}<small>${escape(species || "")} · ${xp} XP</small></div><div class="v5-hero-xp"><i style="width:${pct}%"></i></div><button data-hero="${id}" class="v5-hero-action" ${!p.heroes.unlocked.includes(id) && p.crowns < h.cost ? "disabled" : ""}>${p.heroes.equipped === id ? "Equipped" : p.heroes.unlocked.includes(id) ? "Equip" : `Unlock · <img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${h.cost}`}</button></article>`;
+          return `<div class="v5-hero-cell"><article class="v5-hero-card ${p.heroes.equipped === id ? "is-equipped" : ""}"><img class="v5-hero-art" src="${heroCardArt(id, level)}" alt="${escape(h.name)}"><div class="v5-hero-level"><img src="${V5UI("ui_badge_level_emerald.png")}" alt=""><span>Lv ${level}</span></div><div class="v5-hero-name">${escape(short)}</div><div class="v5-hero-xp"><i style="width:${pct}%"></i></div><button data-hero="${id}" class="v5-hero-action" ${!p.heroes.unlocked.includes(id) && p.crowns < h.cost ? "disabled" : ""}>${p.heroes.equipped === id ? "Equipped" : p.heroes.unlocked.includes(id) ? "Equip" : `<img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${h.cost}`}</button></article><small class="v5-hero-caption" title="${xp} total XP">${heroStage(level)} · ${xp >= 1000 ? (xp / 1000).toFixed(1) + "k" : xp} XP</small></div>`;
         })
         .join("")}${LOCKED_HEROES.map(
           (h) =>
@@ -246,7 +243,7 @@ export class KingdomUI {
       )
         .map(
           ([id, r]) =>
-            `<article class="v5-relic-card relic-${id} ${p.relics.equipped.includes(id) ? "is-equipped" : ""} ${p.relics.unlocked.includes(id) ? "" : "is-locked"}">${p.relics.equipped.includes(id) ? `<span class="v5-equipped-tag">Equipped</span>` : ""}<img class="v5-relic-art relic-art" src="${import.meta.env.BASE_URL}relics/${id}.svg" alt=""><div class="v5-relic-name">${escape(r.name)}</div><p class="v5-relic-desc">${escape(r.description)}<br>${escape(r.condition)}</p><button data-relic="${id}" class="v5-relic-action" ${p.relics.unlocked.includes(id) ? "" : "disabled"}>${p.relics.equipped.includes(id) ? "Unequip" : p.relics.unlocked.includes(id) ? "Equip" : "Earn in adventures"}</button></article>`,
+            `<article class="v5-relic-card relic-${id} ${p.relics.equipped.includes(id) ? "is-equipped" : ""} ${p.relics.unlocked.includes(id) ? "" : "is-locked"}">${p.relics.equipped.includes(id) ? `<span class="v5-equipped-tag">Equipped</span>` : ""}<button class="v5-relic-info" data-relic-info="${id}" aria-label="About ${escape(r.name)}"><img class="v5-relic-art relic-art" src="${import.meta.env.BASE_URL}relics/${id}.svg" alt=""></button><div class="v5-relic-name">${escape(r.name)}</div><p class="v5-relic-desc">${escape(r.description)}<br>${escape(r.condition)}</p><button data-relic="${id}" class="v5-relic-action" ${p.relics.unlocked.includes(id) ? "" : "disabled"}>${p.relics.equipped.includes(id) ? "Unequip" : p.relics.unlocked.includes(id) ? "Equip" : "Locked"}</button></article>`,
         )
         .join(
           "",
@@ -255,6 +252,14 @@ export class KingdomUI {
     document
       .querySelector(".modal-card")
       .classList.add("relic-card", "v5-screen");
+    document.querySelectorAll("[data-relic-info]").forEach(button => {
+      button.onclick = () => {
+        const relic = RELICS[button.dataset.relicInfo];
+        this.ui.modal(`<h1 id="modal-title">${escape(relic.name)}</h1><p>${escape(relic.description)}</p><p>Unlock: ${escape(relic.condition)}</p><button id="close-relic-info" class="primary">Back to relics</button>`);
+        $("close-relic-info").onclick = () => this.relicCollection();
+        this.ui.overlayClose = $("close-relic-info").onclick;
+      };
+    });
     document.querySelectorAll("[data-relic]").forEach(
       (b) =>
         (b.onclick = () =>
@@ -295,6 +300,7 @@ export class KingdomUI {
     this.ui.restart();
   }
   beginRun() {
+    this.practice = false;
     this.run = {
       id: crypto.randomUUID(),
       profileId: this.store.data.selected,
@@ -306,7 +312,7 @@ export class KingdomUI {
   }
   checkpoint(win = false) {
     const run = this.run;
-    if (!run || run.finished || this.model.campaign.id === "classic")
+    if (this.practice || !run || run.finished || this.model.campaign.id === "classic")
       return null;
     // A run is bound to its original profile, never the profile selected later.
     if (run.profileId !== this.store.data.selected)
@@ -333,6 +339,7 @@ export class KingdomUI {
     return { crowns: p.crowns - before, xp: totals };
   }
   finishRun() {
+    if (this.practice) return "Just for fun · no permanent rewards. Your normal checkpoint is safe.";
     if (!this.run || this.run.finished || this.model.campaign.id === "classic")
       return null;
     let result;
@@ -354,6 +361,7 @@ export class KingdomUI {
   }
   saveBattle() {
     if (
+      this.practice ||
       this.ui.inMenu ||
       this.model.campaign.id === "classic" ||
       !this.run ||
@@ -370,6 +378,7 @@ export class KingdomUI {
     this.cloud?.sync();
   }
   clearBattle() {
+    if (this.practice) return;
     if (this.store.current) this.store.saveBattle(null);
     this.cloud?.sync();
   }
@@ -377,6 +386,7 @@ export class KingdomUI {
     const entry = this.store.data.profiles[this.store.data.selected];
     this.run = restoreBattle(this.model, entry.battle, entry.profile);
     this.run.profileId = this.store.data.selected;
+    this.practice = false;
     this.ui.inMenu = false;
     this.ui.helpOpen = false;
     this.ui.cancel();
@@ -480,7 +490,7 @@ export class KingdomUI {
     this.wasPaused = state.paused;
     this.model.paused = true;
     this.ui.modal(
-      `<div class="v5-banner"><h1 id="modal-title"><img class="v5-icon-lg" src="${V5UI("ui_icon_crown.png")}" alt=""> ${p.crowns} Crowns</h1></div><p class="v5-collection-sub">${escape(p.nickname)}’s kingdom · Permanent unlocks. Battle upgrades still cost gold.</p><div class="collection-tabs v5-tabs" role="group" aria-label="Tower collection">${TYPES.map((t) => `<button data-collection="${t}" class="v5-tab" aria-pressed="${t === type}" style="--tower-color:${TOWERS[t].hex}"><img src="${this.portrait({ type: t, paths: [0, 0, 0] })}" alt=""><span>${TOWERS[t].name}</span></button>`).join("")}</div><div class="collection-grid v5-tower-showcase">${[
+      `<div class="v5-banner"><h1 id="modal-title"><img class="v5-icon-lg" src="${V5UI("ui_icon_crown.png")}" alt=""> ${p.crowns} Crowns</h1></div><p class="v5-collection-sub">${escape(p.nickname)}’s kingdom · Permanent unlocks. Battle upgrades still cost gold.</p><div class="collection-tabs v5-tabs" role="group" aria-label="Tower collection">${TYPES.map((t) => `<button data-collection="${t}" class="v5-tab" aria-pressed="${t === type}" style="--tower-color:${TOWERS[t].hex}"><img src="${this.portrait({ type: t, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><span>${TOWERS[t].name}</span></button>`).join("")}</div><div class="collection-grid v5-tower-showcase">${[
         type,
       ]
         .map((type) => {
