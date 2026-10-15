@@ -70,6 +70,10 @@ export class Game {
       active: false,
       paused: false,
       speed: 1,
+      skippedWaves: 0,
+      goldenSpawned: false,
+      autoWave: false,
+      autoTimer: 0,
       ended: null,
       id: 0,
     });
@@ -269,6 +273,24 @@ export class Game {
       return false;
     this.wave++;
     this.queue = waveQueue(this.wave, this.campaign.waves);
+    // The Golden Sproutling: a rare bonus runner, at most once per run,
+    // never in the first ten waves and never on a boss or final wave.
+    // Pure upside — popping it pays 250 gold, escaping costs no life.
+    if (
+      !this.goldenSpawned &&
+      this.wave >= 10 &&
+      this.wave < this.totalWaves &&
+      this.wave % 20 !== 0 &&
+      Math.random() < 0.05
+    ) {
+      this.goldenSpawned = true;
+      this.queue.push({
+        type: "sprout",
+        at: 2 + Math.random() * 8,
+        golden: true,
+      });
+      this.queue.sort((a, b) => a.at - b.at);
+    }
     this.waveTime = 0;
     this.active = true;
     this.emit("wave");
@@ -277,21 +299,33 @@ export class Game {
   get remaining() {
     return this.queue.length + this.enemies.filter((e) => e.alive).length;
   }
+  // Adventure runs advance in 20-wave stages (waves 1-20 = stage 0,
+  // 21-40 = stage 1, ...). Each new stage the enemies grow a little:
+  // +15% health, +3% speed (capped +12%), +7% display size (capped +28%),
+  // plus a warmer tint in the renderer. Bosses keep their own scaling.
+  get stage() {
+    return this.campaign.mode
+      ? Math.floor(Math.max(0, this.wave - 1) / 20)
+      : 0;
+  }
   spawn(type, traits = {}) {
     const config = ENEMIES[type],
-      scale = config.boss
-        ? 1
-        : this.campaign.mode
-          ? this.wave <= 3
-            ? 1
-            : this.campaign.difficulty.health *
-              (1 +
-                (this.wave - 1) *
-                  (this.campaign.mode === "hard" ? 0.04 : 0.028) +
-                (this.campaign.mode === "hard"
-                  ? Math.max(0, this.wave - 20) * 0.14
-                  : 0))
-          : 1 + Math.max(0, this.wave - 1) * 0.055;
+      stage = this.stage,
+      scale =
+        (config.boss
+          ? 1
+          : this.campaign.mode
+            ? this.wave <= 3
+              ? 1
+              : this.campaign.difficulty.health *
+                (1 +
+                  (this.wave - 1) *
+                    (this.campaign.mode === "hard" ? 0.04 : 0.028) +
+                  (this.campaign.mode === "hard"
+                    ? Math.max(0, this.wave - 20) * 0.14
+                    : 0))
+            : 1 + Math.max(0, this.wave - 1) * 0.055) *
+        (this.campaign.mode && !config.boss ? 1 + stage * 0.15 : 1);
     const e = {
       id: ++this.id,
       type,
@@ -327,6 +361,12 @@ export class Game {
       ...this.trail.onPath(0),
     };
     if (this.campaign.mode && e.heal) e.heal *= Math.sqrt(scale);
+    e.stage = stage;
+    e.displayScale = config.boss
+      ? 1
+      : 1 + Math.min(stage * 0.07, 0.28);
+    if (!config.boss)
+      e.speed = config.speed * (1 + Math.min(stage * 0.03, 0.12));
     if (traits.bossHealth && config.boss) {
       e.health = traits.bossHealth;
       e.maxHealth = traits.bossHealth;
@@ -341,6 +381,16 @@ export class Game {
       e.reward *= 2;
       e.lives = 4;
       e.radius += 5;
+    }
+    if (traits.golden) {
+      e.golden = true;
+      e.name = "Golden Sproutling";
+      e.reward = 250;
+      e.lives = 0;
+      e.health *= 3;
+      e.maxHealth *= 3;
+      e.speed = Math.max(e.speed, 115);
+      e.displayScale = (e.displayScale || 1) * 1.15;
     }
     this.enemies.push(e);
     this.emit("spawn", { enemy: e });
@@ -415,6 +465,7 @@ export class Game {
       this.earned += e.reward;
       this.kills++;
       this.emit("death", { enemy: e });
+      if (e.golden) this.emit("goldenPop", { enemy: e });
       if (e.split)
         for (let i = 0; i < e.split; i++) {
           const child = this.spawn("sprout");
@@ -748,9 +799,18 @@ export class Game {
       }
     }
   }
-  // The same fixed-sized steps drive 1x, 2x, and accelerated test simulations.
+  // The same fixed-sized steps drive 1x, 2x, 3x, and accelerated test simulations.
   update(realDelta) {
     if (this.paused || this.ended) return;
+    // Auto-start: after a short between-wave beat, begin the next wave.
+    // The beat leaves room for the wave-clear checkpoint to land first.
+    if (this.autoWave && !this.active && this.wave < this.totalWaves) {
+      this.autoTimer += realDelta;
+      if (this.autoTimer >= 1) {
+        this.autoTimer = 0;
+        this.startWave();
+      }
+    } else this.autoTimer = 0;
     let remaining = realDelta * this.speed;
     while (remaining > 1e-8 && !this.ended) {
       const dt = Math.min(remaining, 0.025);
@@ -808,8 +868,15 @@ export class Game {
       Object.assign(e, this.trail.onPath(e.progress));
       if (e.progress >= this.trail.PATH_LENGTH) {
         e.alive = false;
+        const livesBefore = this.lives;
         this.lives = Math.max(0, this.lives - e.lives);
         this.emit("escape", { enemy: e });
+        // Auto waves are a convenience, not autopilot through a leak: the
+        // first lost life switches auto off so the player can reconsider.
+        if (this.lives < livesBefore && this.autoWave) {
+          this.autoWave = false;
+          this.emit("autoOff", { enemy: e });
+        }
         if (!this.lives) {
           this.finish("defeat");
           break;

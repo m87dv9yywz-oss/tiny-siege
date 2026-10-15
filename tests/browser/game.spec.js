@@ -67,12 +67,28 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
   await page.waitForFunction(() => !window.__tinySiege.model.active);
   await expect(page.locator("#wave")).toHaveText("1");
   expect(await page.evaluate(() => window.__tinySiege.model.lives)).toBe(20);
+  await page.locator("#battle-settings summary").click();
+  await page.locator("#auto-wave").click();
+  await expect(page.locator("#auto-wave")).toContainText("on");
+  await page.locator("#battle-settings summary").click();
+  await page.waitForFunction(() => window.__tinySiege.model.wave === 2);
+  await page.locator("#battle-settings summary").click();
+  await page.locator("#auto-wave").click();
+  await expect(page.locator("#auto-wave")).toContainText("off");
+  await page.locator("#battle-settings summary").click();
   await page.screenshot({
     path: "test-results/battlefield.png",
     fullPage: true,
   });
   await expect(page.locator("#selection-panel")).toBeVisible();
   await page.locator("#sell").click();
+  await expect(page.locator("#cancel-sell")).toBeFocused();
+  await page.locator("#cancel-sell").click();
+  expect(
+    await page.evaluate(() => window.__tinySiege.model.towers.length),
+  ).toBe(1);
+  await page.locator("#sell").click();
+  await page.locator("#confirm-sell").click();
   expect(
     await page.evaluate(() => window.__tinySiege.model.towers.length),
   ).toBe(0);

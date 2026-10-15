@@ -3773,6 +3773,10 @@ h3,
   object-fit: contain;
   vertical-align: -4px;
 }
+#auto-wave.is-on {
+  background: linear-gradient(#cdeeb0, #9ed67e);
+  border-color: #4b8c36;
+}
 #tower-inspector {
   background: linear-gradient(#fff8db, #f1e7bd);
   border: 2px solid var(--v5-bronze);

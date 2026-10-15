@@ -19,6 +19,7 @@ export function battleCheckpoint(model, run) {
     map: model.campaign.id,
     difficulty: model.campaign.mode || null,
     wave: model.wave,
+    skippedWaves: model.skippedWaves || 0,
     lives: model.lives,
     gold: model.gold,
     kills: model.kills,
@@ -39,7 +40,11 @@ export function battleCheckpoint(model, run) {
 export function validateBattle(b) {
   if (
     !b ||
-    Object.keys(b).length !== 16 ||
+    ![16, 17].includes(Object.keys(b).length) ||
+    (b.skippedWaves !== undefined &&
+      (!Number.isInteger(b.skippedWaves) ||
+        b.skippedWaves < 0 ||
+        b.skippedWaves > 1000)) ||
     b.version !== 1 ||
     !Object.hasOwn(CAMPAIGNS, b.map) ||
     b.map === "classic" ||
@@ -47,7 +52,7 @@ export function validateBattle(b) {
     !Number.isInteger(b.wave) ||
     b.wave < 0 ||
     b.wave >= DIFFICULTIES[b.difficulty].waves ||
-    ![1, 2].includes(b.speed) ||
+    ![1, 2, 3].includes(b.speed) ||
     !Number.isInteger(b.lives) ||
     b.lives < 1 ||
     b.lives > 22 ||
@@ -212,6 +217,7 @@ export function restoreBattle(model, b, profile) {
     "participation",
   ])
     model[key] = structuredClone(b[key]);
+  model.skippedWaves = b.skippedWaves || 0;
   model.paused = true;
   model.emit("restore");
   return structuredClone(b.run);
