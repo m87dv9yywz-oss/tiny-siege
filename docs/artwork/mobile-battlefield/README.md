@@ -1,5 +1,7 @@
 # V5 mobile battlefield prototype — owner review required
 
+> Historical PR #15 prototype evidence. For the complete illustrated integration, real Archer Tier 3 artwork and current measurements, see [the PR #17 audit](../../qa/v5/README.md). These original comparison screenshots are retained.
+
 Stacked on PR #13 (`feature/v5-archer-art-prototype`), with the approved 16 Archer appearances intact. Neither prototype is merged or deployed. No Firebase rules, credentials, save formats, prices, damage, maps, enemy paths or campaign settings change.
 
 ## Actual rendered comparison

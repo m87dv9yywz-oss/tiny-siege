@@ -1,0 +1,27 @@
+{
+  "viewport": [
+    844,
+    390
+  ],
+  "worldCanvas": [
+    960,
+    640
+  ],
+  "displayedCanvas": [
+    552,
+    368
+  ],
+  "towers": 24,
+  "panelOpen": true,
+  "samples": 180,
+  "medianFrameMs": 27.400000005960464,
+  "p95FrameMs": 53.5,
+  "worstFrameMs": 98.80000001192093,
+  "maximumEntityCounts": {
+    "effects": 100,
+    "enemies": 101,
+    "projectiles": 27,
+    "particles": 100
+  },
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36"
+}

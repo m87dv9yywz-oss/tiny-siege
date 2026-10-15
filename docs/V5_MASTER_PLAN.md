@@ -1,5 +1,12 @@
 # TINY SIEGE V5 — VISUAL & UX MASTER PLAN FOR CODEX
 
+> Integration update (2026-10-15): PR #17 now includes all 200 tower appearances,
+> including Archer Tier 3, seven painted maps and fourteen enemies. Earlier
+> asset counts below are historical handoff notes. See [the audit report](qa/v5/README.md)
+> for measured layout, rendering, cloud/emulator and campaign evidence. This
+> branch is review-only; no production release is authorized by the audit.
+
+
 **Priority:** iPhone landscape-first, then iPad and desktop. **Repo:** `m87dv9yywz-oss/tiny-siege`. **Production:** `https://m87dv9yywz-oss.github.io/tiny-siege/`.
 
 ## Mission

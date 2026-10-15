@@ -1,0 +1,30 @@
+{
+  "viewport": [
+    844,
+    390
+  ],
+  "worldCanvas": [
+    960,
+    640
+  ],
+  "displayedCanvas": [
+    552,
+    368
+  ],
+  "towers": 24,
+  "panelOpen": true,
+  "samples": 180,
+  "effectsMode": "full",
+  "medianFrameMs": 34.30000001192093,
+  "p95FrameMs": 61.10000002384186,
+  "worstFrameMs": 881.1000000238419,
+  "maximumEntityCounts": {
+    "effects": 100,
+    "enemies": 101,
+    "projectiles": 29,
+    "particles": 100
+  },
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "sourceRef": "6afec046d53bb8207c60312f04dd27d403ea4d40",
+  "note": "Read-only git archive served locally with separate optimizer cache; same benchmark and runner, not a new production deployment."
+}

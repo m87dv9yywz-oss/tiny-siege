@@ -48,7 +48,6 @@ jobs:
           name: v3-validation
           path: |
             test-results/
-            docs/qa/v5/
             docs/v3-balance-results.json
             docs/v4-balance-results.json
           if-no-files-found: ignore
@@ -74,6 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: v5-illustrated-audit-preview
+          retention-days: 7
           path: |
             dist/
             docs/qa/v5/

@@ -1,0 +1,1402 @@
+[
+  {
+    "w": 375,
+    "h": 812,
+    "name": "home",
+    "geometry": {
+      "scroll": 657,
+      "client": 657,
+      "width": 349,
+      "box": {
+        "x": 10,
+        "y": 74.53125,
+        "width": 355,
+        "height": 662.9375,
+        "top": 74.53125,
+        "right": 365,
+        "bottom": 737.46875,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "heroes",
+    "geometry": {
+      "scroll": 318,
+      "client": 318,
+      "width": 354,
+      "box": {
+        "x": 10,
+        "y": 243.828125,
+        "width": 360,
+        "height": 324.328125,
+        "top": 243.828125,
+        "right": 370,
+        "bottom": 568.15625,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "relics",
+    "geometry": {
+      "scroll": 550,
+      "client": 550,
+      "width": 354,
+      "box": {
+        "x": 10,
+        "y": 128.1875,
+        "width": 360,
+        "height": 555.625,
+        "top": 128.1875,
+        "right": 370,
+        "bottom": 683.8125,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "collection",
+    "geometry": {
+      "scroll": 760,
+      "client": 760,
+      "width": 349,
+      "box": {
+        "x": 10,
+        "y": 23.15625,
+        "width": 355,
+        "height": 765.6875,
+        "top": 23.15625,
+        "right": 365,
+        "bottom": 788.84375,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "prepare",
+    "geometry": {
+      "scroll": 643,
+      "client": 643,
+      "width": 349,
+      "box": {
+        "x": 10,
+        "y": 81.75,
+        "width": 355,
+        "height": 648.5,
+        "top": 81.75,
+        "right": 365,
+        "bottom": 730.25,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "panel",
+    "geometry": {
+      "scroll": 263,
+      "client": 263,
+      "width": 353,
+      "box": {
+        "x": 8,
+        "y": 327.35089111328125,
+        "width": 359,
+        "height": 268.796875,
+        "top": 327.35089111328125,
+        "right": 367,
+        "bottom": 596.1477661132812,
+        "left": 8
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "battle-menu",
+    "geometry": {
+      "scroll": 592,
+      "client": 592,
+      "width": 355,
+      "box": {
+        "x": 10,
+        "y": 110.09375,
+        "width": 355,
+        "height": 591.796875,
+        "top": 110.09375,
+        "right": 365,
+        "bottom": 701.890625,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "restart-confirm",
+    "geometry": {
+      "scroll": 314,
+      "client": 314,
+      "width": 355,
+      "box": {
+        "x": 10,
+        "y": 248.84375,
+        "width": 355,
+        "height": 314.296875,
+        "top": 248.84375,
+        "right": 365,
+        "bottom": 563.140625,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "victory",
+    "geometry": {
+      "scroll": 476,
+      "client": 476,
+      "width": 355,
+      "box": {
+        "x": 10,
+        "y": 167.90625,
+        "width": 355,
+        "height": 476.1875,
+        "top": 167.90625,
+        "right": 365,
+        "bottom": 644.09375,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "name": "defeat",
+    "geometry": {
+      "scroll": 476,
+      "client": 476,
+      "width": 355,
+      "box": {
+        "x": 10,
+        "y": 167.90625,
+        "width": 355,
+        "height": 476.1875,
+        "top": 167.90625,
+        "right": 365,
+        "bottom": 644.09375,
+        "left": 10
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "rotate": [
+      844,
+      390
+    ],
+    "canvas": {
+      "x": 146,
+      "y": 11,
+      "width": 552,
+      "height": 368
+    }
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "rotate": [
+      390,
+      760
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 366,
+      "height": 244
+    }
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "rotate": [
+      932,
+      430
+    ],
+    "canvas": {
+      "x": 160,
+      "y": 11,
+      "width": 612,
+      "height": 408
+    }
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "rotate": [
+      375,
+      812
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 351,
+      "height": 234
+    }
+  },
+  {
+    "w": 375,
+    "h": 812,
+    "rotate": [
+      740,
+      360
+    ],
+    "canvas": {
+      "x": 125.5,
+      "y": 17,
+      "width": 489,
+      "height": 326
+    }
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "home",
+    "geometry": {
+      "scroll": 350,
+      "client": 350,
+      "width": 714,
+      "box": {
+        "x": 62,
+        "y": 17.03125,
+        "width": 720,
+        "height": 355.9375,
+        "top": 17.03125,
+        "right": 782,
+        "bottom": 372.96875,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "heroes",
+    "geometry": {
+      "scroll": 335,
+      "client": 335,
+      "width": 774,
+      "box": {
+        "x": 32,
+        "y": 24.671875,
+        "width": 780,
+        "height": 340.65625,
+        "top": 24.671875,
+        "right": 812,
+        "bottom": 365.328125,
+        "left": 32
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "relics",
+    "geometry": {
+      "scroll": 311,
+      "client": 311,
+      "width": 774,
+      "box": {
+        "x": 32,
+        "y": 36.40625,
+        "width": 780,
+        "height": 317.171875,
+        "top": 36.40625,
+        "right": 812,
+        "bottom": 353.578125,
+        "left": 32
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "collection",
+    "geometry": {
+      "scroll": 361,
+      "client": 361,
+      "width": 714,
+      "box": {
+        "x": 62,
+        "y": 11.5,
+        "width": 720,
+        "height": 367,
+        "top": 11.5,
+        "right": 782,
+        "bottom": 378.5,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "prepare",
+    "geometry": {
+      "scroll": 294,
+      "client": 294,
+      "width": 714,
+      "box": {
+        "x": 62,
+        "y": 45,
+        "width": 720,
+        "height": 300,
+        "top": 45,
+        "right": 782,
+        "bottom": 345,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "panel",
+    "geometry": {
+      "scroll": 368,
+      "client": 368,
+      "width": 246,
+      "box": {
+        "x": 454,
+        "y": 13,
+        "width": 252,
+        "height": 374,
+        "top": 13,
+        "right": 706,
+        "bottom": 387,
+        "left": 454
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "battle-menu",
+    "geometry": {
+      "scroll": 332,
+      "client": 332,
+      "width": 720,
+      "box": {
+        "x": 62,
+        "y": 28.84375,
+        "width": 720,
+        "height": 332.296875,
+        "top": 28.84375,
+        "right": 782,
+        "bottom": 361.140625,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "restart-confirm",
+    "geometry": {
+      "scroll": 235,
+      "client": 235,
+      "width": 720,
+      "box": {
+        "x": 62,
+        "y": 77.59375,
+        "width": 720,
+        "height": 234.796875,
+        "top": 77.59375,
+        "right": 782,
+        "bottom": 312.390625,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "victory",
+    "geometry": {
+      "scroll": 270,
+      "client": 270,
+      "width": 720,
+      "box": {
+        "x": 62,
+        "y": 59.859375,
+        "width": 720,
+        "height": 270.28125,
+        "top": 59.859375,
+        "right": 782,
+        "bottom": 330.140625,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "name": "defeat",
+    "geometry": {
+      "scroll": 270,
+      "client": 270,
+      "width": 720,
+      "box": {
+        "x": 62,
+        "y": 59.859375,
+        "width": 720,
+        "height": 270.28125,
+        "top": 59.859375,
+        "right": 782,
+        "bottom": 330.140625,
+        "left": 62
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "rotate": [
+      844,
+      390
+    ],
+    "canvas": {
+      "x": 146,
+      "y": 11,
+      "width": 552,
+      "height": 368
+    }
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "rotate": [
+      390,
+      760
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 366,
+      "height": 244
+    }
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "rotate": [
+      932,
+      430
+    ],
+    "canvas": {
+      "x": 160,
+      "y": 11,
+      "width": 612,
+      "height": 408
+    }
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "rotate": [
+      375,
+      812
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 351,
+      "height": 234
+    }
+  },
+  {
+    "w": 844,
+    "h": 390,
+    "rotate": [
+      740,
+      360
+    ],
+    "canvas": {
+      "x": 125.5,
+      "y": 17,
+      "width": 489,
+      "height": 326
+    }
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "home",
+    "geometry": {
+      "scroll": 657,
+      "client": 657,
+      "width": 714,
+      "box": {
+        "x": 24,
+        "y": 180.53125,
+        "width": 720,
+        "height": 662.9375,
+        "top": 180.53125,
+        "right": 744,
+        "bottom": 843.46875,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "heroes",
+    "geometry": {
+      "scroll": 385,
+      "client": 385,
+      "width": 731,
+      "box": {
+        "x": 15.359375,
+        "y": 316.5,
+        "width": 737.265625,
+        "height": 391,
+        "top": 316.5,
+        "right": 752.625,
+        "bottom": 707.5,
+        "left": 15.359375
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "relics",
+    "geometry": {
+      "scroll": 635,
+      "client": 635,
+      "width": 731,
+      "box": {
+        "x": 15.359375,
+        "y": 191.71875,
+        "width": 737.265625,
+        "height": 640.5625,
+        "top": 191.71875,
+        "right": 752.625,
+        "bottom": 832.28125,
+        "left": 15.359375
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "collection",
+    "geometry": {
+      "scroll": 648,
+      "client": 648,
+      "width": 714,
+      "box": {
+        "x": 24,
+        "y": 184.96875,
+        "width": 720,
+        "height": 654.0625,
+        "top": 184.96875,
+        "right": 744,
+        "bottom": 839.03125,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "prepare",
+    "geometry": {
+      "scroll": 800,
+      "client": 800,
+      "width": 714,
+      "box": {
+        "x": 24,
+        "y": 109.25,
+        "width": 720,
+        "height": 805.5,
+        "top": 109.25,
+        "right": 744,
+        "bottom": 914.75,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "panel",
+    "geometry": {
+      "scroll": 262,
+      "client": 262,
+      "width": 746,
+      "box": {
+        "x": 8,
+        "y": 541,
+        "width": 752,
+        "height": 268,
+        "top": 541,
+        "right": 760,
+        "bottom": 809,
+        "left": 8
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "battle-menu",
+    "geometry": {
+      "scroll": 572,
+      "client": 572,
+      "width": 720,
+      "box": {
+        "x": 24,
+        "y": 225.84375,
+        "width": 720,
+        "height": 572.296875,
+        "top": 225.84375,
+        "right": 744,
+        "bottom": 798.140625,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "restart-confirm",
+    "geometry": {
+      "scroll": 295,
+      "client": 295,
+      "width": 720,
+      "box": {
+        "x": 24,
+        "y": 364.59375,
+        "width": 720,
+        "height": 294.796875,
+        "top": 364.59375,
+        "right": 744,
+        "bottom": 659.390625,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "victory",
+    "geometry": {
+      "scroll": 457,
+      "client": 457,
+      "width": 720,
+      "box": {
+        "x": 24,
+        "y": 283.65625,
+        "width": 720,
+        "height": 456.6875,
+        "top": 283.65625,
+        "right": 744,
+        "bottom": 740.34375,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "name": "defeat",
+    "geometry": {
+      "scroll": 457,
+      "client": 457,
+      "width": 720,
+      "box": {
+        "x": 24,
+        "y": 283.65625,
+        "width": 720,
+        "height": 456.6875,
+        "top": 283.65625,
+        "right": 744,
+        "bottom": 740.34375,
+        "left": 24
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "rotate": [
+      844,
+      390
+    ],
+    "canvas": {
+      "x": 146,
+      "y": 11,
+      "width": 552,
+      "height": 368
+    }
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "rotate": [
+      390,
+      760
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 366,
+      "height": 244
+    }
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "rotate": [
+      932,
+      430
+    ],
+    "canvas": {
+      "x": 160,
+      "y": 11,
+      "width": 612,
+      "height": 408
+    }
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "rotate": [
+      375,
+      812
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 351,
+      "height": 234
+    }
+  },
+  {
+    "w": 768,
+    "h": 1024,
+    "rotate": [
+      740,
+      360
+    ],
+    "canvas": {
+      "x": 125.5,
+      "y": 17,
+      "width": 489,
+      "height": 326
+    }
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "home",
+    "geometry": {
+      "scroll": 632,
+      "client": 632,
+      "width": 714,
+      "box": {
+        "x": 152,
+        "y": 65.125,
+        "width": 720,
+        "height": 637.75,
+        "top": 65.125,
+        "right": 872,
+        "bottom": 702.875,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "heroes",
+    "geometry": {
+      "scroll": 399,
+      "client": 399,
+      "width": 784,
+      "box": {
+        "x": 117,
+        "y": 181.5,
+        "width": 790,
+        "height": 405,
+        "top": 181.5,
+        "right": 907,
+        "bottom": 586.5,
+        "left": 117
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "relics",
+    "geometry": {
+      "scroll": 635,
+      "client": 635,
+      "width": 784,
+      "box": {
+        "x": 117,
+        "y": 63.71875,
+        "width": 790,
+        "height": 640.5625,
+        "top": 63.71875,
+        "right": 907,
+        "bottom": 704.28125,
+        "left": 117
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "collection",
+    "geometry": {
+      "scroll": 614,
+      "client": 614,
+      "width": 714,
+      "box": {
+        "x": 152,
+        "y": 73.96875,
+        "width": 720,
+        "height": 620.0625,
+        "top": 73.96875,
+        "right": 872,
+        "bottom": 694.03125,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "prepare",
+    "geometry": {
+      "scroll": 632,
+      "client": 632,
+      "width": 714,
+      "box": {
+        "x": 152,
+        "y": 65.25,
+        "width": 720,
+        "height": 637.5,
+        "top": 65.25,
+        "right": 872,
+        "bottom": 702.75,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "panel",
+    "geometry": {
+      "scroll": 546,
+      "client": 546,
+      "width": 274,
+      "box": {
+        "x": 590,
+        "y": 133,
+        "width": 280,
+        "height": 552,
+        "top": 133,
+        "right": 870,
+        "bottom": 685,
+        "left": 590
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "battle-menu",
+    "geometry": {
+      "scroll": 571,
+      "client": 571,
+      "width": 720,
+      "box": {
+        "x": 152,
+        "y": 98.65625,
+        "width": 720,
+        "height": 570.6875,
+        "top": 98.65625,
+        "right": 872,
+        "bottom": 669.34375,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "restart-confirm",
+    "geometry": {
+      "scroll": 293,
+      "client": 293,
+      "width": 720,
+      "box": {
+        "x": 152,
+        "y": 237.40625,
+        "width": 720,
+        "height": 293.1875,
+        "top": 237.40625,
+        "right": 872,
+        "bottom": 530.59375,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "victory",
+    "geometry": {
+      "scroll": 455,
+      "client": 455,
+      "width": 720,
+      "box": {
+        "x": 152,
+        "y": 156.453125,
+        "width": 720,
+        "height": 455.078125,
+        "top": 156.453125,
+        "right": 872,
+        "bottom": 611.53125,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "name": "defeat",
+    "geometry": {
+      "scroll": 455,
+      "client": 455,
+      "width": 720,
+      "box": {
+        "x": 152,
+        "y": 156.453125,
+        "width": 720,
+        "height": 455.078125,
+        "top": 156.453125,
+        "right": 872,
+        "bottom": 611.53125,
+        "left": 152
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "rotate": [
+      844,
+      390
+    ],
+    "canvas": {
+      "x": 146,
+      "y": 11,
+      "width": 552,
+      "height": 368
+    }
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "rotate": [
+      390,
+      760
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 366,
+      "height": 244
+    }
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "rotate": [
+      932,
+      430
+    ],
+    "canvas": {
+      "x": 160,
+      "y": 11,
+      "width": 612,
+      "height": 408
+    }
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "rotate": [
+      375,
+      812
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 351,
+      "height": 234
+    }
+  },
+  {
+    "w": 1024,
+    "h": 768,
+    "rotate": [
+      740,
+      360
+    ],
+    "canvas": {
+      "x": 125.5,
+      "y": 17,
+      "width": 489,
+      "height": 326
+    }
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "home",
+    "geometry": {
+      "scroll": 632,
+      "client": 632,
+      "width": 714,
+      "box": {
+        "x": 360,
+        "y": 131.125,
+        "width": 720,
+        "height": 637.75,
+        "top": 131.125,
+        "right": 1080,
+        "bottom": 768.875,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "heroes",
+    "geometry": {
+      "scroll": 399,
+      "client": 399,
+      "width": 784,
+      "box": {
+        "x": 325,
+        "y": 247.5,
+        "width": 790,
+        "height": 405,
+        "top": 247.5,
+        "right": 1115,
+        "bottom": 652.5,
+        "left": 325
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "relics",
+    "geometry": {
+      "scroll": 635,
+      "client": 635,
+      "width": 784,
+      "box": {
+        "x": 325,
+        "y": 129.71875,
+        "width": 790,
+        "height": 640.5625,
+        "top": 129.71875,
+        "right": 1115,
+        "bottom": 770.28125,
+        "left": 325
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "collection",
+    "geometry": {
+      "scroll": 614,
+      "client": 614,
+      "width": 714,
+      "box": {
+        "x": 360,
+        "y": 139.96875,
+        "width": 720,
+        "height": 620.0625,
+        "top": 139.96875,
+        "right": 1080,
+        "bottom": 760.03125,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "prepare",
+    "geometry": {
+      "scroll": 632,
+      "client": 632,
+      "width": 714,
+      "box": {
+        "x": 360,
+        "y": 131.25,
+        "width": 720,
+        "height": 637.5,
+        "top": 131.25,
+        "right": 1080,
+        "bottom": 768.75,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "panel",
+    "geometry": {
+      "scroll": 678,
+      "client": 678,
+      "width": 274,
+      "box": {
+        "x": 1006,
+        "y": 133,
+        "width": 280,
+        "height": 684,
+        "top": 133,
+        "right": 1286,
+        "bottom": 817,
+        "left": 1006
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "battle-menu",
+    "geometry": {
+      "scroll": 572,
+      "client": 572,
+      "width": 720,
+      "box": {
+        "x": 360,
+        "y": 163.84375,
+        "width": 720,
+        "height": 572.296875,
+        "top": 163.84375,
+        "right": 1080,
+        "bottom": 736.140625,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "restart-confirm",
+    "geometry": {
+      "scroll": 295,
+      "client": 295,
+      "width": 720,
+      "box": {
+        "x": 360,
+        "y": 302.59375,
+        "width": 720,
+        "height": 294.796875,
+        "top": 302.59375,
+        "right": 1080,
+        "bottom": 597.390625,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "victory",
+    "geometry": {
+      "scroll": 457,
+      "client": 457,
+      "width": 720,
+      "box": {
+        "x": 360,
+        "y": 221.65625,
+        "width": 720,
+        "height": 456.6875,
+        "top": 221.65625,
+        "right": 1080,
+        "bottom": 678.34375,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "name": "defeat",
+    "geometry": {
+      "scroll": 457,
+      "client": 457,
+      "width": 720,
+      "box": {
+        "x": 360,
+        "y": 221.65625,
+        "width": 720,
+        "height": 456.6875,
+        "top": 221.65625,
+        "right": 1080,
+        "bottom": 678.34375,
+        "left": 360
+      }
+    },
+    "errors": []
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "rotate": [
+      844,
+      390
+    ],
+    "canvas": {
+      "x": 146,
+      "y": 11,
+      "width": 552,
+      "height": 368
+    }
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "rotate": [
+      390,
+      760
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 366,
+      "height": 244
+    }
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "rotate": [
+      932,
+      430
+    ],
+    "canvas": {
+      "x": 160,
+      "y": 11,
+      "width": 612,
+      "height": 408
+    }
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "rotate": [
+      375,
+      812
+    ],
+    "canvas": {
+      "x": 12,
+      "y": 132,
+      "width": 351,
+      "height": 234
+    }
+  },
+  {
+    "w": 1440,
+    "h": 900,
+    "rotate": [
+      740,
+      360
+    ],
+    "canvas": {
+      "x": 125.5,
+      "y": 17,
+      "width": 489,
+      "height": 326
+    }
+  }
+]

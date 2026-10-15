@@ -241,7 +241,8 @@ test("all twenty-four illustrated ultimate silhouettes and a busy magical battle
   });
   await page.waitForFunction(art => {
     const s=window.__tinySiege.ui.scene;
-    return art.every(a=>s.textures.exists(a.key)) && s.towerSprites.size===24;
+    return art.every(a=>s.textures.exists(a.key)) && s.towerSprites.size===24 &&
+      [...s.towerSprites.values()].every(sprite=>art.some(a=>a.key===sprite.texture.key));
   },art);
   art=await page.evaluate(art=>art.map(a=>({...a,name:window.__tinySiege.ui.scene.textures.getBase64(a.key)})),art);
   expect(new Set(art.map((a) => a.name)).size).toBe(24);

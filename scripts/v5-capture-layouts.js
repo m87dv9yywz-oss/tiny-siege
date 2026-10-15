@@ -1,8 +1,9 @@
 // Actual Chromium Canvas/HTML captures. End screens use explicit local UI fixtures.
 import {chromium}from'@playwright/test';import{mkdirSync,writeFileSync}from'node:fs';
 const root='docs/qa/v5/layout';mkdirSync(root,{recursive:true});const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});let results=[];
-for(const[w,h]of[[375,812],[390,844],[844,390],[932,430],[667,375],[768,1024],[1024,768],[1280,720],[1440,900]]){
- const p=await browser.newPage({viewport:{width:w,height:h},hasTouch:true});let errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:5173/tiny-siege/');await p.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await p.evaluate(()=>document.fonts.ready);
+try {
+for(const[w,h]of[[375,812],[844,390],[768,1024],[1024,768],[1440,900]]){
+ const p=await browser.newPage({viewport:{width:w,height:h},hasTouch:true});let errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:5173/tiny-siege/',{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await p.evaluate(()=>document.fonts.ready);
  await p.locator('#new-profile').tap();await p.locator('#nickname').fill('Measure Knight');await p.locator('#profile-form button').tap();
  const check=async(name,selector)=>{results.push({w,h,name,geometry:await p.locator(selector).evaluate(e=>({scroll:e.scrollHeight,client:e.clientHeight,width:e.clientWidth,box:e.getBoundingClientRect().toJSON()})),errors:[...errors]});await p.screenshot({path:`${root}/${name}-${w}x${h}.png`});};
  await check('home','.home-card');
@@ -14,4 +15,4 @@ for(const[w,h]of[[375,812],[390,844],[844,390],[932,430],[667,375],[768,1024],[1
  for(const[width,height]of[[844,390],[390,760],[932,430],[375,812],[740,360]]){await p.setViewportSize({width,height});await p.evaluate(()=>window.dispatchEvent(new Event('orientationchange')));await p.waitForTimeout(180);results.push({w,h,rotate:[width,height],canvas:await p.locator('canvas').boundingBox()});}
  await p.close();
 }
-writeFileSync(root+'/measurements.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results.map(x=>({w:x.w,h:x.h,name:x.name,overflow:x.geometry?x.geometry.scroll-x.geometry.client:undefined,rotate:x.rotate,canvas:x.canvas,errors:x.errors})),null,2));await browser.close();
+writeFileSync(root+'/measurements.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results.map(x=>({w:x.w,h:x.h,name:x.name,overflow:x.geometry?x.geometry.scroll-x.geometry.client:undefined,rotate:x.rotate,canvas:x.canvas,errors:x.errors})),null,2));} finally {await browser.close();}

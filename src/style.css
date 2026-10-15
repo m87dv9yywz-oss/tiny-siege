@@ -4589,3 +4589,100 @@ h3,
 /* Placement hints must never swallow a valid battlefield tap. */
 #selection-panel.placing { pointer-events: none; }
 #selection-panel.placing .cancel-button { pointer-events: auto; }
+
+/* Audit: keep supplied banners proportionate and text in their empty ribbons. */
+.v5-screen-head .v5-banner { max-width: 320px; min-height: 80px; padding: 8px 18px; background-size: contain; margin-inline: auto; }
+.v5-screen-head .v5-banner h1 { font-size: clamp(16px,2.8vw,22px); letter-spacing: 0; margin: 0; }
+.v5-relic-cell { min-width: 0; text-align: center; }
+.v5-relic-caption { font-size: 11px; font-weight: 800; line-height: 1.15; min-height: 26px; margin-top: 2px; }
+.relic-grid .v5-relic-card .v5-relic-name { white-space: nowrap; top: 56%; font-size: 12px; }
+.relic-grid .v5-relic-card .v5-relic-desc { top: 68%; margin: 0; display: block; font-size: 10px; line-height: 1.1; }
+.relic-card.v5-screen .v5-relic-action:disabled { color: #746651; text-shadow: none; }
+.relic-grid .v5-relic-info::after { content: "ⓘ"; position: absolute; right: -4px; top: -2px; font-size: 14px; color: #264e42; }
+/* Percentage vertical padding resolved against width made these dialogs scroll. */
+.modal-card.v5-dialog-card { padding: clamp(40px,9vh,64px) clamp(24px,7vw,72px) clamp(24px,5vh,40px); }
+.modal-card.v5-dialog-card h1 { margin: 0 0 8px; font-size: 26px; }
+.modal-card.v5-dialog-card p { margin: 8px 0; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .adventure-card.v5-screen { padding: 8px 16px; }
+ .adventure-card > .v5-banner { min-height: 58px; max-width: 260px; padding: 4px 24px; margin: 0 auto 4px; background-size: contain; }
+ .adventure-card > .v5-banner h1 { margin: 0; font-size: 22px; }
+ .v5-prep { grid-template-columns: minmax(0,.8fr) minmax(0,1.4fr); align-items: center; }
+ .v5-prep .v5-map-card { max-width: 210px; margin: auto; }
+ .v5-prep-side { gap: 6px; }
+ .v5-prep-side .difficulty-picker { flex-direction: row; gap: 4px; }
+ .v5-prep-side .difficulty-picker .v5-btn { flex: 1; min-width: 0; font-size: 12px; padding: 4px 8px; justify-content: center; border-image-width: 12px 22px; }
+ .v5-prep-side .difficulty-picker small { display: none; }
+ .v5-hero-row { padding: 3px 6px; gap: 5px; }
+ .v5-hero-row .v5-hero-meta b { font-size: 13px; }
+ .v5-hero-row #choose-hero { min-height: 44px; padding: 3px 14px; font-size: 11px; border-image-width: 12px 24px; }
+ .v5-prep-side .v5-relic-line { font-size: 12px; margin: 0; }
+ .v5-prep-actions { margin-top: 6px; }
+ .modal-card.v5-dialog-card:has(#keep-playing) { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+ .v5-dialog-card:has(#keep-playing) > h1, .v5-dialog-card:has(#keep-playing) > p { grid-column: 1/-1; }
+ .v5-dialog-card:has(#keep-playing) > .v5-btn { min-height: 44px; margin: 0; font-size: 14px; }
+ .modal-card.result-card { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }
+ .result-card > :not(button) { grid-column: 1/-1; }
+ .result-card h1 { display: flex; justify-content: center; gap: .25em; }
+ .result-card h1 br { display: none; }
+ .result-card .v5-stars { margin: 0; }
+ .result-card .v5-stars img { width: 28px; height: 28px; }
+ .result-card .result-stats, .result-card .reward-summary { margin: 0; }
+ .result-card .result-stats div { padding: 4px; }
+ .result-card .result-stats b { font-size: 24px; }
+ .result-card .v5-btn { min-height: 44px; margin: 0; font-size: 14px; }
+}
+/* Use nine-slice framing: preserve the original ornaments at different widths. */
+.v5-banner,
+.v5-screen-head .v5-banner,
+.hero-card .v5-screen-head .v5-banner,
+.adventure-card > .v5-banner {
+ background: none;
+ border: solid transparent;
+ border-width: 14px 50px;
+ border-image: url('/tiny-siege/assets/v5/ui/ui_section_header_banner.png') 85 240 fill / 18px 60px;
+ min-height: 64px;
+ padding: 0 4px;
+ max-width: 340px;
+}
+.v5-banner h1, .hero-card .v5-screen-head .v5-banner h1,
+.adventure-card > .v5-banner h1 { font-size: 20px; margin: 0; line-height: 1.1; letter-spacing: 0; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .adventure-card > .v5-banner { max-width: 300px; }
+ .result-card .reward-summary { padding: 4px 8px; font-size: 11px; line-height: 1.2; }
+ .result-card .reward-summary small { font-size: 10px; margin-top: 2px; }
+}
+.v5-banner h1, .hero-card .v5-screen-head .v5-banner h1,
+.adventure-card > .v5-banner h1 { font-size: clamp(16px,2.5vw,20px); }
+.relic-card.v5-screen .v5-relic-card .v5-relic-action {
+ display: flex; align-items: center; justify-content: center; padding: 0;
+ top: calc(84% - 22px); bottom: auto; height: 44px;
+ color: #214e35; text-shadow: none;
+}
+.relic-card.v5-screen .v5-relic-card .v5-relic-action:disabled { opacity: 1; color: #746651; }
+@media (orientation: portrait) and (max-width: 700px) {
+ .adventure-card.v5-screen { padding: 12px; }
+ .adventure-card .v5-prep .v5-map-card { width: 100%; max-width: 200px; margin: auto; }
+ .v5-prep, .v5-prep-side, .v5-prep-side .difficulty-picker { gap: 6px; }
+ .v5-prep-side .difficulty-picker .v5-btn { min-height: 48px; font-size: 14px; padding: 4px 24px; }
+ .v5-prep-side .difficulty-picker small { font-size: 10px; }
+ .v5-hero-row { gap: 6px; padding: 4px 6px; }
+ .v5-hero-row img { width: 42px; height: 42px; }
+ .v5-hero-row .v5-hero-meta b { font-size: 14px; }
+ .v5-hero-row #choose-hero { font-size: 12px; min-height: 44px; padding: 4px 14px; border-image-width: 12px 24px; }
+ .v5-prep-actions .v5-btn { min-height: 48px; font-size: 16px; padding: 4px 24px; border-image-width: 14px 44px; }
+}
+@media (orientation: landscape) and (max-height: 400px) {
+ .modal-card.result-card { padding-top: 32px; padding-bottom: 20px; row-gap: 2px; }
+ .modal-card.result-card h1 { font-size: 24px; }
+ .result-card .v5-stars img { width: 24px; height: 24px; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+ .v5-home .home-actions .v5-btn { min-width: 0; }
+}
+@media (orientation: portrait) and (min-width: 701px) {
+ .adventure-card .v5-prep .v5-map-card { max-width: 300px; margin: auto; }
+}
+@media (orientation: landscape) and (max-height: 400px) {
+ .home-card.v5-home { gap: 1px; padding-block: 4px; }
+}

@@ -2,6 +2,7 @@ import {test,expect} from '@playwright/test';
 import {MAP_IDS} from '../../src/mapArtwork.js';
 import {ENEMY_TYPES,enemyDisplaySize} from '../../src/enemyArtwork.js';
 import {ENEMIES} from '../../src/data/enemies.js';
+import {OBSTACLES} from '../../src/data/map.js';
 import {heroStage} from '../../src/heroArtwork.js';
 const out='docs/qa/v5/rendered';
 async function ready(page){await page.setViewportSize({width:844,height:390});await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.evaluate(()=>document.fonts.ready);await page.locator('#new-profile').tap();await page.locator('#nickname').fill('World Knight');await page.locator('#profile-form button').tap();}
@@ -24,6 +25,15 @@ for(const map of MAP_IDS)test(`${map}: full real route, legal touch placement, b
   expect(await page.evaluate(()=>window.__tinySiege.model.towers.length)).toBe(i+1);
  }
  await expect(page.locator('#gold')).toHaveText('75');
+ if(OBSTACLES[map]?.length){
+  await page.locator('[data-tower="archer"]').tap();
+  for(const obstacle of OBSTACLES[map]){
+   await tap(page,obstacle.x,obstacle.y);
+   expect(await page.evaluate(()=>window.__tinySiege.model.towers.length)).toBe(3);
+   await expect(page.locator('#gold')).toHaveText('75');
+  }
+ }
+
  const invalid=await page.evaluate(()=>{const g=window.__tinySiege.model,p=g.trail.onPath(g.trail.PATH_LENGTH*.4);return g.canPlace('archer',p.x,p.y);});expect(invalid).toContain('trail');
 });
 test('stale map downloads cannot overwrite the new adventure, and cached painted maps remain bounded',async({page})=>{
@@ -61,6 +71,8 @@ test('three playable heroes use baby/teen/adult art at existing levels, attack, 
   const pos=await page.evaluate(()=>window.__tinySiege.model.hero);expect(pos.x).toBeCloseTo(340,0);expect(pos.y).toBeCloseTo(100,0);
   await page.evaluate(()=>{const g=window.__tinySiege.model;g.moveHero(190,80);for(let i=0;i<100;i++)g.update(.1);g.active=true;g.queue=[{at:1e9,type:'basic'}];const e=g.spawn('brute');let nearest=0,dist=Infinity;for(let d=0;d<g.trail.PATH_LENGTH;d+=5){const p=g.trail.onPath(d),n=Math.hypot(p.x-g.hero.x,p.y-g.hero.y);if(n<dist){nearest=d;dist=n;}}e.progress=nearest;Object.assign(e,g.trail.onPath(nearest));g.update(1);});
   expect(await page.evaluate(()=>window.__tinySiege.model.hero.damage)).toBeGreaterThan(0);
+  const sizes=await page.evaluate(async()=>{const a=[];for(let i=0;i<14;i++){await new Promise(requestAnimationFrame);const s=window.__tinySiege.ui.scene.heroSprite;a.push([s.displayWidth,s.displayHeight]);}return a;});
+  expect(sizes.every(([w,h])=>w>=65&&w<=80&&h>=65&&h<=80)).toBe(true);
   await page.locator('#hero-ability').tap();const cooldown=await page.evaluate(()=>{const g=window.__tinySiege.model;g.paused=true;return g.hero.abilityLeft;});expect(cooldown).toBeGreaterThan(0);
   await page.evaluate(()=>window.__tinySiege.model.update(5));expect(await page.evaluate(()=>window.__tinySiege.model.hero.abilityLeft)).toBe(cooldown);
   await page.evaluate(()=>{const{model:g,ui}=window.__tinySiege;g.paused=false;ui.helpOpen=true;ui.heroMoving=true;ui.refresh(true);});

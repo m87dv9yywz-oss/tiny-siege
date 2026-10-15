@@ -295,14 +295,17 @@ export class GameScene extends Phaser.Scene {
         age: 0,
         life: 0.22,
       });
-      if (this.heroSprite)
+      if (this.heroSprite) {
+        this.tweens.killTweensOf(this.heroSprite);
+        this.heroSprite.setDisplaySize(72, 72);
         this.tweens.add({
           targets: this.heroSprite,
-          scaleX: 1.1,
-          scaleY: 0.92,
+          scaleX: this.heroSprite.scaleX * 1.1,
+          scaleY: this.heroSprite.scaleY * 0.92,
           duration: 90,
           yoyo: true,
         });
+      }
     }
     if (type === "build" || type === "upgrade") {
       this.effects.push({
@@ -482,13 +485,21 @@ export class GameScene extends Phaser.Scene {
         this.effects.push({ type: "gold", text, age: 0, life: 0.7 });
       }
     }
-    if (this.effects.length > 100) {
+    const effectLimit = this.ui.reducedEffects ? 36 : 100;
+    if (this.effects.length > effectLimit) {
       this.effects
-        .splice(0, this.effects.length - 100)
+        .splice(0, this.effects.length - effectLimit)
         .forEach((e) => e.text?.destroy());
     }
   }
   update(time, delta) {
+    if (this.gentleEffects !== this.ui.reducedEffects) {
+      this.gentleEffects = this.ui.reducedEffects;
+      for (const emitter of Object.values(this.particles))
+        emitter.maxAliveParticles = this.gentleEffects ? 30 : 100;
+      if (this.gentleEffects && this.effects.length > 36)
+        this.effects.splice(0, this.effects.length - 36).forEach(e => e.text?.destroy());
+    }
     const stopped = this.model.paused || this.ui.inMenu || this.ui.helpOpen;
     this.tweens.timeScale = stopped ? 0 : this.model.speed;
     Object.values(this.particles).forEach(

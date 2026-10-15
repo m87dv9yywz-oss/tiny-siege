@@ -1,0 +1,401 @@
+{
+  "v3": [
+    {
+      "label": "New player, starter towers and Tier 1 only",
+      "map": "emerald",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 5027
+    },
+    {
+      "label": "First Amber attempt with earned Tier 2 starter paths",
+      "map": "amber",
+      "result": "victory",
+      "lives": 11,
+      "totalGold": 20381
+    },
+    {
+      "label": "Moon with earned starter ultimates",
+      "map": "moon",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 20476
+    },
+    {
+      "label": "Progressed mixed defense, selecting owned specializations",
+      "map": "moon",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 20425
+    },
+    {
+      "label": "Progressed physical defense, selecting owned specializations",
+      "map": "moon",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 20476
+    },
+    {
+      "label": "Progressed control defense, selecting owned specializations",
+      "map": "moon",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 20408
+    },
+    {
+      "label": "Garden: earned Grove path 0, introductory run",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 0, earned Tier 2",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 0, earned ultimate",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: earned Grove path 1, introductory run",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 1, earned Tier 2",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 1, earned ultimate",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: earned Grove path 2, introductory run",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 2, earned Tier 2",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    },
+    {
+      "label": "Garden: Grove path 2, earned ultimate",
+      "map": "garden",
+      "result": "victory",
+      "lives": 20,
+      "totalGold": 13679
+    }
+  ],
+  "v4": [
+    {
+      "map": "emerald",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 20,
+      "earned": 14712,
+      "spent": 10565
+    },
+    {
+      "map": "amber",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 14678,
+      "spent": 14165
+    },
+    {
+      "map": "garden",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 14678,
+      "spent": 14605
+    },
+    {
+      "map": "crystal",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16348,
+      "spent": 15970
+    },
+    {
+      "map": "coast",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16421,
+      "spent": 16560
+    },
+    {
+      "map": "moon",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 14678,
+      "spent": 14425
+    },
+    {
+      "map": "crystal",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16331,
+      "spent": 16300
+    },
+    {
+      "map": "coast",
+      "mode": "easy",
+      "hero": "tiger",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16438,
+      "spent": 16315
+    },
+    {
+      "map": "crystal",
+      "mode": "easy",
+      "hero": "dinosaur",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16331,
+      "spent": 15675
+    },
+    {
+      "map": "coast",
+      "mode": "easy",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16438,
+      "spent": 15675
+    },
+    {
+      "map": "crystal",
+      "mode": "easy",
+      "hero": "tiger",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16331,
+      "spent": 15625
+    },
+    {
+      "map": "coast",
+      "mode": "easy",
+      "hero": "dinosaur",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 16438,
+      "spent": 16335
+    },
+    {
+      "map": "emerald",
+      "mode": "medium",
+      "hero": "dragon",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 44856,
+      "spent": 44890
+    },
+    {
+      "map": "emerald",
+      "mode": "hard",
+      "hero": "tiger",
+      "style": "physical",
+      "result": "victory",
+      "lives": 22,
+      "earned": 182162,
+      "spent": 67830
+    },
+    {
+      "map": "amber",
+      "mode": "medium",
+      "hero": "dinosaur",
+      "style": "magic",
+      "result": "victory",
+      "lives": 22,
+      "earned": 44856,
+      "spent": 44130
+    },
+    {
+      "map": "amber",
+      "mode": "hard",
+      "hero": "dragon",
+      "style": "control",
+      "result": "victory",
+      "lives": 22,
+      "earned": 182054,
+      "spent": 65830
+    },
+    {
+      "map": "moon",
+      "mode": "medium",
+      "hero": "tiger",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 44874,
+      "spent": 44355
+    },
+    {
+      "map": "moon",
+      "mode": "hard",
+      "hero": "dinosaur",
+      "style": "physical",
+      "result": "victory",
+      "lives": 22,
+      "earned": 182126,
+      "spent": 71630
+    },
+    {
+      "map": "garden",
+      "mode": "medium",
+      "hero": "dragon",
+      "style": "magic",
+      "result": "victory",
+      "lives": 22,
+      "earned": 44856,
+      "spent": 44885
+    },
+    {
+      "map": "garden",
+      "mode": "hard",
+      "hero": "tiger",
+      "style": "control",
+      "result": "victory",
+      "lives": 22,
+      "earned": 182090,
+      "spent": 69630
+    },
+    {
+      "map": "crystal",
+      "mode": "medium",
+      "hero": "dinosaur",
+      "style": "mixed",
+      "result": "victory",
+      "lives": 22,
+      "earned": 50483,
+      "spent": 49910
+    },
+    {
+      "map": "crystal",
+      "mode": "hard",
+      "hero": "dragon",
+      "style": "physical",
+      "result": "victory",
+      "lives": 22,
+      "earned": 216496,
+      "spent": 71630
+    },
+    {
+      "map": "coast",
+      "mode": "medium",
+      "hero": "tiger",
+      "style": "magic",
+      "result": "victory",
+      "lives": 22,
+      "earned": 50801,
+      "spent": 49940
+    },
+    {
+      "map": "coast",
+      "mode": "hard",
+      "hero": "dinosaur",
+      "style": "control",
+      "result": "victory",
+      "lives": 22,
+      "earned": 218601,
+      "spent": 69630
+    }
+  ],
+  "classic": [
+    {
+      "strategy": "mixed",
+      "result": "victory",
+      "lives": 20,
+      "totalResources": 20391,
+      "spent": 17425,
+      "firstEvolution": 11
+    },
+    {
+      "strategy": "physical",
+      "result": "victory",
+      "lives": 20,
+      "totalResources": 20391,
+      "spent": 14665,
+      "firstEvolution": 11
+    },
+    {
+      "strategy": "magic",
+      "result": "victory",
+      "lives": 20,
+      "totalResources": 20391,
+      "spent": 16635,
+      "firstEvolution": 11
+    },
+    {
+      "strategy": "control",
+      "result": "victory",
+      "lives": 20,
+      "totalResources": 20374,
+      "spent": 16565,
+      "firstEvolution": 11
+    },
+    {
+      "strategy": "beginner",
+      "result": "victory",
+      "lives": 20,
+      "totalResources": 20391,
+      "spent": 16975,
+      "firstEvolution": 11
+    },
+    {
+      "strategy": "noArmorCounter",
+      "result": "defeat",
+      "lives": 0,
+      "totalResources": null,
+      "spent": null,
+      "firstEvolution": null
+    }
+  ]
+}
