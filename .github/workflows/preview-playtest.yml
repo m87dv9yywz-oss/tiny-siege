@@ -1,0 +1,31 @@
+name: Read-only V5 public preview playtest
+on:
+  push:
+    branches: [preview/pr17-isolated-hosting]
+    paths: ['.github/workflows/preview-playtest.yml', 'scripts/v5-preview-isolation.mjs']
+permissions:
+  contents: read
+jobs:
+  public-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PREVIEW_URL: https://tiny-siege-v5-pr17-preview-gr5zdgp6e-krumsick.vercel.app/
+      PLAYWRIGHT_USE_BUNDLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Public shipped-game smoke
+        run: node scripts/v5-preview-smoke.mjs "$PREVIEW_URL"
+      - name: Chromium and WebKit mobile play and isolation
+        run: node scripts/v5-preview-isolation.mjs "$PREVIEW_URL"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-preview-mobile-evidence
+          path: test-results/
+          retention-days: 7
