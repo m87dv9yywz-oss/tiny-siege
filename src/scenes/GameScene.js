@@ -12,6 +12,8 @@ import {
   enemyArtwork,
   enemyDisplaySize,
   enemyTexture,
+  goldenArtwork,
+  goldenTexture,
   stageTint,
 } from "../enemyArtwork.js";
 import { mapArtwork, mapTexture } from "../mapArtwork.js";
@@ -53,6 +55,7 @@ export class GameScene extends Phaser.Scene {
         );
     for (const type of ENEMY_TYPES)
       this.load.image(enemyTexture(type), base + enemyArtwork(type));
+    this.load.image(goldenTexture(), base + goldenArtwork());
     const startMap = mapTexture(this.model.campaign.id);
     if (startMap)
       this.load.image(startMap, base + mapArtwork(this.model.campaign.id));
@@ -462,10 +465,12 @@ export class GameScene extends Phaser.Scene {
           .image(
             enemy.x,
             enemy.y - 7,
-            enemyTexture(enemy.type) || `enemy-${enemy.type}`,
+            enemy.golden
+              ? goldenTexture()
+              : enemyTexture(enemy.type) || `enemy-${enemy.type}`,
           )
           .setDepth(enemy.y + 30);
-        if (enemyTexture(enemy.type)) {
+        if (enemy.golden || enemyTexture(enemy.type)) {
           const gd = enemyDisplaySize((ENEMIES[enemy.type] || {}).radius || 12);
           ghost.setDisplaySize(gd, gd);
         }
@@ -634,9 +639,11 @@ export class GameScene extends Phaser.Scene {
     for (const e of this.model.enemies) {
       let sprite = this.enemySprites.get(e.id);
       if (!sprite) {
-        const tex = enemyTexture(e.type) || `enemy-${e.type}`;
+        const tex = e.golden
+          ? goldenTexture()
+          : enemyTexture(e.type) || `enemy-${e.type}`;
         sprite = this.add.image(e.x, e.y, tex);
-        if (enemyTexture(e.type)) {
+        if (e.golden || enemyTexture(e.type)) {
           const d =
             enemyDisplaySize((ENEMIES[e.type] || {}).radius || 12) *
             (e.displayScale || 1);
@@ -659,11 +666,10 @@ export class GameScene extends Phaser.Scene {
       if (special)
         if (enemyTexture(e.type))
           sprite
-            .setTexture(enemyTexture(e.type))
+            .setTexture(e.golden ? goldenTexture() : enemyTexture(e.type))
             .setTint(max > 0 && state === "broken" ? 0xbbbbbb : max > 0 && state === "cracked" ? 0xdddddd : stageTint(e.stage));
         else sprite.setTexture(`enemy-${e.type}-${state}`);
-      else if (!e.boss)
-        sprite.setTint(e.golden ? 0xffbe3c : stageTint(e.stage));
+      else if (!e.boss) sprite.setTint(stageTint(e.stage));
       if (e.golden) {
         g.lineStyle(2, 0xffbe3c, 0.95);
         g.strokeCircle(e.x, e.y - 8, 17 * (e.displayScale || 1));

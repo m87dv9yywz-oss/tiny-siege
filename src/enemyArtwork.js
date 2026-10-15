@@ -27,6 +27,15 @@ export function enemyArtwork(type) {
 export function enemyTexture(type) {
   return ENEMY_SPRITES[type] ? `v5-enemy-${type}` : null;
 }
+// The Golden Sproutling has its own properly recolored sprite: a Phaser
+// tint multiplies, so gold over a green sprite stays green — the artwork
+// itself has to be gold.
+export function goldenArtwork() {
+  return "assets/v5/enemies/enemy_goldensproutling.png";
+}
+export function goldenTexture() {
+  return "v5-enemy-goldensprout";
+}
 export function enemyDisplaySize(radius) {
   return ((radius * 2) / SPRITE_FILL).toFixed(1) * 1;
 }
