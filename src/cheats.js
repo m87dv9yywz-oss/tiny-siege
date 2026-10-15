@@ -4,36 +4,26 @@
 const TAP_WINDOW = 3000;
 const TAPS_NEEDED = 5;
 
-function trackTaps(el, callback) {
-  let taps = 0, timer = null;
-  el.addEventListener("click", () => {
-    taps++;
-    clearTimeout(timer);
-    timer = setTimeout(() => (taps = 0), TAP_WINDOW);
-    if (taps >= TAPS_NEEDED) {
-      taps = 0;
-      callback();
-    }
-  });
-}
-
 export function initCheats(ui, getGame) {
-  // Logo taps on main menu (event delegation — modal re-renders)
+  // One delegated listener: elements are re-rendered often, so count taps
+  // centrally. 5 taps, each within TAP_WINDOW of the previous, opens it.
+  const counters = new Map();
+  const count = (key) => {
+    const now = Date.now();
+    const c = counters.get(key);
+    if (!c || now - c.last > TAP_WINDOW) counters.set(key, { n: 1, last: now });
+    else {
+      c.n++;
+      c.last = now;
+    }
+    if (counters.get(key).n >= TAPS_NEEDED) {
+      counters.delete(key);
+      showCheatPanel(ui, getGame);
+    }
+  };
   document.addEventListener("click", (e) => {
-    if (e.target.closest(".menu-icon")) {
-      const el = e.target.closest(".menu-icon");
-      if (!el.dataset.cheatWired) {
-        el.dataset.cheatWired = "1";
-        trackTaps(el, () => showCheatPanel(ui, getGame));
-      }
-    }
-    if (e.target.closest("#gold")) {
-      const el = e.target.closest("#gold");
-      if (!el.dataset.cheatWired) {
-        el.dataset.cheatWired = "1";
-        trackTaps(el, () => showCheatPanel(ui, getGame));
-      }
-    }
+    if (e.target.closest(".menu-icon")) count("logo");
+    else if (e.target.closest("#gold")) count("gold");
   });
 }
 
