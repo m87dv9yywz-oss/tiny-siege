@@ -50,6 +50,8 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await page.screenshot({path:`test-results/public-preview/${name}-portrait-battle.png`});
     await page.locator('#close-panel').tap();
+    await page.locator('#pause').tap();
+    await page.waitForFunction(()=>document.querySelector('#start-wave').textContent.includes('START WAVE 2'),null,{timeout:90000});
     const beforePlacement=Number(await page.locator('#gold').textContent());
     await page.locator('[data-tower="archer"]').tap();
     b=await page.locator('canvas').boundingBox();
