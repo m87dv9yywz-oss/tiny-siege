@@ -1,11 +1,14 @@
+import { heroArtwork, heroStage } from "./heroArtwork.js";
 import { HEROES } from "./data/heroes.js";
 import { towerArtwork } from "./towerArtwork.js";
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
 import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
 import { guideHTML } from "./upgradeGuide.js";
 import { UNLOCK_COSTS } from "./progression/profiles.js";
+import { ENEMIES } from "./data/enemies.js";
 import { WAVE_HINTS } from "./data/waves.js";
 const $ = (id) => document.getElementById(id);
+const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
 export class UI {
   constructor(model, kingdom = null) {
     this.kingdom = kingdom;
@@ -23,7 +26,7 @@ export class UI {
     $("tower-shop").innerHTML = Object.entries(TOWERS)
       .map(
         ([key, t], i) =>
-          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
+          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span class="tower-lock" aria-hidden="true"><img src="${V5UI("ui_icon_lock.png")}" alt=""></span><span class="tower-name"><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
       )
       .join("");
     document.querySelectorAll("[data-tower]").forEach(
@@ -150,6 +153,18 @@ export class UI {
     this.refresh(true);
   }
   battlefieldReady() {
+    if (this.scene?.bootFailures?.size) {
+      const status = $("battlefield-loading");
+      if (status) {
+        status.textContent = "Some pictures couldn't load. Check your connection, then retry.";
+        if (!$("retry-artwork")) status.insertAdjacentHTML("afterend", '<button id="retry-artwork" class="secondary">Retry pictures</button>');
+        const button = $("retry-artwork");
+        button.disabled = false;
+        button.onclick = () => { button.disabled = true; status.textContent = "Retrying pictures…"; this.scene.retryArtwork(); };
+      }
+      return;
+    }
+    $("retry-artwork")?.remove();
     $("game").setAttribute("aria-busy", "false");
     document.querySelectorAll("[data-waiting-for-scene]").forEach(button => {
       button.disabled = false;
@@ -160,10 +175,10 @@ export class UI {
   hydrateShop() {
     for (const [key, def] of Object.entries(TOWERS))
       document.querySelector(`[data-tower="${key}"] .tower-icon`).innerHTML =
-        `<img src="${this.portrait({ type: key, paths: [0, 0, 0] })}" alt="">`;
+        `<img src="${this.portrait({ type: key, paths: [0, 0, 0] }, "battlefield_256")}" alt="">`;
   }
-  portrait(t) {
-    const illustrated = towerArtwork(t);
+  portrait(t, usage = "card_512") {
+    const illustrated = towerArtwork(t, usage);
     if (illustrated) return import.meta.env.BASE_URL + illustrated;
     if (this.kingdom) return this.kingdom.portrait(t);
     const p = t.paths.findIndex((n) => n >= 2);
@@ -361,8 +376,9 @@ export class UI {
     this.model.paused = true;
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="restart" class="danger">Restart Battle</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="keep-playing" class="v5-btn v5-btn-primary">Resume Battle</button><button id="battle-settings-open" class="v5-btn v5-btn-secondary">Settings</button><button id="battle-how" class="v5-btn v5-btn-secondary">How to Play</button><button id="confirm-leave" class="v5-btn v5-btn-secondary">Save & Main Menu</button><button id="restart" class="v5-btn v5-btn-secondary">Restart Battle</button><button id="abandon-battle" class="v5-btn v5-btn-danger">Abandon Battle</button>`,
     );
+    $("modal").querySelector(".modal-card").classList.add("v5-dialog-card");
     $("keep-playing").onclick = () => {
       this.helpOpen = false;
       this.model.paused = paused;
@@ -372,10 +388,34 @@ export class UI {
     };
     this.overlayClose = $("keep-playing").onclick;
     const returnToBattle = this.overlayClose;
+    const returnToMenu = () => {
+      this.leaveRun();
+      // leaveRun re-captures the (menu-paused) state; restore the original.
+      this.model.paused = true;
+      $("keep-playing").onclick = returnToBattle;
+      this.overlayClose = returnToBattle;
+    };
+    $("battle-settings-open").onclick = () => {
+      this.helpOpen = false;
+      this.model.paused = paused;
+      $("modal").hidden = true;
+      $("app").inert = false;
+      $("battle-settings").open = true;
+      this.refresh(true);
+    };
+    $("battle-how").onclick = () => {
+      this.help();
+      $("close-help").onclick = () => {
+        this.helpOpen = false;
+        returnToMenu();
+      };
+      this.overlayClose = $("close-help").onclick;
+    };
     $("restart").onclick = () => {
       this.modal(
-        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="primary">Cancel</button><button id="confirm-restart" class="danger">Yes, Restart</button>`,
+        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="v5-btn v5-btn-primary">Cancel</button><button id="confirm-restart" class="v5-btn v5-btn-danger">Yes, Restart</button>`,
       );
+      $("modal").querySelector(".modal-card").classList.add("v5-dialog-card");
       this.overlayClose = returnToBattle;
       $("cancel-restart").onclick = returnToBattle;
       $("confirm-restart").onclick = () => this.restart();
@@ -460,7 +500,9 @@ export class UI {
             "",
           )}</div><button id="intro-ready" class="primary">Ready · start wave ${this.model.wave + 1}</button><button id="intro-back" class="secondary">Prepare my defense</button>`,
       );
-      $("modal").querySelector(".modal-card").classList.add("intro-card");
+      $("modal")
+        .querySelector(".modal-card")
+        .classList.add("intro-card", "v5-dialog-card");
       const close = () => {
         this.helpOpen = false;
         $("modal").hidden = true;
@@ -493,8 +535,10 @@ export class UI {
     this.refresh(true);
   }
   restart() {
-    if (!this.scene) return; // Never enter a battle before Phaser attaches input.
+    if (!this.scene || this.scene.bootFailures?.size) return; // Never enter a battle before Phaser attaches input.
     this.drag = null;
+    this.heroMoving = false;
+    this.canvasPointerDown = false;
     clearTimeout(this.toastTimer);
     $("toast").classList.remove("visible");
     $("toast").textContent = "";
@@ -516,8 +560,8 @@ export class UI {
     $("app").inert = true;
     $("modal").innerHTML = `<div class="modal-card">${html}</div>`;
     $("modal").hidden = false;
-    if (!this.scene) {
-      const entry = $("modal").querySelectorAll("#play, #begin-adventure, #continue-battle");
+    if (!this.scene || this.scene.bootFailures?.size) {
+      const entry = $("modal").querySelectorAll("#play, #play-adventure, #begin-adventure, #continue-battle");
       for (const button of entry) {
         if (!button.disabled) {
           button.dataset.waitingForScene = "true";
@@ -527,7 +571,13 @@ export class UI {
       if (entry.length)
         entry[0].insertAdjacentHTML("beforebegin", '<p id="battlefield-loading" role="status">Preparing battlefield artwork…</p>');
     }
-    requestAnimationFrame(() => $("modal").querySelector("button")?.focus());
+    if (this.scene?.bootFailures?.size) this.battlefieldReady();
+    requestAnimationFrame(() => $("modal").querySelector("button:not([disabled])")?.focus());
+  }
+  closeModal() {
+    $("modal").hidden = true;
+    $("app").inert = false;
+    this.refresh(true);
   }
   menu() {
     if (this.kingdom) {
@@ -569,9 +619,13 @@ export class UI {
   result(result) {
     const win = result === "victory";
     const rewards = this.kingdom?.finishRun();
+    const stars = win ? (this.model.lives >= 18 ? 3 : this.model.lives >= 10 ? 2 : 1) : 0;
     this.modal(
-      `<div class="crest">${win ? "♛" : "♜"}</div><div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><p>${win ? this.model.campaign.victoryText || "The Thorn King has fallen. Your little towers became legends." : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${this.model.wave - (win ? 0 : 1)}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="secondary">Main menu</button>`,
+      `<div class="eyebrow">${win ? "THE KINGDOM STANDS" : "EVERY HERO GETS ANOTHER CHANCE"}</div><h1 id="modal-title">${win ? "A tiny" : "A brave"}<br><span>${win ? "triumph." : "defense."}</span></h1><div class="v5-stars" role="img" aria-label="${stars} of 3 stars">${[1, 2, 3].map((n) => `<img src="${V5UI(n <= stars ? "ui_icon_star.png" : "ui_icon_star_empty.png")}" alt="">`).join("")}</div><p>${win ? this.model.campaign.victoryText || "Your little towers kept the trail safe. A new legend begins!" : "The trail was overrun. Try covering the bends and upgrading before the next rush."}</p><div class="result-stats"><div><b>${Math.max(0, this.model.wave - (win ? 0 : 1))}</b><small>WAVES CLEARED</small></div><div><b>${this.model.kills}</b><small>ENEMIES DEFEATED</small></div><div><b>${this.model.earned}</b><small>GOLD EARNED</small></div></div><button id="again" class="v5-btn v5-btn-primary">${win ? "PLAY AGAIN" : "TRY AGAIN"} <span>→</span></button><button id="main-menu" class="v5-btn v5-btn-secondary">Main menu</button>`,
     );
+    $("modal")
+      .querySelector(".modal-card")
+      .classList.add("v5-dialog-card", "result-card", win ? "is-victory" : "is-defeat");
     if (rewards)
       $("again").insertAdjacentHTML(
         "beforebegin",
@@ -607,7 +661,7 @@ export class UI {
     $("boss-bar").hidden = !boss;
     if (boss)
       $("boss-bar").querySelector("span").textContent =
-        `THE THORN KING · PHASE ${boss.phase}`;
+        `${ENEMIES[boss.type].name.toUpperCase()} · PHASE ${boss.phase}`;
     if (boss)
       $("boss-bar").querySelector("i").style.width =
         `${(boss.health / boss.maxHealth) * 100}%`;
@@ -624,9 +678,10 @@ export class UI {
     $("pause").disabled = this.inMenu || !!m.ended;
     $("speed").disabled = this.inMenu || !!m.ended;
     $("pause").innerHTML = m.paused
-      ? "▶ <span>Resume</span>"
-      : "II <span>Pause</span>";
-    $("speed").innerHTML = `${m.speed}× <span>Speed</span>`;
+      ? `<img src="${V5UI("ui_icon_play.png")}" alt=""> <span>Resume</span>`
+      : `<img src="${V5UI("ui_icon_pause.png")}" alt=""> <span>Pause</span>`;
+    $("speed").innerHTML =
+      `<img src="${V5UI("ui_icon_speed.png")}" alt=""> ${m.speed}× <span>Speed</span>`;
     $("pause-shade").hidden = !m.paused;
     $("start-wave").disabled = m.active || m.paused || !!m.ended || this.inMenu;
     $("start-wave").innerHTML = m.ended
@@ -647,9 +702,10 @@ export class UI {
         def = TOWERS[type],
         unlocked = m.available(type),
         crowns = UNLOCK_COSTS[type];
-      b.querySelector(".tower-cost").textContent = unlocked
+      b.querySelector(".tower-cost").innerHTML = unlocked
         ? def.cost
-        : `♛ ${crowns}`;
+        : `<img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${crowns}`;
+      b.classList.toggle("locked", !unlocked);
       b.title = unlocked
         ? `${def.name}: ${def.subtitle}`
         : `Unlock ${def.name} in Kingdom for ${crowns} Crowns`;
@@ -671,7 +727,7 @@ export class UI {
     const h = m.hero;
     $("hero-controls").hidden = !h || this.inMenu;
     if (h) {
-      $("hero-icon").src = `${import.meta.env.BASE_URL}heroes/${h.type}.svg`;
+      $("hero-icon").src = import.meta.env.BASE_URL + heroArtwork(h.type, heroStage(h.level), "card_512");
       $("hero-icon").alt = HEROES[h.type].name;
       $("hero-move").textContent = this.heroMoving
         ? "Cancel move"
@@ -782,7 +838,7 @@ export class UI {
       panel.scrollTop = scroll;
     } else if (this.placing) {
       const def = TOWERS[this.placing];
-      panel.innerHTML = `<div class="empty-selection"><span style="color:${def.hex}">${def.icon}</span><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
+      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
       $("cancel").onclick = () => this.cancel();
     } else
       panel.innerHTML =

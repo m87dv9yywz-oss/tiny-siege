@@ -1,0 +1,7478 @@
+{
+  "mixed": {
+    "result": "victory",
+    "lives": 20,
+    "totalResources": 20391,
+    "spent": 17425,
+    "firstEvolution": 11,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 127,
+        "earned": 77,
+        "spent": 250,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.5,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 134,
+        "earned": 107,
+        "spent": 100,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 11.6,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 271,
+        "earned": 137,
+        "spent": 0,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 14.2,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 288,
+        "earned": 177,
+        "spent": 160,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.8,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 222,
+        "earned": 214,
+        "spent": 280,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 300,
+        "earned": 278,
+        "spent": 200,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.2,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 20,
+        "gold": 311,
+        "earned": 296,
+        "spent": 285,
+        "totalEarned": 1286,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 56.7,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 20,
+        "gold": 443,
+        "earned": 392,
+        "spent": 260,
+        "totalEarned": 1678,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 59.5,
+        "result": null
+      },
+      {
+        "wave": 9,
+        "lives": 20,
+        "gold": 628,
+        "earned": 535,
+        "spent": 350,
+        "totalEarned": 2213,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 53.3,
+        "result": null
+      },
+      {
+        "wave": 10,
+        "lives": 20,
+        "gold": 890,
+        "earned": 782,
+        "spent": 520,
+        "totalEarned": 2995,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 29.4,
+        "result": null
+      },
+      {
+        "wave": 11,
+        "lives": 20,
+        "gold": 599,
+        "earned": 569,
+        "spent": 860,
+        "totalEarned": 3564,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.2,
+        "result": null
+      },
+      {
+        "wave": 12,
+        "lives": 20,
+        "gold": 613,
+        "earned": 494,
+        "spent": 480,
+        "totalEarned": 4058,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 19.7,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1078,
+        "earned": 1025,
+        "spent": 560,
+        "totalEarned": 5083,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.3,
+        "result": null
+      },
+      {
+        "wave": 14,
+        "lives": 20,
+        "gold": 1420,
+        "earned": 1412,
+        "spent": 1070,
+        "totalEarned": 6495,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.3,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1278,
+        "earned": 1268,
+        "spent": 1410,
+        "totalEarned": 7763,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.8,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 2061,
+        "earned": 1923,
+        "spent": 1140,
+        "totalEarned": 9686,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.5,
+        "result": null
+      },
+      {
+        "wave": 17,
+        "lives": 20,
+        "gold": 2008,
+        "earned": 1957,
+        "spent": 2010,
+        "totalEarned": 11643,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.4,
+        "result": null
+      },
+      {
+        "wave": 18,
+        "lives": 20,
+        "gold": 2629,
+        "earned": 2546,
+        "spent": 1925,
+        "totalEarned": 14189,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.8,
+        "result": null
+      },
+      {
+        "wave": 19,
+        "lives": 20,
+        "gold": 3141,
+        "earned": 3037,
+        "spent": 2525,
+        "totalEarned": 17226,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.5,
+        "result": null
+      },
+      {
+        "wave": 20,
+        "lives": 20,
+        "gold": 2966,
+        "earned": 2865,
+        "spent": 3040,
+        "totalEarned": 20091,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.8,
+        "result": "victory"
+      }
+    ]
+  },
+  "physical": {
+    "result": "victory",
+    "lives": 20,
+    "totalResources": 20391,
+    "spent": 14665,
+    "firstEvolution": 11,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 127,
+        "earned": 77,
+        "spent": 250,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.5,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 134,
+        "earned": 107,
+        "spent": 100,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 11.6,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 271,
+        "earned": 137,
+        "spent": 0,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 14.2,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 288,
+        "earned": 177,
+        "spent": 160,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.8,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 297,
+        "earned": 214,
+        "spent": 205,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.9,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 315,
+        "earned": 278,
+        "spent": 260,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 24.7,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 20,
+        "gold": 326,
+        "earned": 296,
+        "spent": 285,
+        "totalEarned": 1286,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 53.9,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 20,
+        "gold": 458,
+        "earned": 392,
+        "spent": 260,
+        "totalEarned": 1678,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 53.9,
+        "result": null
+      },
+      {
+        "wave": 9,
+        "lives": 20,
+        "gold": 548,
+        "earned": 535,
+        "spent": 445,
+        "totalEarned": 2213,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 49.8,
+        "result": null
+      },
+      {
+        "wave": 10,
+        "lives": 20,
+        "gold": 810,
+        "earned": 782,
+        "spent": 520,
+        "totalEarned": 2995,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 33.9,
+        "result": null
+      },
+      {
+        "wave": 11,
+        "lives": 20,
+        "gold": 629,
+        "earned": 569,
+        "spent": 750,
+        "totalEarned": 3564,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 19.9,
+        "result": null
+      },
+      {
+        "wave": 12,
+        "lives": 20,
+        "gold": 643,
+        "earned": 494,
+        "spent": 480,
+        "totalEarned": 4058,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 19.7,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1048,
+        "earned": 1025,
+        "spent": 620,
+        "totalEarned": 5083,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.9,
+        "result": null
+      },
+      {
+        "wave": 14,
+        "lives": 20,
+        "gold": 1550,
+        "earned": 1412,
+        "spent": 910,
+        "totalEarned": 6495,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 19.7,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1408,
+        "earned": 1268,
+        "spent": 1410,
+        "totalEarned": 7763,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 17.9,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 1971,
+        "earned": 1923,
+        "spent": 1360,
+        "totalEarned": 9686,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.6,
+        "result": null
+      },
+      {
+        "wave": 17,
+        "lives": 20,
+        "gold": 1978,
+        "earned": 1957,
+        "spent": 1950,
+        "totalEarned": 11643,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.5,
+        "result": null
+      },
+      {
+        "wave": 18,
+        "lives": 20,
+        "gold": 2824,
+        "earned": 2546,
+        "spent": 1700,
+        "totalEarned": 14189,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.9,
+        "result": null
+      },
+      {
+        "wave": 19,
+        "lives": 20,
+        "gold": 3811,
+        "earned": 3037,
+        "spent": 2050,
+        "totalEarned": 17226,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.3,
+        "result": null
+      },
+      {
+        "wave": 20,
+        "lives": 20,
+        "gold": 5726,
+        "earned": 2865,
+        "spent": 950,
+        "totalEarned": 20091,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.5,
+        "result": "victory"
+      }
+    ]
+  },
+  "magic": {
+    "result": "victory",
+    "lives": 20,
+    "totalResources": 20391,
+    "spent": 16635,
+    "firstEvolution": 11,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 152,
+        "earned": 77,
+        "spent": 225,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.8,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 129,
+        "earned": 107,
+        "spent": 130,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 13.8,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 166,
+        "earned": 137,
+        "spent": 100,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 17.6,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 183,
+        "earned": 177,
+        "spent": 160,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.7,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 397,
+        "earned": 214,
+        "spent": 0,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.5,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 315,
+        "earned": 278,
+        "spent": 360,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.5,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 20,
+        "gold": 411,
+        "earned": 296,
+        "spent": 200,
+        "totalEarned": 1286,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 27.5,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 20,
+        "gold": 403,
+        "earned": 392,
+        "spent": 400,
+        "totalEarned": 1678,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 27.2,
+        "result": null
+      },
+      {
+        "wave": 9,
+        "lives": 20,
+        "gold": 678,
+        "earned": 535,
+        "spent": 260,
+        "totalEarned": 2213,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 51.7,
+        "result": null
+      },
+      {
+        "wave": 10,
+        "lives": 20,
+        "gold": 840,
+        "earned": 782,
+        "spent": 620,
+        "totalEarned": 2995,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 42.4,
+        "result": null
+      },
+      {
+        "wave": 11,
+        "lives": 20,
+        "gold": 609,
+        "earned": 569,
+        "spent": 800,
+        "totalEarned": 3564,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.6,
+        "result": null
+      },
+      {
+        "wave": 12,
+        "lives": 20,
+        "gold": 508,
+        "earned": 494,
+        "spent": 595,
+        "totalEarned": 4058,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1053,
+        "earned": 1025,
+        "spent": 480,
+        "totalEarned": 5083,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.4,
+        "result": null
+      },
+      {
+        "wave": 14,
+        "lives": 20,
+        "gold": 1515,
+        "earned": 1412,
+        "spent": 950,
+        "totalEarned": 6495,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 24.6,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1328,
+        "earned": 1268,
+        "spent": 1455,
+        "totalEarned": 7763,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 24.5,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 1951,
+        "earned": 1923,
+        "spent": 1300,
+        "totalEarned": 9686,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.7,
+        "result": null
+      },
+      {
+        "wave": 17,
+        "lives": 20,
+        "gold": 1988,
+        "earned": 1957,
+        "spent": 1920,
+        "totalEarned": 11643,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.3,
+        "result": null
+      },
+      {
+        "wave": 18,
+        "lives": 20,
+        "gold": 2549,
+        "earned": 2546,
+        "spent": 1985,
+        "totalEarned": 14189,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.2,
+        "result": null
+      },
+      {
+        "wave": 19,
+        "lives": 20,
+        "gold": 3096,
+        "earned": 3037,
+        "spent": 2490,
+        "totalEarned": 17226,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.1,
+        "result": null
+      },
+      {
+        "wave": 20,
+        "lives": 20,
+        "gold": 3756,
+        "earned": 2865,
+        "spent": 2205,
+        "totalEarned": 20091,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23.5,
+        "result": "victory"
+      }
+    ]
+  },
+  "control": {
+    "result": "victory",
+    "lives": 20,
+    "totalResources": 20374,
+    "spent": 16565,
+    "firstEvolution": 11,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 142,
+        "earned": 77,
+        "spent": 235,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.8,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 119,
+        "earned": 107,
+        "spent": 130,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 13.8,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 156,
+        "earned": 137,
+        "spent": 100,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 17.7,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 183,
+        "earned": 177,
+        "spent": 150,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 16,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 267,
+        "earned": 214,
+        "spent": 130,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.8,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 345,
+        "earned": 278,
+        "spent": 200,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.3,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 20,
+        "gold": 431,
+        "earned": 296,
+        "spent": 210,
+        "totalEarned": 1286,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 26.8,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 20,
+        "gold": 473,
+        "earned": 392,
+        "spent": 350,
+        "totalEarned": 1678,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 27.7,
+        "result": null
+      },
+      {
+        "wave": 9,
+        "lives": 20,
+        "gold": 588,
+        "earned": 535,
+        "spent": 420,
+        "totalEarned": 2213,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 41.9,
+        "result": null
+      },
+      {
+        "wave": 10,
+        "lives": 20,
+        "gold": 875,
+        "earned": 782,
+        "spent": 495,
+        "totalEarned": 2995,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 40,
+        "result": null
+      },
+      {
+        "wave": 11,
+        "lives": 20,
+        "gold": 584,
+        "earned": 569,
+        "spent": 860,
+        "totalEarned": 3564,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.6,
+        "result": null
+      },
+      {
+        "wave": 12,
+        "lives": 20,
+        "gold": 498,
+        "earned": 494,
+        "spent": 580,
+        "totalEarned": 4058,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1033,
+        "earned": 1025,
+        "spent": 490,
+        "totalEarned": 5083,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.4,
+        "result": null
+      },
+      {
+        "wave": 14,
+        "lives": 20,
+        "gold": 1415,
+        "earned": 1412,
+        "spent": 1030,
+        "totalEarned": 6495,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 27.6,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1273,
+        "earned": 1268,
+        "spent": 1410,
+        "totalEarned": 7763,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 1966,
+        "earned": 1923,
+        "spent": 1230,
+        "totalEarned": 9686,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.8,
+        "result": null
+      },
+      {
+        "wave": 17,
+        "lives": 20,
+        "gold": 2038,
+        "earned": 1957,
+        "spent": 1885,
+        "totalEarned": 11643,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.6,
+        "result": null
+      },
+      {
+        "wave": 18,
+        "lives": 20,
+        "gold": 2674,
+        "earned": 2546,
+        "spent": 1910,
+        "totalEarned": 14189,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.9,
+        "result": null
+      },
+      {
+        "wave": 19,
+        "lives": 20,
+        "gold": 3211,
+        "earned": 3037,
+        "spent": 2500,
+        "totalEarned": 17226,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.1,
+        "result": null
+      },
+      {
+        "wave": 20,
+        "lives": 20,
+        "gold": 3809,
+        "earned": 2848,
+        "spent": 2250,
+        "totalEarned": 20074,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.7,
+        "result": "victory"
+      }
+    ]
+  },
+  "beginner": {
+    "result": "victory",
+    "lives": 20,
+    "totalResources": 20391,
+    "spent": 16975,
+    "firstEvolution": 11,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 127,
+        "earned": 77,
+        "spent": 250,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.8,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 134,
+        "earned": 107,
+        "spent": 100,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 13.8,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 271,
+        "earned": 137,
+        "spent": 0,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 17.5,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 288,
+        "earned": 177,
+        "spent": 160,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.3,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 222,
+        "earned": 214,
+        "spent": 280,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.1,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 300,
+        "earned": 278,
+        "spent": 200,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 20.8,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 20,
+        "gold": 386,
+        "earned": 296,
+        "spent": 210,
+        "totalEarned": 1286,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 53.9,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 20,
+        "gold": 428,
+        "earned": 392,
+        "spent": 350,
+        "totalEarned": 1678,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 52.5,
+        "result": null
+      },
+      {
+        "wave": 9,
+        "lives": 20,
+        "gold": 543,
+        "earned": 535,
+        "spent": 420,
+        "totalEarned": 2213,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 53.8,
+        "result": null
+      },
+      {
+        "wave": 10,
+        "lives": 20,
+        "gold": 805,
+        "earned": 782,
+        "spent": 520,
+        "totalEarned": 2995,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 34.6,
+        "result": null
+      },
+      {
+        "wave": 11,
+        "lives": 20,
+        "gold": 649,
+        "earned": 569,
+        "spent": 725,
+        "totalEarned": 3564,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.9,
+        "result": null
+      },
+      {
+        "wave": 12,
+        "lives": 20,
+        "gold": 563,
+        "earned": 494,
+        "spent": 580,
+        "totalEarned": 4058,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 21.5,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1078,
+        "earned": 1025,
+        "spent": 510,
+        "totalEarned": 5083,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 25.4,
+        "result": null
+      },
+      {
+        "wave": 14,
+        "lives": 20,
+        "gold": 1420,
+        "earned": 1412,
+        "spent": 1070,
+        "totalEarned": 6495,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 24.1,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1278,
+        "earned": 1268,
+        "spent": 1410,
+        "totalEarned": 7763,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 23,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 2111,
+        "earned": 1923,
+        "spent": 1090,
+        "totalEarned": 9686,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 27.6,
+        "result": null
+      },
+      {
+        "wave": 17,
+        "lives": 20,
+        "gold": 1988,
+        "earned": 1957,
+        "spent": 2080,
+        "totalEarned": 11643,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 39,
+        "result": null
+      },
+      {
+        "wave": 18,
+        "lives": 20,
+        "gold": 2609,
+        "earned": 2546,
+        "spent": 1925,
+        "totalEarned": 14189,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 30,
+        "result": null
+      },
+      {
+        "wave": 19,
+        "lives": 20,
+        "gold": 3426,
+        "earned": 3037,
+        "spent": 2220,
+        "totalEarned": 17226,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 31.8,
+        "result": null
+      },
+      {
+        "wave": 20,
+        "lives": 20,
+        "gold": 3416,
+        "earned": 2865,
+        "spent": 2875,
+        "totalEarned": 20091,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "lightning",
+            "paths": [
+              0,
+              3,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 29.5,
+        "result": "victory"
+      }
+    ]
+  },
+  "noArmorCounter": {
+    "result": "defeat",
+    "wave": 8,
+    "lives": 0,
+    "waves": [
+      {
+        "wave": 1,
+        "lives": 20,
+        "gold": 77,
+        "earned": 77,
+        "spent": 300,
+        "totalEarned": 77,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 9.8,
+        "result": null
+      },
+      {
+        "wave": 2,
+        "lives": 20,
+        "gold": 109,
+        "earned": 107,
+        "spent": 75,
+        "totalEarned": 184,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 12.4,
+        "result": null
+      },
+      {
+        "wave": 3,
+        "lives": 20,
+        "gold": 171,
+        "earned": 137,
+        "spent": 75,
+        "totalEarned": 321,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 13.3,
+        "result": null
+      },
+      {
+        "wave": 4,
+        "lives": 20,
+        "gold": 248,
+        "earned": 177,
+        "spent": 100,
+        "totalEarned": 498,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 15.9,
+        "result": null
+      },
+      {
+        "wave": 5,
+        "lives": 20,
+        "gold": 262,
+        "earned": 214,
+        "spent": 200,
+        "totalEarned": 712,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22,
+        "result": null
+      },
+      {
+        "wave": 6,
+        "lives": 20,
+        "gold": 340,
+        "earned": 278,
+        "spent": 200,
+        "totalEarned": 990,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 22.2,
+        "result": null
+      },
+      {
+        "wave": 7,
+        "lives": 10,
+        "gold": 246,
+        "earned": 181,
+        "spent": 275,
+        "totalEarned": 1171,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [
+          "armored",
+          "armored",
+          "armored",
+          "armored",
+          "armored"
+        ],
+        "seconds": 67,
+        "result": null
+      },
+      {
+        "wave": 8,
+        "lives": 0,
+        "gold": 251,
+        "earned": 180,
+        "spent": 175,
+        "totalEarned": 1351,
+        "towers": [
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "escaped": [
+          "armored",
+          "armored",
+          "armored",
+          "armored",
+          "armored"
+        ],
+        "seconds": 64,
+        "result": "defeat"
+      }
+    ]
+  }
+}

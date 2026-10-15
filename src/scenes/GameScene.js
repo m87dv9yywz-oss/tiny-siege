@@ -1,5 +1,20 @@
+import { requestTexture } from "./illustratedAssets.js";
 import { HEROES } from "../data/heroes.js";
-import { ARCHER_STATES, towerArtwork } from "../towerArtwork.js";
+import { ENEMIES } from "../data/enemies.js";
+import {
+  TOWER_STATES,
+  TOWER_TYPES,
+  artworkTexture,
+  towerArtwork,
+} from "../towerArtwork.js";
+import {
+  ENEMY_TYPES,
+  enemyArtwork,
+  enemyDisplaySize,
+  enemyTexture,
+} from "../enemyArtwork.js";
+import { mapArtwork, mapTexture } from "../mapArtwork.js";
+import { heroArtwork, heroTexture, heroStage } from "../heroArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -7,6 +22,7 @@ import {
   towerStats,
   towerTexture,
   attackVisual,
+  upgradeState,
 } from "../data/towers.js";
 export class GameScene extends Phaser.Scene {
   constructor(model, ui) {
@@ -19,44 +35,34 @@ export class GameScene extends Phaser.Scene {
   }
   preload() {
     const base = import.meta.env.BASE_URL;
-    for (const state of ARCHER_STATES)
-      this.load.image(
-        `v5-archer-${state}`,
-        base +
-          towerArtwork(
-            { type: "archer", paths: state.split("-").map(Number) },
-            "battlefield_256",
-          ),
-      );
-    for (const type of ["wind", "rune"]) {
-      for (const level of [1, 2, 3])
-        this.load.svg(
-          `tower-${type}-${level}`,
-          `${base}portraits/${type}-${level === 1 ? "base" : "tier1-0"}.svg`,
-          { width: 84, height: 88 },
+    this.bootFailures = new Map();
+    this.load.on("loaderror", file => { if (!this.bootComplete) this.bootFailures.set(file.key, file.url || file.src); });
+    this.load.on("filecomplete", key => {
+      if (this.bootFailures.delete(key) && this.ui.scene) this.ui.battlefieldReady();
+    });
+    for (const type of TOWER_TYPES)
+      for (const state of ["0-0-0"])
+        this.load.image(
+          `v5-${type}-${state}`,
+          base +
+            towerArtwork(
+              { type, paths: state.split("-").map(Number) },
+              "battlefield_256",
+            ),
         );
-      for (const path of [0, 1, 2])
-        for (const tier of [2, 3])
-          this.load.svg(
-            `evolution-${type}-${path}-${tier}`,
-            `${base}portraits/${type}-${tier === 2 ? "tier2-" + path : path}.svg`,
-            { width: 96, height: 100 },
-          );
+    for (const type of ENEMY_TYPES)
+      this.load.image(enemyTexture(type), base + enemyArtwork(type));
+    const startMap = mapTexture(this.model.campaign.id);
+    if (startMap)
+      this.load.image(startMap, base + mapArtwork(this.model.campaign.id));
+    for (const type of Object.keys(HEROES)) {
+      if (heroTexture(type))
+        this.load.image(heroTexture(type, "baby"), base + heroArtwork(type, "baby"));
     }
-    for (const type of Object.keys(HEROES))
-      this.load.svg(`hero-${type}`, `${base}heroes/${type}.svg`, {
-        width: 80,
-        height: 84,
-      });
   }
   create() {
     textures(this);
-    this.battlefieldObjects = battlefield(
-      this,
-      this.model.trail,
-      this.model.campaign.biome,
-    );
-    this.currentMap = this.model.campaign.id;
+    this.showBattlefield(this.model.campaign.id);
     this.dynamic = this.add.graphics().setDepth(900);
     this.preview = this.add.graphics().setDepth(1000);
     this.particles = {};
@@ -149,10 +155,52 @@ export class GameScene extends Phaser.Scene {
       if (index >= 0 && index < Object.keys(TOWERS).length)
         this.ui.choose(Object.keys(TOWERS)[index]);
     });
+    this.bootComplete = true;
     this.ui.scene = this;
     this.ui.hydrateShop();
     this.ui.refresh(true);
     this.ui.battlefieldReady();
+  }
+  async retryArtwork() {
+    await Promise.all([...this.bootFailures].map(([key, url]) => {
+      this.artFailures?.delete(key);
+      return requestTexture(this, key, url);
+    }));
+    this.ui.battlefieldReady();
+  }
+  showBattlefield(id) {
+    this.currentMap = id;
+    this.battlefieldObjects?.forEach(object => object.destroy());
+    const key = mapTexture(id);
+    const apply = () => {
+      if (this.currentMap !== id || !this.textures.exists(key)) return;
+      this.battlefieldObjects?.forEach(object => object.destroy());
+      this.battlefieldObjects = [];
+      if (!this.mapImage) this.mapImage = this.add.image(480, 320, key).setDepth(-10);
+      this.mapImage.setTexture(key).setDisplaySize(960, 640).setVisible(true);
+      // A stale request may cache its image, but must never paint another map.
+    };
+    if (key && this.textures.exists(key)) { apply(); this.trimMapTextures(); }
+    else {
+      this.mapImage?.setVisible(false);
+      this.battlefieldObjects = battlefield(this, this.model.trail, this.model.campaign.biome);
+      if (key) requestTexture(this, key, import.meta.env.BASE_URL + mapArtwork(id)).then(ok => { if (ok) { apply(); this.trimMapTextures(); } });
+    }
+  }
+  heroArt(hero) {
+    const stage = heroStage(hero.level), key = heroTexture(hero.type, stage);
+    if (!this.textures.exists(key)) requestTexture(this, key, import.meta.env.BASE_URL + heroArtwork(hero.type, stage));
+    return this.textures.exists(key) ? key : heroTexture(hero.type, "baby");
+  }
+  trimMapTextures() {
+    const others = this.textures.getTextureKeys().filter(key => key.startsWith("v5-map-") && key !== mapTexture(this.currentMap));
+    for (const key of others.slice(0, -1)) this.textures.remove(key);
+  }
+  towerArt(t) {
+    const key = towerTexture(t);
+    if (!this.textures.exists(key))
+      requestTexture(this, key, import.meta.env.BASE_URL + towerArtwork(t, "battlefield_256"));
+    return this.textures.exists(key) ? key : `v5-${t.type}-0-0-0`;
   }
   towerAt(point) {
     // Hit the illustrated building, including roofs and tall evolved weapons,
@@ -161,8 +209,8 @@ export class GameScene extends Phaser.Scene {
     const candidates = this.model.towers
       .map((t) => {
         const sprite = this.towerSprites.get(t.id),
-          frame = this.textures.getFrame(towerTexture(t));
-        const illustrated = t.type === "archer";
+          frame = this.textures.getFrame(sprite?.texture.key || this.towerArt(t));
+        const illustrated = artworkTexture(t) !== null;
         const x = sprite?.x ?? t.x,
           y = sprite?.y ?? t.y - (illustrated ? 0 : 13);
         const width = sprite?.displayWidth || (illustrated ? 80 : frame.width),
@@ -185,7 +233,7 @@ export class GameScene extends Phaser.Scene {
           this.textures.getPixelAlpha(
             Math.floor(localX),
             Math.floor(localY),
-            towerTexture(t),
+            sprite?.texture.key || this.towerArt(t),
           ) > 20;
         return {
           t,
@@ -205,15 +253,8 @@ export class GameScene extends Phaser.Scene {
     );
   }
   effect(event) {
-    if (event.type === "reset" && this.currentMap !== this.model.campaign.id) {
-      this.battlefieldObjects?.forEach((o) => o.destroy());
-      this.battlefieldObjects = battlefield(
-        this,
-        this.model.trail,
-        this.model.campaign.biome,
-      );
-      this.currentMap = this.model.campaign.id;
-    }
+    if (event.type === "reset" && this.currentMap !== this.model.campaign.id)
+      this.showBattlefield(this.model.campaign.id);
     if (!this.dynamic) return;
     const { type, tower, enemy } = event;
     if (type === "reset") {
@@ -223,6 +264,8 @@ export class GameScene extends Phaser.Scene {
       for (const sprite of this.enemySprites.values()) sprite.destroy();
       this.towerSprites.clear();
       this.enemySprites.clear();
+      for (const key of this.textures.getTextureKeys())
+        if (TOWER_TYPES.some(type => key.startsWith(`v5-${type}-`)) && !key.endsWith("0-0-0")) this.textures.remove(key);
       this.effects.forEach((e) => e.text?.destroy());
       this.effects = [];
       Object.values(this.particles).forEach((p) => p.killAll());
@@ -252,14 +295,17 @@ export class GameScene extends Phaser.Scene {
         age: 0,
         life: 0.22,
       });
-      if (this.heroSprite)
+      if (this.heroSprite) {
+        this.tweens.killTweensOf(this.heroSprite);
+        this.heroSprite.setDisplaySize(72, 72);
         this.tweens.add({
           targets: this.heroSprite,
-          scaleX: 1.1,
-          scaleY: 0.92,
+          scaleX: this.heroSprite.scaleX * 1.1,
+          scaleY: this.heroSprite.scaleY * 0.92,
           duration: 90,
           yoyo: true,
         });
+      }
     }
     if (type === "build" || type === "upgrade") {
       this.effects.push({
@@ -412,9 +458,19 @@ export class GameScene extends Phaser.Scene {
       ].explode(this.ui.reducedEffects ? 2 : 7, enemy.x, enemy.y);
       if (this.effects.length < 70) {
         const ghost = this.add
-          .image(enemy.x, enemy.y - 7, `enemy-${enemy.type}`)
+          .image(
+            enemy.x,
+            enemy.y - 7,
+            enemyTexture(enemy.type) || `enemy-${enemy.type}`,
+          )
           .setDepth(enemy.y + 30);
-        this.effects.push({ type: "death", text: ghost, age: 0, life: 0.24 });
+        if (enemyTexture(enemy.type)) {
+          const gd = enemyDisplaySize((ENEMIES[enemy.type] || {}).radius || 12);
+          ghost.setDisplaySize(gd, gd);
+        }
+        // Fade relative to the displayed enemy, not the 256px source PNG.
+        this.effects.push({ type: "death", text: ghost, scaleX: ghost.scaleX,
+          scaleY: ghost.scaleY, age: 0, life: 0.24 });
       }
       if (this.effects.filter((e) => e.type === "gold").length < 20) {
         const text = this.add
@@ -431,13 +487,21 @@ export class GameScene extends Phaser.Scene {
         this.effects.push({ type: "gold", text, age: 0, life: 0.7 });
       }
     }
-    if (this.effects.length > 100) {
+    const effectLimit = this.ui.reducedEffects ? 36 : 100;
+    if (this.effects.length > effectLimit) {
       this.effects
-        .splice(0, this.effects.length - 100)
+        .splice(0, this.effects.length - effectLimit)
         .forEach((e) => e.text?.destroy());
     }
   }
   update(time, delta) {
+    if (this.gentleEffects !== this.ui.reducedEffects) {
+      this.gentleEffects = this.ui.reducedEffects;
+      for (const emitter of Object.values(this.particles))
+        emitter.maxAliveParticles = this.gentleEffects ? 30 : 100;
+      if (this.gentleEffects && this.effects.length > 36)
+        this.effects.splice(0, this.effects.length - 36).forEach(e => e.text?.destroy());
+    }
     const stopped = this.model.paused || this.ui.inMenu || this.ui.helpOpen;
     this.tweens.timeScale = stopped ? 0 : this.model.speed;
     Object.values(this.particles).forEach(
@@ -455,14 +519,16 @@ export class GameScene extends Phaser.Scene {
       }
     const hero = this.model.hero;
     if (hero) {
-      if (!this.heroSprite)
+      if (!this.heroSprite) {
         this.heroSprite = this.add.image(
           hero.x,
           hero.y - 15,
-          `hero-${hero.type}`,
+          this.heroArt(hero),
         );
+        if (heroTexture(hero.type)) this.heroSprite.setDisplaySize(72, 72);
+      }
       this.heroSprite
-        .setTexture(`hero-${hero.type}`)
+        .setTexture(this.heroArt(hero))
         .setPosition(
           hero.x,
           hero.y - 15 + (this.model.paused ? 0 : Math.sin(time * 0.004) * 2),
@@ -489,20 +555,33 @@ export class GameScene extends Phaser.Scene {
     for (const t of this.model.towers) {
       let sprite = this.towerSprites.get(t.id);
       if (!sprite) {
-        sprite = this.add.image(t.x, t.y - 13, towerTexture(t));
-        if (t.type === "archer")
+        sprite = this.add.image(t.x, t.y - 13, this.towerArt(t));
+        if (artworkTexture(t) !== null)
           sprite.setDisplaySize(80, 80).setOrigin(0.5, 0.96).setY(t.y);
         this.towerSprites.set(t.id, sprite);
       }
-      sprite.setTexture(towerTexture(t)).setDepth(t.y + 40);
+      const wanted = towerTexture(t);
+      this.towerArt(t);
+      if (this.textures.exists(wanted)) sprite.setTexture(wanted);
+      sprite.setDepth(t.y + 40);
+      if (t.id === this.ui.selected) {
+        for (let p = 0; p < 3; p++) {
+          const state = upgradeState(t, p);
+          if (!state.locked && t.paths[p] < 3) {
+            const next = { ...t, paths: t.paths.map((n, i) => n + (i === p ? 1 : 0)) };
+            const key = towerTexture(next);
+            if (!this.textures.exists(key)) requestTexture(this, key, import.meta.env.BASE_URL + towerArtwork(next, "battlefield_256"));
+          }
+        }
+      }
       if (!this.model.paused)
         sprite.y =
           t.y -
-          (t.type === "archer" ? 0 : 13) +
+          (artworkTexture(t) !== null ? 0 : 13) +
           Math.sin(time * 0.002 + t.id) * 0.7;
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)
-        if (t.type !== "archer" && t.paths[path]) {
+        if (artworkTexture(t) === null && t.paths[path]) {
           const v = attackVisual({
             ...t,
             paths: [0, 0, 0].map((n, p) => (p === path ? t.paths[path] : 0)),
@@ -554,7 +633,12 @@ export class GameScene extends Phaser.Scene {
     for (const e of this.model.enemies) {
       let sprite = this.enemySprites.get(e.id);
       if (!sprite) {
-        sprite = this.add.image(e.x, e.y, `enemy-${e.type}`);
+        const tex = enemyTexture(e.type) || `enemy-${e.type}`;
+        sprite = this.add.image(e.x, e.y, tex);
+        if (enemyTexture(e.type)) {
+          const d = enemyDisplaySize((ENEMIES[e.type] || {}).radius || 12);
+          sprite.setDisplaySize(d, d);
+        }
         this.enemySprites.set(e.id, sprite);
       }
       const special = [
@@ -569,14 +653,19 @@ export class GameScene extends Phaser.Scene {
         max = e.type === "warden" ? e.maxShield : e.maxArmor;
       const state =
         pool <= 0 ? "broken" : pool < max * 0.55 ? "cracked" : "intact";
-      if (special) sprite.setTexture(`enemy-${e.type}-${state}`);
+      if (special)
+        if (enemyTexture(e.type))
+          sprite
+            .setTexture(enemyTexture(e.type))
+            .setTint(max > 0 && state === "broken" ? 0xbbbbbb : max > 0 && state === "cracked" ? 0xdddddd : 0xffffff);
+        else sprite.setTexture(`enemy-${e.type}-${state}`);
       if (e.elite) {
-        sprite.setScale(1.3);
+        sprite.setDisplaySize(enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3), enemyDisplaySize((ENEMIES[e.type]?.radius || 12) * 1.3));
         g.lineStyle(2, 0xe7be75);
         g.strokeCircle(e.x, e.y - 8, 23);
       }
       if (e.boss) {
-        sprite.setScale(1 + (e.phase - 1) * 0.12);
+        sprite.setDisplaySize(enemyDisplaySize((ENEMIES[e.type]?.radius || 32) * (1 + (e.phase - 1) * 0.12)), enemyDisplaySize((ENEMIES[e.type]?.radius || 32) * (1 + (e.phase - 1) * 0.12)));
         if (e.armor > 0) {
           g.lineStyle(3, 0xafd791, 0.85);
           g.strokeEllipse(e.x, e.y, 77, 60);
@@ -912,7 +1001,8 @@ export class GameScene extends Phaser.Scene {
         }
       }
       if (e.type === "death") {
-        e.text.setAlpha(alpha).setScale(0.75 + 0.25 * alpha);
+        const shrink = 0.75 + 0.25 * alpha;
+        e.text.setAlpha(alpha).setScale(e.scaleX * shrink, e.scaleY * shrink);
       }
       if (e.type === "gold") {
         e.text.y -= dt * 35;

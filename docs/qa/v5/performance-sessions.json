@@ -1,0 +1,60 @@
+{
+  "note": "Chromium JS heap after forced GC; decoded/native image memory is not included.",
+  "samples": [
+    {
+      "map": "emerald",
+      "heap": 31252948,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    },
+    {
+      "map": "amber",
+      "heap": 31421868,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    },
+    {
+      "map": "moon",
+      "heap": 31442092,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    },
+    {
+      "map": "garden",
+      "heap": 31408236,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    },
+    {
+      "map": "crystal",
+      "heap": 31434628,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    },
+    {
+      "map": "coast",
+      "heap": 31427816,
+      "maps": 2,
+      "towers": 8,
+      "illustratedTowerTextures": 16,
+      "effects": 32,
+      "children": 19
+    }
+  ],
+  "errors": []
+}

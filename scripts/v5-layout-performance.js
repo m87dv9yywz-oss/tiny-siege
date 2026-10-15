@@ -12,6 +12,7 @@ try {
   await page.goto(url);
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
   await page.locator('#play').click();
+  await page.evaluate(gentle=>window.__tinySiege.ui.reducedEffects=gentle,process.argv.includes('--reduced'));
   await page.evaluate(async () => {
     const {model: g, ui} = window.__tinySiege;
     g.gold = 100000;
@@ -32,7 +33,10 @@ try {
       e.progress=100+i*16;Object.assign(e,onPath(e.progress));
     }
   });
+  await page.waitForFunction(() => (!window.__tinySiege.ui.scene.artLoads || window.__tinySiege.ui.scene.artLoads.size === 0));
   await page.waitForTimeout(1000);
+  const cdp=await page.context().newCDPSession(page);
+  if(process.argv.includes('--profile')) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.start'); }
   const result = await page.evaluate(async () => {
     const {model,ui}=window.__tinySiege;
     const frames=[], limits={effects:0,enemies:0,projectiles:0,particles:0};
@@ -49,11 +53,15 @@ try {
     const sorted=frames.toSorted((a,b)=>a-b);
     return {viewport:[innerWidth,innerHeight],worldCanvas:[canvas.width,canvas.height],
       displayedCanvas:[r.width,r.height],towers:model.towers.length,panelOpen:ui.upgradeOpen,
-      samples:frames.length,medianFrameMs:sorted[Math.floor(sorted.length/2)],
-      p95FrameMs:sorted[Math.floor(sorted.length*.95)],maximumEntityCounts:limits,
+      samples:frames.length,effectsMode:ui.reducedEffects?"gentle":"full",medianFrameMs:sorted[Math.floor(sorted.length/2)],
+      p95FrameMs:sorted[Math.floor(sorted.length*.95)],worstFrameMs:sorted.at(-1),maximumEntityCounts:limits,
       browser:navigator.userAgent};
   });
+  if(process.argv.includes('--profile')) {
+    const {profile}=await cdp.send('Profiler.stop');
+    result.jsProfileTop=profile.nodes.filter(n=>n.hitCount).sort((a,b)=>b.hitCount-a.hitCount).slice(0,15).map(n=>({name:n.callFrame.functionName,url:n.callFrame.url.split('/').at(-1),hits:n.hitCount}));
+  }
   await page.screenshot({path:'test-results/v5-mobile-stress.png',animations:'disabled'});
-  await writeFile('docs/artwork/mobile-battlefield/performance.json',JSON.stringify(result,null,2)+'\n');
+  await writeFile(`docs/qa/v5/performance-stress${process.argv.includes('--profile')?'-profile':process.argv.includes('--reduced')?'-reduced':''}.json`,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify(result));
 } finally { await browser.close(); }

@@ -22,3 +22,15 @@ test("slow artwork loading keeps battle entry disabled until real Phaser input i
   await page.touchscreen.tap(b.x + b.width * 145 / 960, b.y + b.height * 105 / 640);
   await expect(page.locator("#gold")).toHaveText("225");
 });
+
+test("failed startup artwork keeps battle entry safe and Retry pictures recovers real input",async({page})=>{
+ let fail=true;
+ await page.route('**/towers/archer/battlefield_256/archer_0-0-0.png',route=>fail?route.abort('failed'):route.continue());
+ await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene);
+ await expect(page.locator('#play')).toBeDisabled();await expect(page.locator('#retry-artwork')).toBeVisible();
+ await expect(page.locator('#modal')).toContainText("Some pictures couldn't load");
+ fail=false;await page.locator('#retry-artwork').tap();await expect(page.locator('#play')).toBeEnabled();
+ await page.locator('#play').tap();await page.locator('[data-tower="archer"]').tap();
+ const b=await page.locator('canvas').boundingBox();await page.touchscreen.tap(b.x+b.width*145/960,b.y+b.height*105/640);
+ await expect(page.locator('#gold')).toHaveText('225');
+});

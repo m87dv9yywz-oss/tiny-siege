@@ -1,3 +1,5 @@
+@font-face { font-family:"Baloo 2"; font-style:normal; font-weight:400 800; font-display:swap; src:url("/tiny-siege/fonts/Baloo2.woff2") format("woff2"); }
+@font-face { font-family:"Nunito"; font-style:normal; font-weight:200 900; font-display:swap; src:url("/tiny-siege/fonts/Nunito.woff2") format("woff2"); }
 /* Tiny Siege: a single viewport, original storybook panels and touch-first controls. */
 :root {
   font-family:
@@ -2864,3 +2866,1979 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   .hud { top: 98px; row-gap: 3px; }
   .hud .resource b, .hud .wave-counter b { font-size: 18px; }
 }
+
+/* Sky-writing Easter egg: golden firework letters, temporary */
+.skywriting {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.08em;
+  pointer-events: none;
+  z-index: 9999;
+  animation: skywriting-fade 6s ease forwards;
+}
+.skywriting span {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: clamp(48px, 12vw, 120px);
+  color: #ffd94d;
+  text-shadow:
+    0 0 18px #ff9d2e,
+    0 0 45px #ff7b1c,
+    0 3px 0 #b25b12,
+    0 6px 18px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(30px) scale(0.6);
+  animation: skywriting-letter 1s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+@keyframes skywriting-letter {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes skywriting-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.sky-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffe27a;
+  box-shadow: 0 0 12px 4px rgba(255, 180, 60, 0.8);
+  animation: sky-spark 1.2s ease-out forwards;
+}
+@keyframes sky-spark {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.2) translateY(-40px); }
+}
+
+/* ================================================================
+   V5 ILLUSTRATED UI — storybook kingdom reskin.
+   All artwork is a blank illustrated shell from public/assets/v5/ui/;
+   every label, name, price and count stays real HTML text on top.
+   ================================================================ */
+:root {
+  --v5-emerald: #2f9e5f;
+  --v5-forest: #1f7a44;
+  --v5-gold: #d9a441;
+  --v5-bronze: #a8742c;
+  --v5-cream: #fff8db;
+  --v5-parchment: #f5edd8;
+  --v5-ink: #284c4a;
+  --v5-mint: #eafff0;
+  --v5-danger: #e08a6d;
+  --v5-stone: #9a9a92;
+  --v5-slate: #6b7280;
+  --v5-display: "Baloo 2", "Nunito", ui-rounded, sans-serif;
+  --v5-body: "Nunito", ui-rounded, sans-serif;
+}
+body {
+  font-family: var(--v5-body);
+}
+h1,
+h2,
+h3,
+.brand,
+.modal-card h1,
+.panel-title b {
+  font-family: var(--v5-display);
+}
+
+/* ---------- V5 illustrated buttons (nine-slice shells, HTML labels) ---------- */
+.v5-btn {
+  border: 0 solid transparent;
+  background: none;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.05;
+}
+.v5-btn-primary {
+  color: var(--v5-mint);
+  text-shadow: 0 2px 0 rgba(20, 60, 30, 0.45);
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_primary_normal.png")
+    33% 26% fill / 16px 64px stretch;
+  min-height: 58px;
+  padding: 6px 30px;
+  font-size: 19px;
+}
+.v5-btn-primary:active {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_primary_pressed.png");
+}
+.v5-btn-primary:disabled {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_primary_disabled.png");
+  color: #f4f4ec;
+  text-shadow: 0 1px 0 rgba(60, 60, 50, 0.5);
+  cursor: default;
+}
+.v5-btn-secondary {
+  color: var(--v5-ink);
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_secondary_normal.png")
+    33% 26% fill / 15px 60px stretch;
+  min-height: 52px;
+  padding: 5px 26px;
+  font-size: 16px;
+}
+.v5-btn-secondary:active {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_secondary_pressed.png");
+}
+.v5-btn-secondary:disabled {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_secondary_disabled.png");
+  color: #7a7a70;
+  cursor: default;
+}
+.v5-btn-danger {
+  color: #fff6ec;
+  text-shadow: 0 2px 0 rgba(96, 34, 8, 0.45);
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_danger_normal.png")
+    38% 24% fill / 17px 62px stretch;
+  min-height: 56px;
+  padding: 6px 28px;
+  font-size: 17px;
+}
+.v5-btn-start {
+  color: var(--v5-mint);
+  text-shadow: 0 2px 0 rgba(20, 60, 30, 0.5);
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_start_wave.png")
+    36% 25% fill / 22px 78px stretch;
+  min-height: 76px;
+  padding: 8px 40px;
+  font-size: 23px;
+}
+.v5-btn-sm {
+  min-height: 46px;
+  padding: 4px 20px;
+  font-size: 14px;
+  border-image-width: 12px 44px;
+}
+.v5-circle-btn {
+  border: none;
+  background: url("/tiny-siege/assets/v5/ui/ui_button_circle_back.png") center /
+    contain no-repeat;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  cursor: pointer;
+  color: transparent;
+  font-size: 0;
+}
+.v5-circle-close {
+  background-image: url("/tiny-siege/assets/v5/ui/ui_button_circle_close.png");
+}
+.v5-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  vertical-align: -5px;
+  pointer-events: none;
+}
+.v5-icon-lg {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* ---------- V5 dialog shell + banner ---------- */
+.v5-dialog-card {
+  background: url("/tiny-siege/assets/v5/ui/ui_dialog_confirmation.png") center /
+    100% 100% no-repeat;
+  border: none;
+  box-shadow: none;
+  padding: 15% 11% 11%;
+}
+.v5-banner {
+  background: url("/tiny-siege/assets/v5/ui/ui_section_header_banner.png")
+    center / 100% 100% no-repeat;
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15% 16px;
+  margin: -6px auto 8px;
+  max-width: 560px;
+}
+.v5-banner h1 {
+  margin: 0;
+  font-size: 27px;
+  color: var(--v5-ink);
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+.v5-screen {
+  background: var(--v5-parchment)
+    url("/tiny-siege/assets/v5/ui/ui_background_parchment.png") center / cover
+    no-repeat;
+  border: 3px solid var(--v5-bronze);
+}
+.modal-card.v5-screen {
+  color: var(--v5-ink);
+}
+
+/* ---------- Screen A: main menu ---------- */
+.modal-card.v5-home {
+  background:
+    linear-gradient(rgba(255, 250, 225, 0.18), rgba(255, 250, 225, 0.05)),
+    url("/tiny-siege/assets/v5/ui/ui_background_main_menu.png") center / cover
+      no-repeat;
+  border: 3px solid var(--v5-bronze);
+  color: var(--v5-ink);
+}
+.v5-home .home-heading h1 {
+  color: #fffbe8;
+  text-shadow:
+    0 2px 0 rgba(90, 58, 10, 0.55),
+    0 4px 14px rgba(40, 70, 30, 0.45);
+  font-size: 44px;
+}
+.v5-home .home-heading h1 span {
+  color: #ffe066;
+}
+.v5-home .eyebrow {
+  color: #fff7cf;
+  text-shadow: 0 1px 3px rgba(60, 45, 5, 0.6);
+  letter-spacing: 0.14em;
+}
+.v5-home-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.v5-home-top .profile-picker {
+  flex: 1;
+  min-width: 0;
+}
+.v5-crown-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--v5-cream);
+  border: 2px solid var(--v5-gold);
+  border-radius: 999px;
+  padding: 5px 14px 5px 8px;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--v5-bronze);
+  box-shadow: 0 3px 8px rgba(60, 50, 10, 0.25);
+  white-space: nowrap;
+}
+.v5-home .profile-choice {
+  background: rgba(255, 248, 219, 0.92);
+  border-color: var(--v5-bronze);
+  font-family: var(--v5-body);
+}
+.v5-home .profile-choice.chosen {
+  background: #ffedb0;
+  border-color: var(--v5-gold);
+  box-shadow: 0 0 0 2px rgba(246, 212, 124, 0.8);
+}
+.v5-home .home-section {
+  color: #fffbe8;
+  text-shadow: 0 1px 3px rgba(60, 45, 5, 0.65);
+  font-family: var(--v5-display);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+}
+.v5-home .home-section small {
+  color: #fdf3c0;
+  font-family: var(--v5-body);
+}
+.v5-play-row {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 4px;
+}
+.v5-play-row .v5-btn {
+  min-width: min(430px, 100%);
+}
+.v5-home .kingdom-actions {
+  margin-top: 8px;
+}
+.v5-home .kingdom-actions .v5-btn {
+  flex: 1;
+}
+.v5-home .home-actions {
+  margin-top: 8px;
+  align-items: stretch;
+}
+.v5-home .home-actions .v5-btn {
+  width: 100%;
+}
+.v5-home #save-message,
+.v5-home .welcome-copy {
+  color: #fffbe8;
+  text-shadow: 0 1px 3px rgba(60, 45, 5, 0.65);
+  font-weight: 700;
+}
+
+/* ---------- Screen B: adventure cards (in main menu grid) ---------- */
+.v5-map-card {
+  position: relative;
+  aspect-ratio: 1024 / 640;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  background: url("/tiny-siege/assets/v5/ui/ui_card_map_frame.png") center /
+    100% 100% no-repeat;
+  padding: 0;
+  display: block;
+  cursor: pointer;
+  color: var(--v5-ink);
+}
+.v5-map-card .v5-map-thumb {
+  position: absolute;
+  left: 8.5%;
+  top: 9%;
+  width: 83%;
+  height: 62%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.v5-map-card .v5-map-stars {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16.5%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.v5-map-card .v5-map-stars img {
+  width: 21px;
+  height: 21px;
+  object-fit: contain;
+}
+.v5-map-card .v5-map-name {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 2.2%;
+  text-align: center;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--v5-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v5-map-card .v5-map-waves {
+  position: absolute;
+  top: 11%;
+  left: 11%;
+  background: rgba(255, 248, 219, 0.92);
+  border: 1.5px solid var(--v5-bronze);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--v5-bronze);
+}
+.v5-map-card.recommended {
+  filter: drop-shadow(0 0 9px rgba(246, 212, 124, 0.95));
+}
+.v5-map-card .level-state {
+  top: 10%;
+  right: 10%;
+  z-index: 2;
+}
+
+/* ---------- Screen C: pre-battle ---------- */
+.v5-prep {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 14px;
+  align-items: start;
+  text-align: left;
+}
+.v5-prep .v5-map-card {
+  cursor: default;
+  width: 100%;
+}
+.v5-prep-side {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+.v5-prep-side .difficulty-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.v5-prep-side .difficulty-picker .v5-btn {
+  width: 100%;
+  justify-content: space-between;
+  padding-left: 34px;
+  padding-right: 34px;
+}
+.v5-prep-side .difficulty-picker small {
+  font-family: var(--v5-body);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.85;
+}
+.v5-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 248, 219, 0.75);
+  border: 2px solid var(--v5-bronze);
+  border-radius: 16px;
+  padding: 6px 10px;
+}
+.v5-hero-row img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+.v5-hero-row .v5-hero-meta {
+  flex: 1;
+  min-width: 0;
+}
+.v5-hero-row .v5-hero-meta b {
+  font-family: var(--v5-display);
+  font-size: 16px;
+  display: block;
+}
+.v5-hero-row .v5-hero-meta small {
+  font-size: 11px;
+  color: #5c7263;
+}
+.v5-relic-line {
+  font-size: 12.5px;
+  margin: 0;
+  color: #43584a;
+}
+.v5-prep-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 10px;
+}
+.v5-prep-actions .v5-btn {
+  width: 100%;
+}
+
+/* ---------- Screen D: hero collection ---------- */
+.v5-hero-roster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.v5-hero-card {
+  position: relative;
+  aspect-ratio: 384 / 512;
+  background: url("/tiny-siege/assets/v5/ui/ui_card_hero_unselected.png")
+    center / 100% 100% no-repeat;
+  border-radius: 0;
+  padding: 0;
+  color: var(--v5-ink);
+}
+.v5-hero-card.is-equipped {
+  background-image: url("/tiny-siege/assets/v5/ui/ui_card_hero_selected.png");
+  filter: drop-shadow(0 0 8px rgba(47, 158, 95, 0.55));
+}
+.v5-hero-card .v5-hero-art {
+  position: absolute;
+  left: 14%;
+  top: 8.5%;
+  width: 72%;
+  height: 43%;
+  object-fit: contain;
+}
+.v5-hero-card .v5-hero-name {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 56.5%;
+  text-align: center;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 16.5px;
+  line-height: 1.1;
+  color: var(--v5-ink);
+}
+.v5-hero-card .v5-hero-name small {
+  display: block;
+  font-family: var(--v5-body);
+  font-weight: 700;
+  font-size: 10.5px;
+  color: #68786a;
+}
+.v5-hero-card .v5-hero-level {
+  position: absolute;
+  top: 1.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+}
+.v5-hero-card .v5-hero-level img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.v5-hero-card .v5-hero-level span {
+  position: relative;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 12px;
+  color: #fffbe8;
+  text-shadow: 0 1px 2px rgba(30, 60, 30, 0.7);
+  text-align: center;
+  line-height: 1;
+}
+.v5-hero-card .v5-hero-xp {
+  position: absolute;
+  left: 18%;
+  top: 71.8%;
+  width: 64%;
+  height: 4.6%;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(60, 48, 30, 0.55);
+}
+.v5-hero-card .v5-hero-xp i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #7dcc50, var(--v5-emerald));
+  border-radius: 999px;
+}
+.v5-hero-card .v5-hero-action {
+  position: absolute;
+  left: 13%;
+  bottom: 3.2%;
+  width: 74%;
+  height: 13%;
+  border: none;
+  background: none;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 15.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--v5-mint);
+  text-shadow: 0 2px 0 rgba(20, 60, 30, 0.45);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.v5-hero-card .v5-hero-action:disabled {
+  color: #e8e8da;
+  cursor: default;
+}
+.v5-hero-card .v5-hero-action img {
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+}
+.v5-hero-card.is-locked .v5-hero-art {
+  filter: grayscale(0.95) brightness(0.82);
+}
+.v5-hero-card .v5-hero-lock {
+  position: absolute;
+  left: 50%;
+  top: 27%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(30, 40, 35, 0.5));
+}
+.v5-hero-card .v5-hero-lock-note {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 71.8%;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--v5-slate);
+}
+
+/* ---------- Screen E: tower collection ---------- */
+.v5-tabs {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.v5-tab {
+  border: none;
+  background: url("/tiny-siege/assets/v5/ui/ui_tab_unselected.png") center /
+    100% 100% no-repeat;
+  min-height: 56px;
+  padding: 5px 2px 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  font-family: var(--v5-display);
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--v5-ink);
+}
+.v5-tab[aria-pressed="true"] {
+  background-image: url("/tiny-siege/assets/v5/ui/ui_tab_selected.png");
+  color: var(--v5-mint);
+  text-shadow: 0 1px 0 rgba(20, 60, 30, 0.45);
+}
+.v5-tab img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  pointer-events: none;
+}
+.v5-tower-showcase {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  text-align: left;
+}
+.v5-tower-card {
+  position: relative;
+  aspect-ratio: 384 / 512;
+  background: url("/tiny-siege/assets/v5/ui/ui_card_tower_unselected.png")
+    center / 100% 100% no-repeat;
+}
+.v5-tower-card.owned {
+  background-image: url("/tiny-siege/assets/v5/ui/ui_card_tower_selected.png");
+}
+.v5-tower-card .v5-tower-art {
+  position: absolute;
+  left: 12%;
+  top: 9%;
+  width: 76%;
+  height: 44%;
+  object-fit: contain;
+}
+.v5-tower-card .v5-tower-name {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 58.5%;
+  text-align: center;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--v5-ink);
+}
+.v5-tower-card .v5-tower-slots {
+  position: absolute;
+  left: 13%;
+  right: 13%;
+  bottom: 6.5%;
+  display: flex;
+  justify-content: space-between;
+}
+.v5-tower-card .v5-tower-slots img {
+  width: 26%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.v5-tower-card.is-locked .v5-tower-art {
+  filter: grayscale(0.95) brightness(0.82);
+}
+.v5-triple {
+  position: relative;
+  background: url("/tiny-siege/assets/v5/ui/ui_upgrade_panel_triple.png")
+    center / 100% 100% no-repeat;
+  aspect-ratio: 1024 / 341;
+  margin: 4px 0 8px;
+}
+.v5-triple img {
+  position: absolute;
+  top: 50%;
+  width: 21%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+}
+.v5-triple img:nth-child(1) {
+  left: 17.5%;
+}
+.v5-triple img:nth-child(2) {
+  left: 50%;
+}
+.v5-triple img:nth-child(3) {
+  left: 82.5%;
+}
+.v5-xpline {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #43584a;
+  margin: 2px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.v5-pips {
+  display: inline-flex;
+  gap: 3px;
+}
+.v5-pips i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--v5-bronze);
+  background: var(--v5-cream);
+}
+.v5-pips i.on {
+  background: var(--v5-emerald);
+  border-color: var(--v5-forest);
+}
+
+/* ---------- Screen F: relics ---------- */
+.v5-relic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.v5-relic-card {
+  position: relative;
+  aspect-ratio: 292 / 483;
+  background: url("/tiny-siege/assets/v5/ui/ui_card_relic_frame.png") center /
+    100% 100% no-repeat;
+  color: var(--v5-ink);
+  padding: 0;
+}
+.v5-relic-card .v5-relic-art {
+  position: absolute;
+  left: 22%;
+  top: 13%;
+  width: 56%;
+  height: 30%;
+  object-fit: contain;
+}
+.v5-relic-card .v5-relic-name {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 55.5%;
+  text-align: center;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.1;
+}
+.v5-relic-card .v5-relic-desc {
+  position: absolute;
+  left: 13%;
+  right: 13%;
+  top: 66%;
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: #4c6152;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.v5-relic-card .v5-relic-action {
+  position: absolute;
+  left: 12%;
+  bottom: 2.5%;
+  width: 76%;
+  height: 10.5%;
+  border: none;
+  background: none;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  text-transform: uppercase;
+  color: var(--v5-mint);
+  text-shadow: 0 1px 0 rgba(20, 60, 30, 0.5);
+  cursor: pointer;
+}
+.v5-relic-card .v5-relic-action:disabled {
+  color: #d8d8c8;
+  cursor: default;
+}
+.v5-relic-card.is-equipped {
+  filter: drop-shadow(0 0 8px rgba(217, 164, 65, 0.8));
+}
+.v5-relic-card.is-locked .v5-relic-art {
+  filter: grayscale(0.95) brightness(0.85);
+}
+.v5-equipped-tag {
+  position: absolute;
+  top: 4%;
+  right: 7%;
+  background: linear-gradient(#f6d47c, var(--v5-gold));
+  color: #5c3d08;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1.5px solid var(--v5-bronze);
+  z-index: 2;
+}
+
+/* ---------- Screens G/H: dialogs & results ---------- */
+.v5-dialog-card .v5-btn {
+  width: 100%;
+  margin-top: 7px;
+}
+.v5-dialog-card h1 {
+  font-size: 30px;
+}
+.result-card .v5-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 2px;
+}
+.result-card .v5-stars img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+.result-card.is-defeat {
+  filter: saturate(0.72);
+}
+.result-card .result-stats div {
+  background: rgba(255, 248, 219, 0.8);
+  border: 2px solid var(--v5-bronze);
+  border-radius: 14px;
+}
+.v5-reward-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: var(--v5-display);
+  font-weight: 800;
+  color: var(--v5-bronze);
+}
+
+/* ---------- Screen I: gameplay HUD ---------- */
+.topbar #kingdom-button,
+.topbar #leave-run {
+  font-family: var(--v5-display);
+}
+.hud .resource {
+  background: linear-gradient(#fff8db, #f1e7bd);
+  border: 2px solid var(--v5-bronze);
+  border-radius: 999px;
+  padding: 3px 10px 3px 6px;
+  box-shadow: 0 2px 5px rgba(60, 60, 30, 0.18);
+}
+.hud .resource > img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.hud .resource b,
+.wave-counter b {
+  font-family: var(--v5-display);
+}
+.wave-counter {
+  font-family: var(--v5-display);
+}
+#start-wave {
+  font-family: var(--v5-display);
+}
+#pause,
+#speed {
+  font-family: var(--v5-display);
+}
+#pause img,
+#speed img {
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+  vertical-align: -4px;
+}
+#tower-inspector {
+  background: linear-gradient(#fff8db, #f1e7bd);
+  border: 2px solid var(--v5-bronze);
+  border-radius: 999px;
+  font-family: var(--v5-display);
+}
+#boss-bar > div {
+  background: rgba(40, 40, 30, 0.35);
+  border: 2px solid var(--v5-bronze);
+  border-radius: 999px;
+  overflow: hidden;
+}
+#boss-bar > div i {
+  background: linear-gradient(90deg, #e2543e, #ff8a5c);
+}
+#toast {
+  background: rgba(33, 62, 55, 0.94);
+  color: #fdf6d8;
+  border: 2px solid var(--v5-gold);
+  border-radius: 999px;
+  font-family: var(--v5-body);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(30, 50, 35, 0.4);
+}
+/* Shop cards */
+.tower-card {
+  font-family: var(--v5-body);
+}
+.tower-card b {
+  font-family: var(--v5-display);
+}
+.tower-card.selected {
+  border-color: var(--v5-emerald);
+  box-shadow:
+    0 0 0 2px #d9f5c8,
+    0 0 12px rgba(47, 158, 95, 0.65);
+}
+.tower-card .tower-lock {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 17px;
+  height: 21px;
+  display: none;
+}
+.tower-card .tower-lock img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.tower-card.locked .tower-lock {
+  display: block;
+}
+.tower-card.locked .tower-icon {
+  filter: grayscale(0.9) brightness(0.85);
+}
+.tower-card .tower-cost img {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  vertical-align: -2px;
+}
+/* Hero controls: portrait chip sits in the ability socket art */
+#hero-icon {
+  background: url("/tiny-siege/assets/v5/ui/ui_socket_icon_round.png") center /
+    contain no-repeat;
+  padding: 5px;
+  width: 44px;
+  height: 44px;
+}
+#hero-ability {
+  position: relative;
+}
+#hero-ability .v5-cd-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(40, 60, 50, 0.35);
+  transform-origin: bottom;
+  pointer-events: none;
+}
+/* Upgrade / placement panel */
+#selection-panel {
+  background: linear-gradient(#fff8db, #eef3cd);
+  border: 3px solid var(--v5-bronze);
+  font-family: var(--v5-body);
+}
+#selection-panel .panel-title b {
+  font-family: var(--v5-display);
+  color: var(--v5-ink);
+}
+#close-panel {
+  background: url("/tiny-siege/assets/v5/ui/ui_button_circle_close.png")
+    center / contain no-repeat;
+  border: none;
+  color: transparent;
+  font-size: 0;
+  min-width: 40px;
+  min-height: 40px;
+}
+#selection-panel .upgrade-button {
+  font-family: var(--v5-display);
+  background: linear-gradient(#8ed45f, var(--v5-emerald));
+  border: 2px solid var(--v5-forest);
+  border-bottom-width: 4px;
+  color: var(--v5-mint);
+  text-shadow: 0 1px 0 rgba(20, 60, 30, 0.45);
+  border-radius: 12px;
+}
+#selection-panel .upgrade-button:disabled {
+  background: linear-gradient(#c9c9bd, var(--v5-stone));
+  border-color: #7c7c72;
+  color: #f2f2e8;
+  text-shadow: none;
+}
+#selection-panel .sell-button {
+  font-family: var(--v5-display);
+  background: linear-gradient(#f0a184, var(--v5-danger));
+  border: 2px solid #b85c38;
+  border-bottom-width: 4px;
+  color: #fff6ec;
+  border-radius: 12px;
+}
+#selection-panel .cancel-button {
+  font-family: var(--v5-display);
+}
+#selection-panel .path-heading i.bought {
+  background: var(--v5-emerald);
+  border-color: var(--v5-forest);
+  color: var(--v5-mint);
+}
+
+/* ---------- V5 overlap guarantees ----------
+   The upgrade panel is a floating overlay docked OPPOSITE the selected
+   tower. These end-of-file rules pin its docked edge with right offsets
+   (rail width + grid gap) so it can never slide under the tower shop,
+   regardless of which breakpoint set its width. */
+@media (min-width: 851px) and (min-height: 601px) {
+  #selection-panel[data-side="right"]:not(.placing) {
+    left: auto;
+    right: 142px;
+  }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  #selection-panel[data-side="right"]:not(.placing) {
+    left: auto;
+    right: 130px;
+  }
+  /* Hero controls own the bottom of the right rail; the shop always
+     stops above them (aside margin hack reinforced with a hard cap). */
+  main:has(#hero-controls:not([hidden])) aside {
+    margin-bottom: 100px;
+  }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  #selection-panel[data-side="right"]:not(.placing) {
+    left: auto;
+    right: 114px;
+  }
+}
+@media (orientation: landscape) and (max-width: 700px) {
+  #selection-panel[data-side="right"]:not(.placing) {
+    left: auto;
+    right: 110px;
+  }
+  main:has(#hero-controls:not([hidden])) aside {
+    margin-bottom: 100px;
+  }
+}
+
+/* ---------- V5 responsive menu tightening (844x390 landscape) ---------- */
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-banner {
+    min-height: 52px;
+    margin-bottom: 4px;
+  }
+  .v5-banner h1 {
+    font-size: 20px;
+  }
+  .v5-btn-primary {
+    min-height: 48px;
+    font-size: 16px;
+    border-image-width: 13px 52px;
+  }
+  .v5-btn-secondary {
+    min-height: 44px;
+    font-size: 14px;
+    border-image-width: 12px 48px;
+  }
+  .v5-btn-danger {
+    min-height: 46px;
+    font-size: 15px;
+    border-image-width: 13px 50px;
+  }
+  .v5-btn-start {
+    min-height: 58px;
+    font-size: 19px;
+    border-image-width: 16px 60px;
+  }
+  .v5-dialog-card {
+    padding: 12% 10% 9%;
+  }
+  .v5-dialog-card h1 {
+    font-size: 24px;
+  }
+  .v5-hero-roster,
+  .v5-relic-grid {
+    gap: 8px;
+  }
+  .v5-hero-card .v5-hero-name {
+    font-size: 13.5px;
+  }
+  .v5-hero-card .v5-hero-action {
+    font-size: 12.5px;
+  }
+  .v5-relic-card .v5-relic-name {
+    font-size: 12.5px;
+  }
+  .v5-relic-card .v5-relic-desc {
+    font-size: 9.5px;
+  }
+  .v5-tab {
+    min-height: 46px;
+    font-size: 9.5px;
+  }
+  .v5-tab img {
+    width: 24px;
+    height: 24px;
+  }
+  .v5-map-card .v5-map-name {
+    font-size: 13.5px;
+  }
+  .v5-home .home-heading h1 {
+    font-size: 32px;
+  }
+}
+@media (max-width: 850px) and (orientation: portrait) {
+  .v5-hero-roster,
+  .v5-relic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .v5-prep {
+    grid-template-columns: 1fr;
+  }
+  .v5-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .v5-tower-showcase {
+    grid-template-columns: 128px minmax(0, 1fr);
+  }
+}
+
+/* ---------- V5 shared screen pieces ---------- */
+.v5-screen-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.v5-screen-head .v5-banner {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+}
+.v5-collection-sub {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  color: #43584a;
+}
+.placing-art {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+#selection-panel .empty-selection .placing-art {
+  width: 54px;
+  height: 54px;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .placing-art,
+  #selection-panel .empty-selection .placing-art {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* ================================================================
+   V5 fix round: specificity boosts so illustrated shells beat the
+   older shorthand rules, plus a fitted landscape main menu.
+   ================================================================ */
+.v5-btn.v5-btn-primary {
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_primary_normal.png")
+    33% 26% fill / 16px 64px stretch;
+}
+.v5-btn.v5-btn-primary:active {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_primary_pressed.png");
+}
+.v5-btn.v5-btn-primary:disabled {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_primary_disabled.png");
+}
+.v5-btn.v5-btn-secondary {
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_secondary_normal.png")
+    33% 26% fill / 15px 60px stretch;
+}
+.v5-btn.v5-btn-secondary:active {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_secondary_pressed.png");
+}
+.v5-btn.v5-btn-secondary:disabled {
+  border-image-source: url("/tiny-siege/assets/v5/ui/ui_button_secondary_disabled.png");
+}
+.v5-btn.v5-btn-danger {
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_danger_normal.png")
+    38% 24% fill / 17px 62px stretch;
+}
+.v5-btn.v5-btn-start {
+  border-image: url("/tiny-siege/assets/v5/ui/ui_button_start_wave.png")
+    36% 25% fill / 22px 78px stretch;
+}
+.relic-grid .v5-relic-card {
+  background: url("/tiny-siege/assets/v5/ui/ui_card_relic_frame.png") center /
+    100% 100% no-repeat;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.hero-roster .v5-hero-card {
+  background: url("/tiny-siege/assets/v5/ui/ui_card_hero_unselected.png")
+    center / 100% 100% no-repeat;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.hero-roster .v5-hero-card.is-equipped {
+  background-image: url("/tiny-siege/assets/v5/ui/ui_card_hero_selected.png");
+}
+.map-picker .v5-map-card,
+.v5-prep .v5-map-card {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.v5-tabs .v5-tab {
+  border: none;
+  border-radius: 0;
+}
+.v5-tower-showcase .v5-tower-card {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.v5-tower-showcase section > .v5-triple,
+.v5-tower-showcase section > .v5-xpline {
+  grid-column: 1 / -1;
+}
+.v5-hero-card.is-equipped .v5-hero-name {
+  color: #fffbe8;
+  text-shadow:
+    0 1px 0 rgba(25, 60, 30, 0.85),
+    0 2px 6px rgba(25, 60, 30, 0.55);
+}
+.v5-hero-card.is-equipped .v5-hero-name small {
+  color: #e6f5d8;
+}
+
+/* Main menu: adventure cards become a horizontal scroll row (layout B),
+   which also lets the whole menu fit the 844x390 reference size. */
+.v5-home .map-picker {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 5px 3px 9px;
+  margin: 0;
+  overscroll-behavior: contain;
+}
+.v5-home .v5-map-card {
+  flex: 0 0 218px;
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  /* Replace the old two-column dashboard grid: the V5 menu is a
+     single fitted column so nothing is pushed below the fold. */
+  .home-card.v5-home {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px 14px;
+    max-width: 850px;
+  }
+  .v5-home .v5-home-top,
+  .v5-home .home-heading,
+  .v5-home .home-section,
+  .v5-home .map-picker,
+  .v5-home .v5-play-row,
+  .v5-home .kingdom-actions,
+  .v5-home .home-actions,
+  .v5-home #save-message {
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+    width: 100%;
+  }
+  .v5-home .home-heading {
+    justify-content: center;
+  }
+  .v5-home .home-heading .menu-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .v5-home .home-heading h1 {
+    font-size: 27px;
+  }
+  .v5-home .home-section {
+    font-size: 13px;
+  }
+  .v5-home .v5-map-card {
+    flex-basis: 188px;
+  }
+  .v5-home .v5-play-row {
+    margin: 0;
+  }
+  .v5-home .v5-play-row .v5-btn {
+    min-height: 50px;
+  }
+  .v5-home .kingdom-actions,
+  .v5-home .home-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .v5-home .kingdom-actions .v5-btn,
+  .v5-home .home-actions .v5-btn {
+    flex: 1;
+    min-height: 40px;
+    font-size: 12.5px;
+    border-image-width: 11px 34px;
+    padding: 3px 12px;
+    white-space: nowrap;
+  }
+  .v5-home #save-message {
+    font-size: 10.5px;
+    text-align: center;
+  }
+  /* Hero collection: all six heroes in one row at phone landscape. */
+  .v5-hero-roster {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .v5-hero-card .v5-hero-name {
+    font-size: 12px;
+    top: 55.5%;
+  }
+  .v5-hero-card .v5-hero-name small {
+    font-size: 8.5px;
+  }
+  .v5-hero-card .v5-hero-action {
+    font-size: 11px;
+  }
+  .v5-hero-card .v5-hero-level {
+    width: 40px;
+    height: 40px;
+  }
+  .v5-hero-card .v5-hero-level span {
+    font-size: 10px;
+  }
+  .v5-hero-card .v5-hero-lock {
+    width: 30px;
+    height: 37px;
+  }
+  /* Start Wave lives in the 124px rail: shrink the nine-slice sides
+     so the label fits the emerald field instead of spilling over. */
+  #start-wave.v5-btn-start {
+    border-image-width: 13px 30px;
+    font-size: 14.5px;
+    padding: 4px 8px;
+    min-height: 52px;
+  }
+  .v5-dialog-card {
+    padding-top: 9.5%;
+  }
+}
+
+.v5-btn.v5-btn-sm {
+  border-image-width: 12px 44px;
+}
+
+/* ---------- V5 fix round 2: fitted menu row + pre-battle ---------- */
+.v5-map-card .v5-map-name {
+  bottom: 4.6%;
+  font-size: 15px;
+}
+.v5-home > * {
+  flex-shrink: 0;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .home-card.v5-home {
+    gap: 4px;
+  }
+  .v5-home .home-heading .menu-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .v5-home .home-heading h1 {
+    font-size: 24px;
+  }
+  .v5-home .v5-map-card {
+    flex-basis: 168px;
+  }
+  .v5-home .v5-map-card .v5-map-name {
+    font-size: 12px;
+  }
+  .v5-home .v5-map-card .v5-map-stars {
+    bottom: 15%;
+  }
+  .v5-home .v5-map-card .v5-map-stars img {
+    width: 15px;
+    height: 15px;
+  }
+  .v5-home .v5-play-row .v5-btn {
+    min-height: 46px;
+  }
+  .v5-home .kingdom-actions .v5-btn,
+  .v5-home .home-actions .v5-btn {
+    min-height: 38px;
+  }
+  /* Pre-battle: one-row actions so BEGIN is never below the fold. */
+  .v5-prep-actions {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .v5-prep-actions #begin-adventure {
+    flex: 1;
+  }
+  .v5-prep-actions #back {
+    flex: 0 0 130px;
+  }
+  .v5-prep-side .difficulty-picker .v5-btn {
+    min-height: 44px;
+  }
+  .v5-hero-row img {
+    width: 42px;
+    height: 42px;
+  }
+  .v5-prep {
+    gap: 9px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .home-card.v5-home {
+    gap: 3px;
+    padding: 6px 14px;
+  }
+  .v5-home .v5-map-card {
+    flex-basis: 144px;
+  }
+  .v5-home .profile-choice {
+    min-height: 34px;
+    padding: 4px 10px;
+  }
+  .v5-home .v5-crown-chip {
+    padding: 3px 12px 3px 7px;
+    font-size: 15px;
+  }
+  .v5-home .v5-play-row .v5-btn {
+    min-height: 44px;
+  }
+  .v5-home .kingdom-actions .v5-btn,
+  .v5-home .home-actions .v5-btn {
+    min-height: 36px;
+  }
+}
+
+/* ---------- V5 fix round 3: overlay alignment ---------- */
+.v5-map-card .v5-map-name {
+  bottom: 6.4%;
+}
+.relic-grid .v5-relic-card .v5-relic-name {
+  top: 56.8%;
+}
+.relic-grid .v5-relic-card .v5-relic-desc {
+  top: 68.5%;
+}
+
+/* ---------- V5 fix round 4: panel-open + hero-visible shop reserve ----------
+   The battlefield block zeroes the aside margin when the upgrade panel
+   opens (higher-specificity :has rule), which let the shop stretch under
+   the hero controls. When BOTH the panel is open and hero controls are
+   visible, the reserve must win. */
+@media (orientation: landscape) and (max-height: 600px) {
+  main:has(#selection-panel.open):has(#hero-controls:not([hidden])) aside {
+    margin-bottom: 100px;
+  }
+}
+/* Hero cards: names stay ink on the cream ribbon for both card arts. */
+.hero-roster .v5-hero-card.is-equipped .v5-hero-name {
+  color: var(--v5-ink);
+  text-shadow: none;
+}
+.hero-roster .v5-hero-card.is-equipped .v5-hero-name small {
+  color: #68786a;
+}
+.v5-hero-card .v5-hero-lock-note {
+  top: 66.5%;
+}
+.v5-hero-card .v5-hero-action {
+  bottom: 4.6%;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-hero-card .v5-hero-name {
+    font-size: 11px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-hero-card .v5-hero-action {
+    font-size: 10.5px;
+    gap: 3px;
+    letter-spacing: 0.01em;
+  }
+  .v5-hero-card .v5-hero-action img {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* ---------- V5 fix round 5: dialog headroom + stat labels ---------- */
+.result-card .result-stats div {
+  padding: 7px 4px 10px;
+}
+.result-card .result-stats small {
+  display: block;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.v5-map-card .v5-map-name {
+  bottom: 7.4%;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-dialog-card {
+    padding-top: 15.5%;
+  }
+}
+
+/* Dialog eyebrows get a cream pill so the flavor line stays legible
+   where it crosses the illustrated frame's top ornament. */
+.v5-dialog-card .eyebrow {
+  display: inline-block;
+  background: rgba(255, 248, 220, 0.88);
+  padding: 2px 12px;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(90, 60, 10, 0.25);
+}
+
+/* ================================================================
+   V5 collection fit: the tower collection must fit without
+   scrolling at every reference size (polish.spec contract).
+   Path columns go three-across everywhere; the decorative triple
+   strip is width-capped, and dropped entirely at short heights.
+   ================================================================ */
+.collection-grid.v5-tower-showcase > section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px 10px;
+  align-content: start;
+  min-width: 0;
+}
+.v5-tower-showcase section > h2,
+.v5-tower-showcase section > small,
+.v5-tower-showcase section > .v5-xpline,
+.v5-tower-showcase section > .v5-triple,
+.v5-tower-showcase section > [data-unlock-tower],
+.v5-tower-showcase section > .tree-link {
+  grid-column: 1 / -1;
+}
+.v5-tower-showcase .v5-triple {
+  width: min(320px, 100%);
+  margin-inline: auto;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .collection-card {
+    padding: 8px 10px;
+  }
+  .v5-tower-showcase .v5-triple {
+    display: none;
+  }
+  .v5-tower-showcase .v5-tower-card {
+    width: 128px;
+  }
+  .collection-grid.v5-tower-showcase {
+    gap: 10px;
+  }
+  .collection-grid.v5-tower-showcase > section {
+    gap: 4px 8px;
+  }
+  .v5-tower-showcase .collection-path small {
+    display: none;
+  }
+  .v5-tower-showcase section > h2 {
+    font-size: 19px;
+    margin: 0;
+  }
+  .v5-collection-sub {
+    margin-bottom: 2px;
+  }
+}
+
+/* ---------- V5 collection fit, round 2 ---------- */
+.v5-tower-showcase .collection-path {
+  grid-column: auto;
+}
+@media (max-width: 700px) {
+  .v5-tower-showcase {
+    grid-template-columns: 1fr;
+  }
+  .v5-tower-showcase .v5-tower-card {
+    width: 108px;
+    margin: 0 auto;
+  }
+  .v5-tabs {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+  }
+  .v5-tabs .v5-tab {
+    flex: 0 0 84px;
+  }
+  .v5-tower-showcase .v5-triple {
+    width: min(200px, 100%);
+  }
+  .v5-collection-sub {
+    font-size: 11.5px;
+  }
+}
+
+/* Audit: resource typography must fit six-digit gold and Hard 99/100. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hud { row-gap: 4px; }
+  .hud .resource { min-width: 0; padding: 2px 4px; gap: 2px; }
+  .hud .resource > img { width: 18px; height: 18px; }
+  .hud .resource small, .hud .remaining small { line-height: 1.1; }
+  .hud .resource b, .hud .remaining > span, .hud .wave-counter b { font-size: 20px; line-height: 1.1; }
+  .hud .wave-counter { line-height: 1.1; }
+}
+/* A framed card is sized from the available viewport, never its intrinsic image.
+   Six decorative hero cards must not make the three playable heroes inaccessible. */
+.hero-card.v5-screen .v5-hero-roster,
+.relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.hero-card.v5-screen .v5-hero-card { width: min(100%, 150px); margin-inline: auto; }
+.relic-card.v5-screen .v5-relic-card { width: min(100%, 130px); margin-inline: auto; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero-card.v5-screen, .relic-card.v5-screen { padding: 8px 12px; }
+  .hero-card.v5-screen .v5-hero-roster,
+  .relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 6px; }
+  .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 105px; }
+  .home-card.v5-home { gap: 2px; }
+  .v5-home #save-message { margin: 0; line-height: 1.1; }
+  .v5-home .home-heading .menu-icon { width: 24px; height: 24px; }
+  .v5-home .home-heading h1 { font-size: 22px; line-height: 1.05; }
+  .v5-home .home-section { line-height: 1.1; }
+}
+@media (max-width: 700px) and (orientation: portrait) {
+  .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: 100px; }
+}
+/* Keep unsupported friends decorative; give playable hero actions real tap areas. */
+.hero-card.v5-screen .v5-hero-card:not(.is-locked) .v5-hero-action,
+.relic-card.v5-screen .v5-relic-action { height: 44px; min-height: 44px; padding-top: 22px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero-card.v5-screen .v5-hero-roster { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+  .hero-card.v5-screen .v5-hero-card:not(.is-locked) { max-width: 135px; }
+}
+.hero-card.v5-screen .v5-hero-card.is-locked {
+  width: 100%; max-width: 150px; height: 60px; aspect-ratio: auto;
+  background: none; opacity: .72; border: 1px solid #bda66e; border-radius: 10px;
+}
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-art { left: 4px; top: 4px; width: 35px; height: 44px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-name { left: 40px; right: 2px; top: 8px; font-size: 11px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-lock { width: 13px; height: 16px; left: 42px; top: 35px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-lock-note { left: 56px; right: 1px; top: 37px; font-size: 9px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-action { display: none; }
+/* Supersede legacy article padding/background/display, not just the new class. */
+.hero-roster .v5-hero-card:not(.is-locked) {
+  display: block; padding: 0; border: 0; border-radius: 0;
+  background: url('/tiny-siege/assets/v5/ui/ui_card_hero_unselected.png') center / 100% 100% no-repeat;
+}
+.hero-roster .v5-hero-card.is-equipped {
+  background-image: url('/tiny-siege/assets/v5/ui/ui_card_hero_selected.png');
+}
+.relic-grid .v5-relic-card {
+  display: block; padding: 0; border: 0; border-radius: 0;
+  background: url('/tiny-siege/assets/v5/ui/ui_card_relic_frame.png') center / 100% 100% no-repeat;
+}
+.v5-hero-cell { min-width: 0; width: min(100%,150px); margin-inline: auto; }
+.v5-hero-caption { display: block; margin: 0; line-height: 1.1; font-size: 10px; text-transform: capitalize; color: #315343; }
+.hero-roster .v5-hero-card .v5-hero-name { font-size: 13px; top: 58%; white-space: nowrap; }
+.hero-roster .v5-hero-card .v5-hero-action { white-space: nowrap; font-size: 11px; padding: 22px 0 0; line-height: 1; gap: 3px; }
+.hero-roster .v5-hero-card .v5-hero-action img { width: 15px; height: 15px; }
+.hero-card .v5-screen-head .v5-banner { padding-inline: 8%; }
+.hero-card .v5-screen-head .v5-banner h1 { font-size: clamp(16px,4vw,24px); white-space: nowrap; }
+.relic-grid .v5-relic-info { position: absolute; left: 22%; top: 13%; width: 56%; height: 30%; min-height: 44px; border: 0; padding: 0; background: none; cursor: pointer; }
+.relic-grid .v5-relic-info .v5-relic-art { position: static; width: 100%; height: 100%; }
+.relic-grid .v5-relic-name { font-size: 12px; line-height: 1.05; }
+.relic-grid .v5-relic-desc { font-size: 10px; line-height: 1.1; }
+.relic-grid .v5-relic-action { font-size: 11px; white-space: nowrap; line-height: 1; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .v5-hero-cell { max-width: 128px; }
+  .hero-card .v5-screen-head .v5-banner { min-height: 44px; }
+}
+
+/* Placement hints must never swallow a valid battlefield tap. */
+#selection-panel.placing { pointer-events: none; }
+#selection-panel.placing .cancel-button { pointer-events: auto; }
+
+/* Audit: keep supplied banners proportionate and text in their empty ribbons. */
+.v5-screen-head .v5-banner { max-width: 320px; min-height: 80px; padding: 8px 18px; background-size: contain; margin-inline: auto; }
+.v5-screen-head .v5-banner h1 { font-size: clamp(16px,2.8vw,22px); letter-spacing: 0; margin: 0; }
+.v5-relic-cell { min-width: 0; text-align: center; }
+.v5-relic-caption { font-size: 11px; font-weight: 800; line-height: 1.15; min-height: 26px; margin-top: 2px; }
+.relic-grid .v5-relic-card .v5-relic-name { white-space: nowrap; top: 56%; font-size: 12px; }
+.relic-grid .v5-relic-card .v5-relic-desc { top: 68%; margin: 0; display: block; font-size: 10px; line-height: 1.1; }
+.relic-card.v5-screen .v5-relic-action:disabled { color: #746651; text-shadow: none; }
+.relic-grid .v5-relic-info::after { content: "ⓘ"; position: absolute; right: -4px; top: -2px; font-size: 14px; color: #264e42; }
+/* Percentage vertical padding resolved against width made these dialogs scroll. */
+.modal-card.v5-dialog-card { padding: clamp(40px,9vh,64px) clamp(24px,7vw,72px) clamp(24px,5vh,40px); }
+.modal-card.v5-dialog-card h1 { margin: 0 0 8px; font-size: 26px; }
+.modal-card.v5-dialog-card p { margin: 8px 0; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .adventure-card.v5-screen { padding: 8px 16px; }
+ .adventure-card > .v5-banner { min-height: 58px; max-width: 260px; padding: 4px 24px; margin: 0 auto 4px; background-size: contain; }
+ .adventure-card > .v5-banner h1 { margin: 0; font-size: 22px; }
+ .v5-prep { grid-template-columns: minmax(0,.8fr) minmax(0,1.4fr); align-items: center; }
+ .v5-prep .v5-map-card { max-width: 210px; margin: auto; }
+ .v5-prep-side { gap: 6px; }
+ .v5-prep-side .difficulty-picker { flex-direction: row; gap: 4px; }
+ .v5-prep-side .difficulty-picker .v5-btn { flex: 1; min-width: 0; font-size: 12px; padding: 4px 8px; justify-content: center; border-image-width: 12px 22px; }
+ .v5-prep-side .difficulty-picker small { display: none; }
+ .v5-hero-row { padding: 3px 6px; gap: 5px; }
+ .v5-hero-row .v5-hero-meta b { font-size: 13px; }
+ .v5-hero-row #choose-hero { min-height: 44px; padding: 3px 14px; font-size: 11px; border-image-width: 12px 24px; }
+ .v5-prep-side .v5-relic-line { font-size: 12px; margin: 0; }
+ .v5-prep-actions { margin-top: 6px; }
+ .modal-card.v5-dialog-card:has(#keep-playing) { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+ .v5-dialog-card:has(#keep-playing) > h1, .v5-dialog-card:has(#keep-playing) > p { grid-column: 1/-1; }
+ .v5-dialog-card:has(#keep-playing) > .v5-btn { min-height: 44px; margin: 0; font-size: 14px; }
+ .modal-card.result-card { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }
+ .result-card > :not(button) { grid-column: 1/-1; }
+ .result-card h1 { display: flex; justify-content: center; gap: .25em; }
+ .result-card h1 br { display: none; }
+ .result-card .v5-stars { margin: 0; }
+ .result-card .v5-stars img { width: 28px; height: 28px; }
+ .result-card .result-stats, .result-card .reward-summary { margin: 0; }
+ .result-card .result-stats div { padding: 4px; }
+ .result-card .result-stats b { font-size: 24px; }
+ .result-card .v5-btn { min-height: 44px; margin: 0; font-size: 14px; }
+}
+/* Use nine-slice framing: preserve the original ornaments at different widths. */
+.v5-banner,
+.v5-screen-head .v5-banner,
+.hero-card .v5-screen-head .v5-banner,
+.adventure-card > .v5-banner {
+ background: none;
+ border: solid transparent;
+ border-width: 14px 50px;
+ border-image: url('/tiny-siege/assets/v5/ui/ui_section_header_banner.png') 85 240 fill / 18px 60px;
+ min-height: 64px;
+ padding: 0 4px;
+ max-width: 340px;
+}
+.v5-banner h1, .hero-card .v5-screen-head .v5-banner h1,
+.adventure-card > .v5-banner h1 { font-size: 20px; margin: 0; line-height: 1.1; letter-spacing: 0; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .adventure-card > .v5-banner { max-width: 300px; }
+ .result-card .reward-summary { padding: 4px 8px; font-size: 11px; line-height: 1.2; }
+ .result-card .reward-summary small { font-size: 10px; margin-top: 2px; }
+}
+.v5-banner h1, .hero-card .v5-screen-head .v5-banner h1,
+.adventure-card > .v5-banner h1 { font-size: clamp(16px,2.5vw,20px); }
+.relic-card.v5-screen .v5-relic-card .v5-relic-action {
+ display: flex; align-items: center; justify-content: center; padding: 0;
+ top: calc(84% - 22px); bottom: auto; height: 44px;
+ color: #214e35; text-shadow: none;
+}
+.relic-card.v5-screen .v5-relic-card .v5-relic-action:disabled { opacity: 1; color: #746651; }
+@media (orientation: portrait) and (max-width: 700px) {
+ .adventure-card.v5-screen { padding: 12px; }
+ .adventure-card .v5-prep .v5-map-card { width: 100%; max-width: 200px; margin: auto; }
+ .v5-prep, .v5-prep-side, .v5-prep-side .difficulty-picker { gap: 6px; }
+ .v5-prep-side .difficulty-picker .v5-btn { min-height: 48px; font-size: 14px; padding: 4px 24px; }
+ .v5-prep-side .difficulty-picker small { font-size: 10px; }
+ .v5-hero-row { gap: 6px; padding: 4px 6px; }
+ .v5-hero-row img { width: 42px; height: 42px; }
+ .v5-hero-row .v5-hero-meta b { font-size: 14px; }
+ .v5-hero-row #choose-hero { font-size: 12px; min-height: 44px; padding: 4px 14px; border-image-width: 12px 24px; }
+ .v5-prep-actions .v5-btn { min-height: 48px; font-size: 16px; padding: 4px 24px; border-image-width: 14px 44px; }
+}
+@media (orientation: landscape) and (max-height: 400px) {
+ .modal-card.result-card { padding-top: 32px; padding-bottom: 20px; row-gap: 2px; }
+ .modal-card.result-card h1 { font-size: 24px; }
+ .result-card .v5-stars img { width: 24px; height: 24px; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+ .v5-home .home-actions .v5-btn { min-width: 0; }
+}
+@media (orientation: portrait) and (min-width: 701px) {
+ .adventure-card .v5-prep .v5-map-card { max-width: 300px; margin: auto; }
+}
+@media (orientation: landscape) and (max-height: 400px) {
+ .home-card.v5-home { gap: 1px; padding-block: 4px; }
+}
+
+/* iPhone playtest: reserve the ornament borders instead of painting them
+   underneath text. All shells retain their approved artwork. */
+.v5-btn {
+  --frame-y: 10px;
+  --frame-x: 26px;
+  border-width: var(--frame-y) var(--frame-x);
+  /* Override legacy per-screen border-image widths; 1 follows real borders. */
+  border-image-width: 1 !important;
+  padding: 2px 8px;
+  line-height: 1.1;
+  letter-spacing: .01em;
+}
+.v5-btn.v5-btn-sm { --frame-y: 8px; --frame-x: 20px; padding: 2px 6px; }
+.v5-btn.v5-btn-start { --frame-y: 12px; --frame-x: 32px; padding: 2px 8px; }
+.modal-card:has(#profile-form) > .v5-btn,
+#profile-form > .v5-btn { display: flex; width: 100%; margin-top: 10px; }
+/* A single centered difficulty label belongs in the ribbon. Extra help lives
+   below the choices, rather than sharing the narrow decorative ends. */
+.v5-prep-side .difficulty-picker .v5-btn {
+  justify-content: center; padding: 2px 8px; gap: 0; font-size: 14px;
+}
+.v5-prep-side .difficulty-picker small { display: none; }
+.v5-prep-side .difficulty-picker .v5-btn > span { line-height: 1.1; }
+.v5-prep-side #choose-hero { --frame-x: 16px; padding: 2px 6px; }
+.v5-prep-actions .v5-btn { padding: 2px 8px; }
+/* The supplied map ribbon is centered at 87.5% of its painted frame. */
+.v5-map-card .v5-map-name,
+.v5-home .v5-map-card .v5-map-name {
+  top: 87.5%; bottom: auto; left: 19%; right: 19%; transform: translateY(-50%);
+  line-height: 1; font-size: 11px;
+}
+.v5-map-card .v5-map-stars,
+.v5-home .v5-map-card .v5-map-stars {
+  top: 74%; bottom: auto; transform: translateY(-50%); gap: 4px;
+}
+.v5-map-card .v5-map-stars img,
+.v5-home .v5-map-card .v5-map-stars img { width: 7%; height: auto; max-width: 21px; }
+/* Shop icons flex inside their row; names and prices each own a fixed row. */
+#tower-shop .tower-card {
+  position: relative; display: grid; grid-template-columns: minmax(0,1fr);
+  grid-template-rows: minmax(12px,1fr) 13px 15px; align-content: stretch;
+  justify-items: center; gap: 0; padding: 2px; overflow: hidden;
+}
+#tower-shop .tower-card .tower-icon,
+#tower-shop .tower-card .tower-icon img {
+  min-height: 0; height: 100%; width: 100%; max-width: 48px; object-fit: contain;
+}
+#tower-shop .tower-card .tower-name { min-width: 0; width: 100%; line-height: 13px; }
+#tower-shop .tower-card .tower-name b { display: block; font-size: 10px; line-height: 13px; white-space: nowrap; }
+#tower-shop .tower-card .tower-cost { display: flex; align-items: center; justify-content: center; gap: 2px; font-size: 12px; line-height: 15px; white-space: nowrap; }
+#tower-shop .tower-card .tower-cost img { width: 12px; height: 12px; }
+#tower-shop .tower-card .tower-lock { top: 3px; right: 3px; width: 11px; height: 14px; }
+/* Avoid a half-width life badge competing with the enemy counter. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hud { grid-template-columns: minmax(0,1fr); gap: 3px; padding: 0; }
+  .hud .gold, .hud .lives { grid-column: 1; grid-row: auto; min-height: 33px; padding: 2px 6px; }
+  .hud .resource > div { min-width: 0; }
+  .hud .resource small { font-size: 8px; line-height: 1; white-space: nowrap; }
+  .hud .resource b { display: block; line-height: 1; font-size: 20px; }
+  .hud .wave-counter { grid-column: 1; grid-row: 3; display: flex; align-items: center; gap: 5px; min-height: 22px; }
+  .hud .wave-counter b { font-size: 18px; }
+  .hud .remaining { grid-column: 1; grid-row: 4; display: flex; align-items: center; gap: 5px; min-height: 18px; }
+  .hud .remaining > span { font-size: 16px; line-height: 1; }
+  .hud .remaining small { font-size: 8px; line-height: 1; }
+  #start-wave.v5-btn-start { --frame-x: 16px; --frame-y: 10px; padding: 2px; font-size: 12px; min-height: 52px; }
+  #start-wave > span { display: none; }
+  .v5-home .home-actions .v5-btn,
+  .v5-home .kingdom-actions .v5-btn { --frame-x: 12px; --frame-y: 7px; padding: 2px 4px; }
+  .v5-prep-side .difficulty-picker .v5-btn { --frame-x: 14px; font-size: 12px; }
+  #tower-shop .tower-card { grid-template-rows: minmax(10px,1fr) 11px 13px; border-bottom-width: 2px; }
+  #tower-shop .tower-card .tower-name,
+  #tower-shop .tower-card .tower-name b { font-size: 9px; line-height: 11px; }
+  #tower-shop .tower-card .tower-cost { font-size: 11px; line-height: 13px; }
+}
+/* Legacy difficulty button borders must not compress the ornamental slices. */
+.v5-prep-side .difficulty-picker .v5-btn {
+  border-width: var(--frame-y) var(--frame-x); border-style: solid;
+  border-color: transparent; border-radius: 0; background: none;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  #tower-shop .tower-card { padding: 0; grid-template-rows: minmax(10px,1fr) 15px 15px; }
+  #tower-shop .tower-card .tower-name,
+  #tower-shop .tower-card .tower-name b { line-height: 15px; }
+  #tower-shop .tower-card .tower-cost { line-height: 15px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  #tower-shop .tower-card .tower-name b { font-size: 8.5px; }
+}
+@media (orientation: landscape) and (max-width: 700px) {
+  #tower-shop .tower-card .tower-name b { font-size: 8px; }
+}
+@media (orientation: landscape) and (max-width: 700px) and (max-height: 600px) {
+  .v5-home .v5-map-card { flex-basis: 132px; }
+}
+/* Hero-specific legacy height rules must not force a 30px image into a
+   shorter shop row. Scope the override to the real card, including its image. */
+#tower-shop .tower-card[data-tower] .tower-icon,
+#tower-shop .tower-card[data-tower] .tower-icon img {
+  display: block; height: 100%; max-height: 100%; min-height: 0;
+  width: 100%; object-fit: contain;
+}
+/* Collection shells also supersede older plain-button border shorthands. */
+.modal-card button.v5-btn {
+  border-width: var(--frame-y) var(--frame-x); border-style: solid;
+  border-color: transparent;
+}
+.v5-banner h1 { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.v5-banner h1 .v5-icon-lg { width: 22px; height: 22px; flex: 0 0 22px; }
+.v5-tabs .v5-tab { background: url('/tiny-siege/assets/v5/ui/ui_tab_unselected.png') center / 100% 100% no-repeat; color: var(--v5-ink); text-shadow: none; }
+.v5-tabs .v5-tab[aria-pressed="true"] { background-image: url('/tiny-siege/assets/v5/ui/ui_tab_selected.png'); }
+.collection-card .collection-path .v5-btn,
+.collection-card .v5-xpline .v5-btn { --frame-x: 12px; --frame-y: 6px; padding: 2px 4px; min-height: 44px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-name { white-space: normal; font-size: 10px; line-height: 1.05; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .collection-card.v5-screen > .v5-banner,
+  .hero-card .v5-screen-head .v5-banner,
+  .relic-card .v5-screen-head .v5-banner {
+    min-height: 44px; border-width: 8px 40px; border-image-width: 1;
+    margin-block: 0 2px;
+  }
+  .collection-card .v5-collection-sub { margin: 2px 0 5px; font-size: 11px; line-height: 1.2; }
+  .collection-card .v5-tabs { margin-bottom: 4px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  .hero-card.v5-screen .v5-hero-card:not(.is-locked) { max-width: 110px; }
+  .hero-card.v5-screen .v5-hero-card.is-locked { height: 52px; }
+  .collection-card.v5-screen > .v5-banner { min-height: 38px; }
+  .collection-card.v5-screen .v5-tower-card { width: 100px; }
+}
+.collection-card #save-message:empty { display: none; }
+.collection-card .collection-path {
+  display: grid; grid-template-columns: auto minmax(0,1fr); gap: 2px;
+}
+.collection-card .collection-path > b { grid-column: 1/-1; line-height: 1.15; }
+.collection-card .collection-path .v5-pips {
+  display: flex; align-items: center; gap: 2px; height: 10px; margin: 0;
+}
+.collection-card .v5-pips i { display: block; flex: 0 0 7px; width: 7px; height: 7px; border-width: 1px; }
+.collection-card .collection-path > span:not(.v5-pips) { margin: 0; line-height: 1.15; font-size: 9px; }
+.collection-card .collection-path > button,
+.collection-card .collection-path > strong { grid-column: 1/-1; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .collection-grid.v5-tower-showcase { grid-template-columns: 128px minmax(0,1fr); }
+ .collection-grid.v5-tower-showcase > section { padding: 4px; gap: 3px 8px; }
+ .collection-card #back { --frame-y: 8px; min-height: 44px; padding: 2px 8px; font-size: 15px; }
+ .collection-card .v5-xpline { margin: 1px 0 3px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+ .collection-grid.v5-tower-showcase { grid-template-columns: 100px minmax(0,1fr); }
+ .collection-card .v5-collection-sub { display: none; }
+ .collection-grid.v5-tower-showcase > section > h2 { display: none; }
+ .collection-grid.v5-tower-showcase > section > .v5-xpline { grid-row: 1; }
+ .collection-grid.v5-tower-showcase > section > .collection-path { grid-row: 2; }
+}
+.v5-tabs .v5-tab[aria-pressed="true"] { color: var(--v5-mint); text-shadow: 0 1px 0 #27513c; }

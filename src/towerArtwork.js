@@ -1,6 +1,17 @@
 // Runtime art is separate from tower stats, saves and permanent unlocks.
-// Future towers register their available complete A-B-C states here.
-export const ARCHER_STATES = [
+// All eight towers (archer, cannon, frost, fire, lightning, grove, wind, rune)
+// register their available complete A-B-C states here.
+export const TOWER_TYPES = [
+  "archer",
+  "cannon",
+  "frost",
+  "fire",
+  "lightning",
+  "grove",
+  "wind",
+  "rune",
+];
+export const TOWER_STATES = [
   "0-0-0",
   "1-0-0",
   "0-1-0",
@@ -17,7 +28,18 @@ export const ARCHER_STATES = [
   "0-2-1",
   "1-0-2",
   "0-1-2",
+  "3-0-0",
+  "0-3-0",
+  "0-0-3",
+  "3-1-0",
+  "3-0-1",
+  "1-3-0",
+  "0-3-1",
+  "1-0-3",
+  "0-1-3",
 ];
+// Backwards compatibility for existing imports.
+export const ARCHER_STATES = TOWER_STATES;
 export function artworkState(paths) {
   if (
     !Array.isArray(paths) ||
@@ -27,13 +49,14 @@ export function artworkState(paths) {
     paths.filter((n) => n > 1).length > 1
   )
     return "0-0-0";
-  const state = paths.map((n) => Math.min(n, 2)).join("-");
-  return ARCHER_STATES.includes(state) ? state : "0-0-0";
+  const state = paths.join("-");
+  return TOWER_STATES.includes(state) ? state : "0-0-0";
 }
 export function towerArtwork(t, usage = "card_512") {
-  if (t.type !== "archer") return null;
-  return `assets/v5/towers/archer/${usage}/archer_${artworkState(t.paths)}.png`;
+  if (!t || !TOWER_TYPES.includes(t.type)) return null;
+  return `assets/v5/towers/${t.type}/${usage}/${t.type}_${artworkState(t.paths)}.png`;
 }
 export function artworkTexture(t) {
-  return t.type === "archer" ? `v5-archer-${artworkState(t.paths)}` : null;
+  if (!t || !TOWER_TYPES.includes(t.type)) return null;
+  return `v5-${t.type}-${artworkState(t.paths)}`;
 }

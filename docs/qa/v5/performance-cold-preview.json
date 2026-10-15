@@ -1,0 +1,403 @@
+{
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "canvas": {
+    "x": 146,
+    "y": 11,
+    "width": 552,
+    "height": 368,
+    "top": 11,
+    "right": 698,
+    "bottom": 379,
+    "left": 146
+  },
+  "devHook": "undefined",
+  "resources": [
+    {
+      "url": "/tiny-siege/assets/index-CeE3KnLp.js",
+      "bytes": 410870,
+      "transfer": 411170,
+      "duration": 1038.300000011921,
+      "initiator": "script"
+    },
+    {
+      "url": "/tiny-siege/assets/index-Cj6u87b-.css",
+      "bytes": 16102,
+      "transfer": 16402,
+      "duration": 273.7999999821186,
+      "initiator": "link"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_crown.png",
+      "bytes": 65174,
+      "transfer": 65474,
+      "duration": 182.5,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_gear.png",
+      "bytes": 49101,
+      "transfer": 49401,
+      "duration": 276.80000001192093,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_gold.png",
+      "bytes": 94546,
+      "transfer": 94846,
+      "duration": 282.09999999403954,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_heart.png",
+      "bytes": 56429,
+      "transfer": 56729,
+      "duration": 281.7999999821186,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_pause.png",
+      "bytes": 50061,
+      "transfer": 50361,
+      "duration": 288.90000000596046,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_speed.png",
+      "bytes": 52285,
+      "transfer": 52585,
+      "duration": 303.40000000596046,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_button_start_wave.png",
+      "bytes": 463348,
+      "transfer": 463648,
+      "duration": 201.59999999403954,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/fonts/Baloo2.woff2",
+      "bytes": 179892,
+      "transfer": 180192,
+      "duration": 692,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/fonts/Nunito.woff2",
+      "bytes": 100836,
+      "transfer": 101136,
+      "duration": 692,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_background_main_menu.png",
+      "bytes": 1680997,
+      "transfer": 1681297,
+      "duration": 82.19999998807907,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_button_secondary_normal.png",
+      "bytes": 254330,
+      "transfer": 254630,
+      "duration": 51.69999998807907,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_button_secondary_disabled.png",
+      "bytes": 128102,
+      "transfer": 128402,
+      "duration": 39.80000001192093,
+      "initiator": "css"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_lock.png",
+      "bytes": 72571,
+      "transfer": 72871,
+      "duration": 22.30000001192093,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/icons/icon-192.png",
+      "bytes": 25000,
+      "transfer": 25300,
+      "duration": 77,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_cloud.png",
+      "bytes": 43137,
+      "transfer": 43437,
+      "duration": 77.19999998807907,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/ui/ui_icon_help.png",
+      "bytes": 61902,
+      "transfer": 62202,
+      "duration": 77.40000000596046,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/archer/battlefield_256/archer_0-0-0.png",
+      "bytes": 89610,
+      "transfer": 89910,
+      "duration": 104.90000000596046,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/cannon/battlefield_256/cannon_0-0-0.png",
+      "bytes": 84924,
+      "transfer": 85224,
+      "duration": 108.09999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/frost/battlefield_256/frost_0-0-0.png",
+      "bytes": 58986,
+      "transfer": 59286,
+      "duration": 104.5,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/fire/battlefield_256/fire_0-0-0.png",
+      "bytes": 71335,
+      "transfer": 71635,
+      "duration": 108.09999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/lightning/battlefield_256/lightning_0-0-0.png",
+      "bytes": 60198,
+      "transfer": 60498,
+      "duration": 107.90000000596046,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/grove/battlefield_256/grove_0-0-0.png",
+      "bytes": 80056,
+      "transfer": 80356,
+      "duration": 112,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/wind/battlefield_256/wind_0-0-0.png",
+      "bytes": 76234,
+      "transfer": 76534,
+      "duration": 152.59999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/rune/battlefield_256/rune_0-0-0.png",
+      "bytes": 71693,
+      "transfer": 71993,
+      "duration": 154.30000001192093,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_mossling.png",
+      "bytes": 67698,
+      "transfer": 67998,
+      "duration": 145.40000000596046,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_fleetfoot.png",
+      "bytes": 72825,
+      "transfer": 73125,
+      "duration": 151.5,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_sproutling.png",
+      "bytes": 59020,
+      "transfer": 59320,
+      "duration": 145.39999997615814,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_ironbound.png",
+      "bytes": 100504,
+      "transfer": 100804,
+      "duration": 151.80000001192093,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_shardling.png",
+      "bytes": 80387,
+      "transfer": 80687,
+      "duration": 241,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_emberbrute.png",
+      "bytes": 110799,
+      "transfer": 111099,
+      "duration": 239.5,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_crystalcrawler.png",
+      "bytes": 89493,
+      "transfer": 89793,
+      "duration": 227.7999999821186,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_lavaimp.png",
+      "bytes": 70459,
+      "transfer": 70759,
+      "duration": 227.60000002384186,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_grovehealer.png",
+      "bytes": 80838,
+      "transfer": 81138,
+      "duration": 227.59999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_shieldwarden.png",
+      "bytes": 107364,
+      "transfer": 107664,
+      "duration": 270.19999998807907,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_moonwraith.png",
+      "bytes": 81230,
+      "transfer": 81530,
+      "duration": 296.2999999821186,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_crystalcolossus.png",
+      "bytes": 118350,
+      "transfer": 118650,
+      "duration": 303.90000000596046,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_emberdrake.png",
+      "bytes": 114742,
+      "transfer": 115042,
+      "duration": 294.59999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/enemies/enemy_thornking.png",
+      "bytes": 114963,
+      "transfer": 115263,
+      "duration": 295.59999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/maps/map_classic.png",
+      "bytes": 1656091,
+      "transfer": 1656391,
+      "duration": 329.69999998807907,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/heroes/battlefield_256/hero_dragon_baby.png",
+      "bytes": 65946,
+      "transfer": 66246,
+      "duration": 287.10000002384186,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/heroes/battlefield_256/hero_dino_baby.png",
+      "bytes": 55321,
+      "transfer": 55621,
+      "duration": 301.09999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/heroes/battlefield_256/hero_tiger_baby.png",
+      "bytes": 68113,
+      "transfer": 68413,
+      "duration": 306.59999999403954,
+      "initiator": "xmlhttprequest"
+    },
+    {
+      "url": "/tiny-siege/icons/favicon.png",
+      "bytes": 1898,
+      "transfer": 2198,
+      "duration": 15.5,
+      "initiator": "other"
+    },
+    {
+      "url": "/tiny-siege/assets/firebase-B2_O2V6p.js",
+      "bytes": 169114,
+      "transfer": 169414,
+      "duration": 111.7999999821186,
+      "initiator": "script"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/archer/battlefield_256/archer_0-0-0.png",
+      "bytes": 89610,
+      "transfer": 300,
+      "duration": 4.200000017881393,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/cannon/battlefield_256/cannon_0-0-0.png",
+      "bytes": 84924,
+      "transfer": 300,
+      "duration": 11.5,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/frost/battlefield_256/frost_0-0-0.png",
+      "bytes": 58986,
+      "transfer": 300,
+      "duration": 9.5,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/fire/battlefield_256/fire_0-0-0.png",
+      "bytes": 71335,
+      "transfer": 300,
+      "duration": 14.099999994039536,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/lightning/battlefield_256/lightning_0-0-0.png",
+      "bytes": 60198,
+      "transfer": 300,
+      "duration": 16.69999998807907,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/grove/battlefield_256/grove_0-0-0.png",
+      "bytes": 80056,
+      "transfer": 300,
+      "duration": 16.5,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/wind/battlefield_256/wind_0-0-0.png",
+      "bytes": 76234,
+      "transfer": 300,
+      "duration": 20.799999982118607,
+      "initiator": "img"
+    },
+    {
+      "url": "/tiny-siege/assets/v5/towers/rune/battlefield_256/rune_0-0-0.png",
+      "bytes": 71693,
+      "transfer": 300,
+      "duration": 20.30000001192093,
+      "initiator": "img"
+    }
+  ],
+  "heap": {
+    "used": 13959132,
+    "total": 18871668
+  },
+  "interactiveMs": 3751,
+  "totalResourceBodyBytes": 8275910,
+  "totalResourceTransferBytes": 7699074,
+  "errors": [],
+  "badResponses": []
+}

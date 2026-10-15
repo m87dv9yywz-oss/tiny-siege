@@ -1,4 +1,19 @@
-# Tiny Siege — Artwork Index (2026-10-14)
+# Tiny Siege — Artwork Index
+
+## Illustrated integration status — 2026-10-15
+
+PR #17 contains all **200 complete tower appearances** (25 legal states for each
+of eight towers), in matching 256px battlefield and 512px card exports. All nine
+Archer Tier 3 images are present; the old prototype Tier 2 fallback is no longer
+used on this branch. Seven painted maps, fourteen enemies and the three playable
+hero families are integrated. Owl/Fox/Bear remain decorative locked previews.
+
+See [the V5 audit](../qa/v5/README.md) and its generated asset inventory for current
+runtime filenames, dimensions, transparency and SHA-256 checksums. The older
+handoff manifest and notes below describe the October 14 source delivery, not the
+current integration completeness. Approved original paintings are unchanged.
+
+## Historical handoff — 2026-10-14
 
 ## Read me first
 

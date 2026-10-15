@@ -68,6 +68,15 @@ jobs:
           path: |
             dist/
             docs/artwork/mobile-battlefield/
+      - name: Archive illustrated V5 audit and playable build (no deployment)
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/v5-illustrated-ui-integration'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-illustrated-audit-preview
+          retention-days: 7
+          path: |
+            dist/
+            docs/qa/v5/
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:

@@ -1,0 +1,336 @@
+{
+ "masterSize": 1254,
+ "origin": [
+  0.5,
+  0.96
+ ],
+ "displaySize": 80,
+ "states": {
+  "0-0-0": {
+   "masterSha256": "a2d80d1b9e8671ac14d468d76feb2bfe1998797f6cdba743bc88cbd608b40260",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 76234,
+     "sha256": "f57e1c16ec3dba1f3b736d4cc8e8e18d205eb8d4fb69f4675047b1b54cbbe1e9"
+    },
+    "card_512": {
+     "bytes": 240942,
+     "sha256": "db3aebd33489187a0f59146e6409480fc1b590d6fc17badba3d8a4d8006cfaf5"
+    }
+   }
+  },
+  "0-0-1": {
+   "masterSha256": "3c23787f6b8d2c779bd25b75166b080176c98e7e77c1244ab407c5f45d53750a",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 85318,
+     "sha256": "77617ccd3a2bfa0dd7b9ab181f6ae396963f54de37e24d190fa9191ae01cdb55"
+    },
+    "card_512": {
+     "bytes": 269507,
+     "sha256": "e0bb297959649bed042ac0067c991ec94a33bb48ba99291c1678f5b7f7612409"
+    }
+   }
+  },
+  "0-0-2": {
+   "masterSha256": "5be970ca60959c127f64b032e795cddf73db48af1fab942cfaa17860ee1f8a9b",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 85766,
+     "sha256": "e4ddd8bc1b5853d0ec10cda89e449c07fd390126d1748bb3bdb1c0ec5ea66e9a"
+    },
+    "card_512": {
+     "bytes": 275152,
+     "sha256": "4b53dca68436bb46760a40408d865dfd0d59e79f57aaa656710e4bc0bd0e31d8"
+    }
+   }
+  },
+  "0-0-3": {
+   "masterSha256": "6bd9a827d1da0d719ee9f27130de9b41815de4899c4845e4bdf15f3e8ed8218b",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 108644,
+     "sha256": "183f04cd2e74a09f8e4f4d3a20dd1cd3af0e56c1d9d46224c45d7106772ac9ef"
+    },
+    "card_512": {
+     "bytes": 351478,
+     "sha256": "ccd13fcbc4420a3b4dad4953bea034a832b5523d96d771b331a86cd0b2e93e67"
+    }
+   }
+  },
+  "0-1-0": {
+   "masterSha256": "b476d6e4eb7108d9caec0a2a72e962ea8f29302163b82890259af3ca56a66455",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 76381,
+     "sha256": "6ccde10b56285d41332ccfb1547d88aa2965a6125a206bc17830431b60c54797"
+    },
+    "card_512": {
+     "bytes": 244298,
+     "sha256": "9ab377d710dec36d07790ab34b59c2a5a8b69fbbae115b483e42a120956e1f1b"
+    }
+   }
+  },
+  "0-1-1": {
+   "masterSha256": "5e4e47e612c9309ce6016c3b1ceee8cd6f453cb11b3b5ac6d365c5917b3b175e",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 82993,
+     "sha256": "1e11c89834ff15d43a074431bf2df34fb25123f58488755d58ff2015c784ce14"
+    },
+    "card_512": {
+     "bytes": 264412,
+     "sha256": "b6c8d75e8dfcc513f930a8c19825a88782af75e63c9fb184177d3fd269c8f20c"
+    }
+   }
+  },
+  "0-1-2": {
+   "masterSha256": "8d7f7a4f338949cea416d2b6dc890ebb89a86aee93c7d82eb50c7ae0b782e334",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 99299,
+     "sha256": "387c61341ff7b3b5ccf799269e6e222d0527711a867e0614f4bc0546f3dc733f"
+    },
+    "card_512": {
+     "bytes": 316141,
+     "sha256": "dbfd3185f40cf62a616162fa35a7edb9a04d96e695cd530e6eb3571accad2657"
+    }
+   }
+  },
+  "0-1-3": {
+   "masterSha256": "b2cda7bad4f9e00dd7046fde566192e1f83f5284564c930cc3b8535d8ce317d4",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 90108,
+     "sha256": "a9a8fbc5a04bbcb81aea3e5efb3157dc91a75b22129977587d43bf5368391543"
+    },
+    "card_512": {
+     "bytes": 290570,
+     "sha256": "4714a6009c749efebf3506a4b743e06a52cd6903573606b3ee803ac873b35e12"
+    }
+   }
+  },
+  "0-2-0": {
+   "masterSha256": "0fd8b41e499944d8893aa74fb3bc79427d3c0821355e8a04a257bbbcef30923b",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 84095,
+     "sha256": "a59937bf1d8a573a4b40fd88cad5eb75f91a781e0893587e9a9dc8abdf036d94"
+    },
+    "card_512": {
+     "bytes": 270421,
+     "sha256": "b2bc9fff5edd9f20c224767144036d4f69db877037ec270a0426d350924a54b3"
+    }
+   }
+  },
+  "0-2-1": {
+   "masterSha256": "5b44c41c959e8e010c1af13bdba8418e57c75e83766cc702e0ff7f394e41c3e9",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 91870,
+     "sha256": "7fde3e56e5615d018744f21b99700d9ce1c9fbe30c0c5176894abd3deaecaab8"
+    },
+    "card_512": {
+     "bytes": 295328,
+     "sha256": "56637118f7b94ec49b8cb4e60b7bdf57c66d9b3d4876b80898889a797872a5ec"
+    }
+   }
+  },
+  "0-3-0": {
+   "masterSha256": "4901685f85cddac06d8c32e06fc8015aa657a898304a9f7d5368cea038de642c",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 80983,
+     "sha256": "38f9d306ba32a50628951d1e1a5d4a1144550149dfc8ca36bf3ba132a9bdf6e4"
+    },
+    "card_512": {
+     "bytes": 261592,
+     "sha256": "97855a4f388f5e1bbce2ac0ffa50c0f6f37f49bd4363fb11c2eaa0185e7ee4fc"
+    }
+   }
+  },
+  "0-3-1": {
+   "masterSha256": "2b4370846353aaf7d969623a398f95cb46fa4b2573058a10c67200b4514f457f",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 82620,
+     "sha256": "4c6fa7d5b8c59cff77ab6ec0d1f044167ee3727b6ece31f2d3256513b4e86e16"
+    },
+    "card_512": {
+     "bytes": 265047,
+     "sha256": "521630f8c63038d592aa64396148defec99756a724900cce10615ab0c60cee93"
+    }
+   }
+  },
+  "1-0-0": {
+   "masterSha256": "fc343b018fc1ae2a7205784dc2b83a49311d005013ce619b0406b39dc664768a",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 89049,
+     "sha256": "004885e3c303de85ab4e2c47e6cb1ec8035b018346a2b18f25a8b569abe67de0"
+    },
+    "card_512": {
+     "bytes": 282093,
+     "sha256": "c19113adb00261da05d6e7f2ac5f5fedf72c75c6b5103be9c81a475eaf3ae2f9"
+    }
+   }
+  },
+  "1-0-1": {
+   "masterSha256": "42f806de45a4d0d38bc63dbe03a666d37f45d58ce3522f727c1a7dc3de067f67",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 90875,
+     "sha256": "b447ab1b79eb23430079baa450bcda55a8b9a90f389315cdd4e0fa44d98b12a4"
+    },
+    "card_512": {
+     "bytes": 288850,
+     "sha256": "8c7800422127248ad45c36d8803be7aa9863f9530fe4cd4e643bb4a4ac379ddd"
+    }
+   }
+  },
+  "1-0-2": {
+   "masterSha256": "3908f37384cd1bc0177ad44397cf2608389e4f6de0faa4c7cfc415abc48bb31f",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 91820,
+     "sha256": "1472017257c5f17a36cf61a7c9ce6556376ecfa20a70e5edbac9ee117445fda9"
+    },
+    "card_512": {
+     "bytes": 296209,
+     "sha256": "4ddd549c86e0367f5e0040672e63eda8ed5086ff4ec1ebcce235549de616bde4"
+    }
+   }
+  },
+  "1-0-3": {
+   "masterSha256": "df9c56e34fcbd04960fc5fa5454f76da18d7e3da97e80763fe18731a12c220a5",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 99204,
+     "sha256": "ead7fed9560e2889fc00ca13aca07e2ba9406703e2682055faf447e622cc4909"
+    },
+    "card_512": {
+     "bytes": 325785,
+     "sha256": "59b07cc5b6fb4ba7e0c49d97e568cf2a31e89fe3b5c69a50d01235dc5bcb7622"
+    }
+   }
+  },
+  "1-1-0": {
+   "masterSha256": "120a7c20753ad56c101f5441c83630c4f51091aafd2f581d55306aaa40213426",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 85333,
+     "sha256": "e9a560c58d1d3f7363705a911951cc87a5828b6e4d4644ef7ead2d85b287f95f"
+    },
+    "card_512": {
+     "bytes": 272398,
+     "sha256": "8be38e848bff9a1e08456b779d64d120ec5d8e69050f4655c7263347fcea8d72"
+    }
+   }
+  },
+  "1-2-0": {
+   "masterSha256": "f07a7bda307b91cff18a3047a06a15b6f17f22847fe4e56ecf36d525cb5baac9",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 96374,
+     "sha256": "02f41a11981e4c3f24d9ebbdb8af033b5fb22019c1527f75753e78bea3a8d6d9"
+    },
+    "card_512": {
+     "bytes": 309134,
+     "sha256": "8df0fb7c7857e442a1be6c7c047f0b02e85a5b0601dba3c98a7edddd90101917"
+    }
+   }
+  },
+  "1-3-0": {
+   "masterSha256": "10921e27278709ba8db0318e78674620c16a0e1797590c1583d42e3a150018ed",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 94818,
+     "sha256": "7957a6e7ed4551f294828729c68d100ddd5fbb61dbd1bd76acfc5b9ad6f32610"
+    },
+    "card_512": {
+     "bytes": 305010,
+     "sha256": "c04b4a9f8ddfd2941a9a9a276d97fd141d73e5a7f05f06a6a0cdb0678b4fbb19"
+    }
+   }
+  },
+  "2-0-0": {
+   "masterSha256": "96fd3cfe715fd38488cc0ab8ec9c7ac5ab464b43d825f9b5d9dfa65551684222",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 107967,
+     "sha256": "3f57af4b0961b184eaa66b27736be352a3700dc21cf3bc00e3be3bd73d3752f7"
+    },
+    "card_512": {
+     "bytes": 346179,
+     "sha256": "459c8839ff72c354519ed48ef84dcc68d86548b82fc8eda64cc8a5704c541dd2"
+    }
+   }
+  },
+  "2-0-1": {
+   "masterSha256": "7a2ed1b8ca0066d6a78c36936fb37c512f40e23880c52eab349a8ce21232123d",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 118578,
+     "sha256": "ea635fc09b38c761ebb673aa1571f94616a39f7987087a2b718d0e6598bcd01a"
+    },
+    "card_512": {
+     "bytes": 379436,
+     "sha256": "de7cdebd525687bdc9e25bdabba22d9bd7f45c1fa61c3255cd5bd7b445229c47"
+    }
+   }
+  },
+  "2-1-0": {
+   "masterSha256": "447e5c03aa7f999130f7772224aa8e6748adc6a0cb5f93040234476b5ae147e2",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 119068,
+     "sha256": "4ea316ade16240c99c28986a02860584bdd8db2ef8fbd6a37e4e88cf80a91396"
+    },
+    "card_512": {
+     "bytes": 380701,
+     "sha256": "71785b049a5fd77c027fac8944f800853b3ae772f3ce8c9e2054ed947112b56f"
+    }
+   }
+  },
+  "3-0-0": {
+   "masterSha256": "20498474915624ceed7356196629a5173010e63804314b4a130d71d3e680583a",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 113706,
+     "sha256": "6e3fae47d5eed62535588c0b72e345cc3cec9d222bf1234eec5a0f91b44f71e9"
+    },
+    "card_512": {
+     "bytes": 365034,
+     "sha256": "df23931e63b34fac73d66532df830717f1e55a593264685e880858d6c39a353b"
+    }
+   }
+  },
+  "3-0-1": {
+   "masterSha256": "f608c244f66d9b6ae7a353722d3a05762dee4ee0fb8f92c75139d3bae5f44142",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 92413,
+     "sha256": "af5be89e0583663944bbc4ea27473b4c466052f244be914dea4376de84203b90"
+    },
+    "card_512": {
+     "bytes": 299131,
+     "sha256": "479c3aff9a8657378f00a2fd643e5eb7c0d4ca56de83aaeaeb79f2a05faf22f3"
+    }
+   }
+  },
+  "3-1-0": {
+   "masterSha256": "e45bbc163fb08d14a04f481695f469215a6c759bd8809a8e08e989c85f5da5c2",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 85652,
+     "sha256": "2b2165735495b0f27029c485aec78938beb04fb467866c7472a6fa95dc113a47"
+    },
+    "card_512": {
+     "bytes": 278149,
+     "sha256": "0e4a9703c282e2ec6aff921d427da1d6d2b93abd291ce19eda7f2a6305d1395c"
+    }
+   }
+  }
+ },
+ "mastersOn": "Google Drive Tiny Siege/Artwork/ (source of truth)"
+}

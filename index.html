@@ -34,7 +34,12 @@
           ></a
         >
         <button id="kingdom-button" class="secondary">
-          ♛ <span id="kingdom-crowns">0</span> Crowns · Kingdom</button
+          <img
+            class="v5-icon"
+            src="assets/v5/ui/ui_icon_crown.png"
+            alt=""
+          />
+          <span id="kingdom-crowns">0</span> Crowns · Kingdom</button
         ><span id="sync-status" role="status">Saved locally</span>
         <div class="campaign-label">
           <i></i> THE EMERALD TRAIL <span>CAMPAIGN 01</span>
@@ -47,7 +52,10 @@
           ☰ <span>Menu</span>
         </button>
         <details id="battle-settings">
-          <summary aria-label="Battle settings">⚙ <span>Settings</span></summary>
+          <summary aria-label="Battle settings">
+            <img class="v5-icon" src="assets/v5/ui/ui_icon_gear.png" alt="" />
+            <span>Settings</span>
+          </summary>
           <div class="settings-actions">
             <button id="effects" class="secondary" aria-label="Toggle reduced effects">Effects: full</button>
             <button id="mute" class="secondary" aria-label="Toggle sound">♫ <span>Sound off</span></button>
@@ -60,11 +68,11 @@
         <section class="battle-column" aria-label="Battlefield">
           <div class="hud">
             <div class="resource gold">
-              <span>◈</span>
+              <img src="assets/v5/ui/ui_icon_gold.png" alt="Gold" />
               <div><small>YOUR GOLD</small><b id="gold">300</b></div>
             </div>
             <div class="resource lives">
-              <span>♥</span>
+              <img src="assets/v5/ui/ui_icon_heart.png" alt="Lives" />
               <div><small>KINGDOM LIVES</small><b id="lives">20</b></div>
             </div>
             <div class="wave-counter">
@@ -109,12 +117,14 @@
           <div class="battle-controls">
             <div>
               <button id="pause" class="secondary" disabled>
-                II <span>Pause</span></button
+                <img src="assets/v5/ui/ui_icon_pause.png" alt="" />
+                <span>Pause</span></button
               ><button id="speed" class="secondary" disabled>
-                1× <span>Speed</span></button
+                <img src="assets/v5/ui/ui_icon_speed.png" alt="" /> 1×
+                <span>Speed</span></button
               >
             </div>
-            <button id="start-wave" class="primary" disabled>
+            <button id="start-wave" class="primary v5-btn v5-btn-start" disabled>
               START WAVE <span>→</span>
             </button>
           </div>

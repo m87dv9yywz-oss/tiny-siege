@@ -1,0 +1,104 @@
+{
+  "viewport": [
+    844,
+    390
+  ],
+  "worldCanvas": [
+    960,
+    640
+  ],
+  "displayedCanvas": [
+    552,
+    368
+  ],
+  "towers": 24,
+  "panelOpen": true,
+  "samples": 180,
+  "medianFrameMs": 36.099999994039536,
+  "p95FrameMs": 74.2999999821186,
+  "worstFrameMs": 882.7000000178814,
+  "maximumEntityCounts": {
+    "effects": 100,
+    "enemies": 101,
+    "projectiles": 27,
+    "particles": 100
+  },
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+  "jsProfileTop": [
+    {
+      "name": "(program)",
+      "url": "",
+      "hits": 3277
+    },
+    {
+      "name": "GraphicsCanvasRenderer",
+      "url": "phaser.js?v=152df27d",
+      "hits": 130
+    },
+    {
+      "name": "save",
+      "url": "",
+      "hits": 93
+    },
+    {
+      "name": "drawImage",
+      "url": "",
+      "hits": 88
+    },
+    {
+      "name": "fill",
+      "url": "",
+      "hits": 69
+    },
+    {
+      "name": "update",
+      "url": "GameScene.js?t=1792062021822",
+      "hits": 63
+    },
+    {
+      "name": "save",
+      "url": "",
+      "hits": 60
+    },
+    {
+      "name": "(idle)",
+      "url": "",
+      "hits": 59
+    },
+    {
+      "name": "drawImage",
+      "url": "",
+      "hits": 58
+    },
+    {
+      "name": "(garbage collector)",
+      "url": "",
+      "hits": 56
+    },
+    {
+      "name": "step",
+      "url": "phaser.js?v=152df27d",
+      "hits": 50
+    },
+    {
+      "name": "ParticleEmitterCanvasRenderer",
+      "url": "phaser.js?v=152df27d",
+      "hits": 49
+    },
+    {
+      "name": "arc",
+      "url": "",
+      "hits": 41
+    },
+    {
+      "name": "refresh",
+      "url": "ui.js?t=1792063006787",
+      "hits": 35
+    },
+    {
+      "name": "step",
+      "url": "phaser.js?v=152df27d",
+      "hits": 32
+    }
+  ]
+}
