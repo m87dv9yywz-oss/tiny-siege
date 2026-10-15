@@ -193,14 +193,14 @@ test("rotation retains the campaign and accurately maps touch coordinates", asyn
   expect(Math.abs(t.x - 342)).toBeLessThan(1);
   expect(Math.abs(t.y - 263)).toBeLessThan(1);
 });
-test("all eighteen ultimate silhouettes and a busy magical battlefield render with bounded effects", async ({
+test("all twenty-four illustrated ultimate silhouettes and a busy magical battlefield render with bounded effects", async ({
   page,
 }) => {
   test.setTimeout(60000);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await open(page);
-  const art = await page.evaluate(async () => {
+  let art = await page.evaluate(async () => {
     const { model: g, ui } = window.__tinySiege,
       types = [
         "archer",
@@ -222,12 +222,8 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
             if (!g.canPlace(type, x, y)) t = g.place(type, x, y);
         if (!t) throw Error("No legal test placement");
         for (let n = 0; n < 3; n++) g.upgrade(t.id, p);
-        const key =
-          type === "archer"
-            ? `v5-archer-${t.paths.map((n) => Math.min(n, 2)).join("-")}`
-            : `evolution-${type}-${p}-3`;
         art.push({
-          name: ui.scene.textures.getBase64(key),
+          key: `v5-${type}-${t.paths.join("-")}`,
           label: type + " " + ["A", "B", "C"][p],
         });
       }
@@ -243,6 +239,11 @@ test("all eighteen ultimate silhouettes and a busy magical battlefield render wi
     for (const e of g.enemies) Object.assign(e, path.onPath(e.progress));
     return art;
   });
+  await page.waitForFunction(art => {
+    const s=window.__tinySiege.ui.scene;
+    return art.every(a=>s.textures.exists(a.key)) && s.towerSprites.size===24;
+  },art);
+  art=await page.evaluate(art=>art.map(a=>({...a,name:window.__tinySiege.ui.scene.textures.getBase64(a.key)})),art);
   expect(new Set(art.map((a) => a.name)).size).toBe(24);
   await page.waitForTimeout(1000);
   await page.screenshot({ path: "test-results/evolution-combat.png" });

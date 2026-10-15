@@ -39,3 +39,16 @@ test('cold start requests only base tower textures and menu thumbnails; scene in
  expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#begin-adventure').tap();await page.locator('[data-tower="archer"]').tap();await world(page,145,105);await expect(page.locator('#gold')).toHaveText('225');
 });
+
+// The model upgrades immediately; touch must still hit the currently drawn art
+// while the replacement PNG is in flight.
+test('selecting a tower while its upgrade picture downloads uses its visible texture',async({page})=>{
+ await ready(page);await page.locator('#play').tap();const messages=[];
+ page.on('console',m=>{if(/texture.*(not found|missing)|no texture/i.test(m.text()))messages.push(m.text());});
+ let release;const gate=new Promise(r=>release=r);
+ await page.route('**/archer/battlefield_256/archer_1-0-0.png',async route=>{await gate;await route.continue();});
+ await page.locator('[data-tower="archer"]').tap();await world(page,145,105);
+ await page.locator('[data-upgrade="0"]').tap();await page.locator('#close-panel').tap();await world(page,145,90);
+ await expect(page.locator('#selection-panel')).toBeVisible();expect(messages).toEqual([]);
+ release();await page.waitForFunction(()=>window.__tinySiege.ui.scene.towerSprites.get(1)?.texture.key==='v5-archer-1-0-0');
+});

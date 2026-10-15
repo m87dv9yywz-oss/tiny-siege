@@ -48,6 +48,7 @@ jobs:
           name: v3-validation
           path: |
             test-results/
+            docs/qa/v5/
             docs/v3-balance-results.json
             docs/v4-balance-results.json
           if-no-files-found: ignore

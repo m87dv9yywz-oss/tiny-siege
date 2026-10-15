@@ -233,7 +233,7 @@ export class GameScene extends Phaser.Scene {
           this.textures.getPixelAlpha(
             Math.floor(localX),
             Math.floor(localY),
-            towerTexture(t),
+            sprite?.texture.key || this.towerArt(t),
           ) > 20;
         return {
           t,
