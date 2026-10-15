@@ -152,6 +152,7 @@ export class GameScene extends Phaser.Scene {
     this.ui.scene = this;
     this.ui.hydrateShop();
     this.ui.refresh(true);
+    this.ui.battlefieldReady();
   }
   towerAt(point) {
     // Hit the illustrated building, including roofs and tall evolved weapons,
