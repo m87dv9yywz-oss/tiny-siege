@@ -56,7 +56,7 @@ test("all 16 illustrated states, immediate paid upgrade changes, Tier3 fallbacks
     );
     await expect(page.locator("#selection-panel")).toBeVisible();
     await page.screenshot({
-      path: `docs/artwork/archer-prototype/after-${state}-landscape.png`,
+      path: `test-results/archer-prototype/after-${state}-landscape.png`,
     });
   }
   for (const p of [0, 1, 2])

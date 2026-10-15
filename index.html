@@ -46,9 +46,14 @@
         >
           ☰ <span>Menu</span>
         </button>
-        <button id="help-button" class="icon-button" aria-label="How to play">
-          ?
-        </button>
+        <details id="battle-settings">
+          <summary aria-label="Battle settings">⚙ <span>Settings</span></summary>
+          <div class="settings-actions">
+            <button id="effects" class="secondary" aria-label="Toggle reduced effects">Effects: full</button>
+            <button id="mute" class="secondary" aria-label="Toggle sound">♫ <span>Sound off</span></button>
+            <button id="help-button" class="secondary" aria-label="How to play">? How to play</button>
+          </div>
+        </details>
       </header>
       <main>
         <div id="selection-panel"></div>
@@ -107,15 +112,7 @@
                 II <span>Pause</span></button
               ><button id="speed" class="secondary" disabled>
                 1× <span>Speed</span></button
-              ><button
-                id="effects"
-                class="secondary"
-                aria-label="Toggle reduced effects"
               >
-                Effects: full</button
-              ><button id="mute" class="secondary" aria-label="Toggle sound">
-                ♫ <span>Sound off</span>
-              </button>
             </div>
             <button id="start-wave" class="primary" disabled>
               START WAVE <span>→</span>
@@ -127,9 +124,7 @@
               <span id="wave-hint"
                 >A quiet kingdom. An approaching storm.</span
               ></span
-            ><button id="restart" class="text-button" disabled>
-              ↻ Restart
-            </button>
+            >
           </div>
         </section>
         <aside>

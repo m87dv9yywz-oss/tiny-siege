@@ -42,12 +42,12 @@ for (const [width, height] of viewports)
     }));
     expect(scroll.w).toBeLessThanOrEqual(width);
     expect(scroll.h).toBeLessThanOrEqual(height);
+    await page.locator("#battle-settings summary").tap();
     for (const q of [
       "#start-wave",
       "#pause",
       "#speed",
       "#mute",
-      "#restart",
       "#help-button",
       '[data-tower="lightning"]',
     ]) {
@@ -57,6 +57,7 @@ for (const [width, height] of viewports)
       expect(b.x + b.width).toBeLessThanOrEqual(width + 0.1);
       expect(b.y + b.height).toBeLessThanOrEqual(height + 0.1);
     }
+    await page.locator("#battle-settings summary").tap();
     await page.locator('[data-tower="archer"]').tap();
     expect(await page.evaluate(() => window.__tinySiege.model.gold)).toBe(300);
     // Placement panel must leave the upper trail usable in every orientation.
@@ -104,7 +105,9 @@ for (const [width, height] of viewports)
     await tapMap(page, 145, 105);
     await page.locator("#sell").tap();
     await expect(page.locator("#gold")).toHaveText("217");
+    await page.locator("#leave-run").tap();
     await page.locator("#restart").tap();
+    await page.locator("#confirm-restart").tap();
     await expect(page.locator("#gold")).toHaveText("300");
     expect(errors).toEqual([]);
   });

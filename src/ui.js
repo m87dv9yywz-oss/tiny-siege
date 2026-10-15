@@ -84,7 +84,7 @@ export class UI {
           .composedPath()
           .some((node) =>
             node.matches?.(
-              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal, .battle-controls, .map-footer, .topbar",
+              "#game canvas, #selection-panel, #tower-inspector, #tower-shop, #modal, .battle-controls, .map-footer, .topbar, #hero-controls",
             ),
           )
       )
@@ -103,7 +103,6 @@ export class UI {
       this.refresh(true);
     };
     $("leave-run").onclick = () => this.leaveRun();
-    $("restart").onclick = () => this.restart();
     $("help-button").onclick = () => this.help();
     document.querySelector(".brand").onclick = (e) => {
       e.preventDefault();
@@ -117,6 +116,20 @@ export class UI {
         : "♫ <span>Sound off</span>";
     };
     document.addEventListener("keydown", (e) => {
+      // Native selects and disclosure widgets own their keyboard actions;
+      // don't let Phaser's window-level Space shortcut start/pause a wave.
+      if (e.target.closest?.("select") ||
+          (e.code === "Space" && e.target.closest?.("summary"))) {
+        e.stopPropagation();
+        return;
+      }
+      if (e.key === "Escape" && $("battle-settings").open && $("modal").hidden) {
+        e.preventDefault();
+        e.stopPropagation();
+        $("battle-settings").open = false;
+        $("battle-settings").querySelector("summary").focus();
+        return;
+      }
       if (
         e.key === "Escape" &&
         !$("modal").hidden &&
@@ -127,6 +140,10 @@ export class UI {
         if (this.overlayClose) this.overlayClose();
         else this.closeHelp();
       }
+    });
+    const settings = $("battle-settings");
+    document.addEventListener("pointerdown", (e) => {
+      if (settings.open && !settings.contains(e.target)) settings.open = false;
     });
     this.menu();
     this.refresh(true);
@@ -335,7 +352,7 @@ export class UI {
     this.model.paused = true;
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Leave this run?</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
+      `<div class="eyebrow">TAKE A LITTLE BREAK</div><h1 id="modal-title">Battle menu</h1><p>Continue later from the last between-wave checkpoint. An unfinished wave restarts without keeping its kills or gold.</p><button id="confirm-leave" class="primary">Save & main menu</button><button id="restart" class="danger">Restart Battle</button><button id="abandon-battle" class="danger">Abandon battle</button><button id="keep-playing" class="secondary">Keep playing</button>`,
     );
     $("keep-playing").onclick = () => {
       this.helpOpen = false;
@@ -345,6 +362,15 @@ export class UI {
       this.refresh(true);
     };
     this.overlayClose = $("keep-playing").onclick;
+    const returnToBattle = this.overlayClose;
+    $("restart").onclick = () => {
+      this.modal(
+        `<h1 id="modal-title">Restart battle?</h1><p>Restart this battle? Your current battle progress will be lost.</p><button id="cancel-restart" class="primary">Cancel</button><button id="confirm-restart" class="danger">Yes, Restart</button>`,
+      );
+      this.overlayClose = returnToBattle;
+      $("cancel-restart").onclick = returnToBattle;
+      $("confirm-restart").onclick = () => this.restart();
+    };
     $("confirm-leave").onclick = () => {
       this.kingdom?.safe(() => this.kingdom.saveBattle());
       this.helpOpen = false;
@@ -504,7 +530,7 @@ export class UI {
   help() {
     this.helpOpen = true;
     this.modal(
-      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range; tap it again or choose Upgrades to upgrade or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire, Lightning and Grove, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–6</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
+      `<div class="eyebrow">THE KINGDOM'S FIELD GUIDE</div><h1 id="modal-title" style="font-size:38px">Small towers.<br><span>Big possibilities.</span></h1><ul class="help-list"><li>Tap a tower, then tap grass to build, or drag its icon onto the map. Landscape gives a larger view. Keep the trail clear. Start with an Archer near a bend.</li><li>Defeat enemies to earn gold. Tap a tower to see its range and upgrades, or sell for 70%. Tap outside the panel to tuck it away. Buy three tiers on one path and one tier on a second; the third locks.</li><li>Begin with Archer, Cannon and Frost. Cannons break armor; Frost slows enemies. Win Crowns to unlock Fire, Lightning and Grove, and spend earned tower XP in your Kingdom to unlock higher upgrade tiers. Gold buys those upgrades during battle. Classic starts fully unlocked. Moon Wraiths resist magic.</li><li>Start each wave when you're ready. Finish your selected trail while protecting your 20 lives. Moonlit Marsh ends with the Thorn King.</li><li>Keys <b>1–8</b> choose towers. <b>Esc</b> cancels placement. <b>Space</b> starts a wave or pauses combat.</li></ul><button id="close-help" class="primary">GOT IT <span>→</span></button>`,
     );
     $("close-help").onclick = () => this.closeHelp();
   }
@@ -515,7 +541,7 @@ export class UI {
     else {
       $("modal").hidden = true;
       $("app").inert = false;
-      $("help-button").focus();
+      $("battle-settings").querySelector("summary").focus();
     }
     this.refresh(true);
   }
@@ -576,7 +602,6 @@ export class UI {
     $("remaining").textContent = m.remaining;
     $("pause").disabled = this.inMenu || !!m.ended;
     $("speed").disabled = this.inMenu || !!m.ended;
-    $("restart").disabled = this.inMenu;
     $("pause").innerHTML = m.paused
       ? "▶ <span>Resume</span>"
       : "II <span>Pause</span>";

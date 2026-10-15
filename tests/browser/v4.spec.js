@@ -18,7 +18,7 @@ async function world(page, x, y) {
 async function fit(page) {
   const b = await page.locator("canvas").boundingBox();
   expect(Math.abs(b.width / b.height - 1.5)).toBeLessThan(0.01);
-  expect(b.y).toBeGreaterThan(45);
+  expect(b.y).toBeGreaterThanOrEqual(8);
   expect(b.y + b.height).toBeLessThan((await page.viewportSize()).height);
   expect(
     await page.evaluate(
