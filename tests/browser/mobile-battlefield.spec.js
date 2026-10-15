@@ -32,6 +32,7 @@ test('large landscape map, opposite panels, paid artwork upgrades and live wave 
   const after=await page.locator('canvas').boundingBox();
   expect(after).toEqual(before);
   await page.locator('#sell').tap();
+  await page.locator('#confirm-sell').tap();
   await page.locator('[data-tower="archer"]').tap();await tap(page,820,110);
   await expect(page.locator('#selection-panel')).toHaveAttribute('data-side','left');
   await capture(page,'panel-left');

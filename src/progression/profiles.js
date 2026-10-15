@@ -429,12 +429,19 @@ export function rewardForRun(model, runId) {
     difficulty: model.campaign.mode || null,
     hero: model.hero?.type || null,
     heroXP: model.hero
-      ? Math.min(300, Math.floor(model.hero.damage * 0.012) + model.wave * 3)
+      ? Math.min(
+          300,
+          Math.floor(model.hero.damage * 0.012) +
+            Math.max(0, model.wave - (model.skippedWaves || 0)) * 3,
+        )
       : 0,
     stars: model.lives >= 18 ? 3 : model.lives >= 10 ? 2 : 1,
     xp,
     stats: {
-      waves: model.wave - (model.active || model.ended === "defeat" ? 1 : 0),
+      waves:
+        model.wave -
+        (model.skippedWaves || 0) -
+        (model.active || model.ended === "defeat" ? 1 : 0),
       damage: Math.round(
         Object.values(model.participation).reduce((n, m) => n + m.damage, 0),
       ),

@@ -102,7 +102,16 @@ export class UI {
     $("start-wave").onclick = () => this.beginWave();
     $("pause").onclick = () => this.togglePause();
     $("speed").onclick = () => {
-      this.model.speed = this.model.speed === 1 ? 2 : 1;
+      this.model.speed = this.model.speed === 1 ? 2 : this.model.speed === 2 ? 3 : 1;
+      this.refresh(true);
+    };
+    $("auto-wave").onclick = () => {
+      this.model.autoWave = !this.model.autoWave;
+      this.toast(
+        this.model.autoWave
+          ? "Auto waves on — each wave starts by itself."
+          : "Auto waves off.",
+      );
       this.refresh(true);
     };
     $("leave-run").onclick = () => this.leaveRun();
@@ -682,6 +691,8 @@ export class UI {
       : `<img src="${V5UI("ui_icon_pause.png")}" alt=""> <span>Pause</span>`;
     $("speed").innerHTML =
       `<img src="${V5UI("ui_icon_speed.png")}" alt=""> ${m.speed}× <span>Speed</span>`;
+    $("auto-wave").textContent = `Auto waves: ${m.autoWave ? "on" : "off"}`;
+    $("auto-wave").classList.toggle("is-on", !!m.autoWave);
     $("pause-shade").hidden = !m.paused;
     $("start-wave").disabled = m.active || m.paused || !!m.ended || this.inMenu;
     $("start-wave").innerHTML = m.ended
@@ -831,8 +842,28 @@ export class UI {
           }),
       );
       $("sell").onclick = () => {
-        m.sell(t.id);
-        this.refresh(true);
+        // Selling is permanent and refunds only 70% — confirm first, with
+        // Cancel as the safe default, like the restart confirmation.
+        const wasPaused = m.paused;
+        m.paused = true;
+        const value = Math.floor(t.invested * 0.7);
+        this.modal(
+          `<div class="eyebrow">SELL TOWER</div><h1 id="modal-title">Sell this ${TOWERS[t.type].name}?</h1><p>You will get back ${value} gold. The tower and its upgrades will be gone.</p><button id="cancel-sell" class="v5-btn v5-btn-primary">Cancel</button><button id="confirm-sell" class="v5-btn v5-btn-danger">Yes, Sell</button>`,
+        );
+        const close = () => {
+          this.overlayClose = null;
+          $("modal").hidden = true;
+          $("app").inert = false;
+          m.paused = wasPaused;
+          this.refresh(true);
+        };
+        this.overlayClose = close;
+        $("cancel-sell").onclick = close;
+        $("confirm-sell").onclick = () => {
+          close();
+          m.sell(t.id);
+          this.refresh(true);
+        };
       };
       panel.querySelector(".properties").open = detailsOpen;
       panel.scrollTop = scroll;

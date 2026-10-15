@@ -21,6 +21,19 @@ test('cosmetic skywriting preserves navigation and never exposes unsupported her
  await ready(page);await reveal(page,'.menu-icon');await expect(page.locator('#cheat-gold')).toBeDisabled();await page.locator('#cheat-jackson').tap();await expect(page.locator('.skywriting')).toContainText('JACKSON');await expect(page.locator('#new-profile')).toBeVisible();
  await reveal(page,'.menu-icon');await page.locator('#cheat-luke').tap();await expect(page.locator('.skywriting').last()).toContainText('LUKE');await profile(page);await page.locator('#heroes').tap();await expect(page.locator('[data-hero]')).toHaveCount(3);await expect(page.locator('.v5-hero-card.is-locked')).toHaveCount(3);
 });
+test('wave skips keep the adventure real: skipped waves earn nothing and an honest finish completes it',async({page})=>{
+ await ready(page);await profile(page);await page.locator('[data-map="emerald"]').tap();await page.locator('#begin-adventure').tap();
+ await reveal(page);await page.locator('#cheat-waves').tap();await page.locator('#confirm-cheat').tap();
+ await expect(page.locator('#wave')).toHaveText('9');
+ await expect(page.locator('#sync-status')).not.toContainText('Just for fun');
+ expect(await page.evaluate(()=>window.__tinySiege.model.skippedWaves)).toBe(9);
+ const crownsBefore=await page.evaluate(()=>Object.values(window.__tinySiege.kingdom.store.data.profiles)[0].profile.crowns);
+ await page.evaluate(()=>{const{model:g}=window.__tinySiege;g.wave=g.totalWaves;g.finish('victory');});
+ await expect(page.locator('#modal')).toContainText('Crowns');
+ const after=await page.evaluate(()=>Object.values(window.__tinySiege.kingdom.store.data.profiles)[0].profile);
+ expect(after.completedMaps).toContain('emerald');
+ expect(after.crowns).toBeGreaterThan(crownsBefore);
+});
 
 test('isolated taps outside the secret gesture window cannot open fun codes',async({page})=>{
  await ready(page);await page.locator('#play').tap();

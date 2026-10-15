@@ -317,6 +317,49 @@ test("between-wave snapshot restores gold, specialization, hero cooldown and pro
   assert(!validateBattle({ ...b, towers: [{ ...t, paths: [2, 2, 0] }] }));
   assert(!validateBattle({ ...b, wave: 100 }));
 });
+test("checkpoints carry 3x speed and skipped waves; legacy snapshots still validate", () => {
+  const p = freshProfile();
+  const g = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "hard",
+    profile: p,
+    hero: "dragon",
+  });
+  g.speed = 3;
+  g.skippedWaves = 9;
+  g.wave = 9;
+  const b = battleCheckpoint(g, run(g));
+  assert(validateBattle(b));
+  assert.equal(b.speed, 3);
+  assert.equal(b.skippedWaves, 9);
+  assert(!validateBattle({ ...b, speed: 4 }));
+  const legacy = { ...b };
+  delete legacy.skippedWaves;
+  assert(validateBattle(legacy));
+  const h = new Game();
+  restoreBattle(h, b, p);
+  assert.equal(h.speed, 3);
+  assert.equal(h.skippedWaves, 9);
+});
+test("auto-start begins the next wave after a beat, never while paused; 3x triples sim time", () => {
+  const g = new Game(() => {}, { map: "emerald", difficulty: "easy" });
+  g.autoWave = true;
+  g.update(0.5);
+  assert.equal(g.wave, 0);
+  g.update(0.6);
+  assert.equal(g.wave, 1);
+  assert(g.active);
+  const held = new Game(() => {}, { map: "emerald", difficulty: "easy" });
+  held.autoWave = true;
+  held.paused = true;
+  held.update(2);
+  assert.equal(held.wave, 0);
+  const fast = new Game(() => {}, { map: "emerald", difficulty: "easy" });
+  fast.startWave();
+  fast.speed = 3;
+  fast.update(1);
+  assert(fast.waveTime > 2.9);
+});
 test("bounded document codec preserves progress while local receipt storage prevents ancient reward replay", () => {
   const store = new ProfileStore(disk());
   store.create("Long journey");

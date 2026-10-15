@@ -41,23 +41,34 @@ function showCheatPanel(ui, getGame) {
   };
   const confirm = kind => {
     ui.modal(`<h1 id="modal-title">${kind === "gold" ? "Add 10,000 gold?" : "Skip ahead 10 waves?"}</h1>
-      <p>${game.campaign.id === "classic" ? "Apply this code to your Classic practice battle?" : "Play this adventure just for fun? No Crowns, XP, achievements or new checkpoint will be saved. Your normal checkpoint stays safe. Refreshing returns to that checkpoint."}</p>
+      <p>${game.campaign.id === "classic" ? "Apply this code to your Classic practice battle?" : kind === "gold" ? "Play this adventure just for fun? No Crowns, XP, achievements or new checkpoint will be saved. Your normal checkpoint stays safe. Refreshing returns to that checkpoint." : "Skipped waves earn no gold or XP. Waves you play still count — and if you play the final waves and win, the adventure still completes."}</p>
       <button id="cancel-cheat" class="primary">Cancel</button><button id="confirm-cheat" class="danger">${kind === "gold" ? "Yes, add gold" : "Yes, skip waves"}</button>`);
     ui.overlayClose = close;
     document.getElementById("cancel-cheat").onclick = close;
     document.getElementById("confirm-cheat").onclick = () => {
-      if (game.campaign.id !== "classic" && !ui.kingdom.practice) {
-        ui.kingdom.safe(() => ui.kingdom.saveBattle());
-        ui.kingdom.practice = true;
+      if (kind === "gold") {
+        if (game.campaign.id !== "classic" && !ui.kingdom.practice) {
+          ui.kingdom.safe(() => ui.kingdom.saveBattle());
+          ui.kingdom.practice = true;
+        }
+        game.gold += 10000;
+        close();
+        ui.toast("Just for fun! Your normal progress stays safe.");
+        return;
       }
-      if (kind === "gold") game.gold += 10000;
-      else {
-        const target = Math.min(game.wave + 10, game.totalWaves);
-        game.enemies = []; game.projectiles = []; game.queue = []; game.zones = [];
-        game.active = false; game.waveTime = 0; game.wave = target - 1;
-      }
+      // Wave skip: the run stays real. Skipped waves are recorded so reward
+      // math only ever credits waves the player actually played.
+      const target = Math.min(game.wave + 10, game.totalWaves);
+      game.skippedWaves =
+        (game.skippedWaves || 0) + Math.max(0, target - 1 - game.wave);
+      game.enemies = []; game.projectiles = []; game.queue = []; game.zones = [];
+      game.active = false; game.waveTime = 0; game.wave = target - 1;
       close();
-      ui.toast("Just for fun! Your normal progress stays safe.");
+      ui.toast(
+        game.campaign.id === "classic"
+          ? "Skipped ahead!"
+          : "Skipped ahead — skipped waves earn nothing.",
+      );
     };
   };
   ui.modal(`<div class="eyebrow">A LITTLE SECRET</div><h1 id="modal-title">Fun codes</h1>

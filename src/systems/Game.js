@@ -69,6 +69,9 @@ export class Game {
       active: false,
       paused: false,
       speed: 1,
+      skippedWaves: 0,
+      autoWave: false,
+      autoTimer: 0,
       ended: null,
       id: 0,
     });
@@ -744,9 +747,18 @@ export class Game {
       }
     }
   }
-  // The same fixed-sized steps drive 1x, 2x, and accelerated test simulations.
+  // The same fixed-sized steps drive 1x, 2x, 3x, and accelerated test simulations.
   update(realDelta) {
     if (this.paused || this.ended) return;
+    // Auto-start: after a short between-wave beat, begin the next wave.
+    // The beat leaves room for the wave-clear checkpoint to land first.
+    if (this.autoWave && !this.active && this.wave < this.totalWaves) {
+      this.autoTimer += realDelta;
+      if (this.autoTimer >= 1) {
+        this.autoTimer = 0;
+        this.startWave();
+      }
+    } else this.autoTimer = 0;
     let remaining = realDelta * this.speed;
     while (remaining > 1e-8 && !this.ended) {
       const dt = Math.min(remaining, 0.025);

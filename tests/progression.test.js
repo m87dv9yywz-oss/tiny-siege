@@ -186,6 +186,22 @@ test("XP rewards include actual armor and control contributions and are bounded"
   assert.equal(op.xp.cannon, 350);
   assert.equal(op.xp.fire, 0);
 });
+test("hero XP and wave stats credit only waves actually played after a skip", () => {
+  const g = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "hard",
+    hero: "dragon",
+  });
+  g.hero.damage = 1000;
+  g.wave = 20;
+  const honest = rewardForRun(g, "run");
+  assert.equal(honest.heroXP, 72);
+  assert.equal(honest.stats.waves, 20);
+  g.skippedWaves = 10;
+  const skipped = rewardForRun(g, "run");
+  assert.equal(skipped.heroXP, 42);
+  assert.equal(skipped.stats.waves, 10);
+});
 test("empty reviewed merge is valid and backups exclude other parents", () => {
   const empty = mergeProfiles(freshProfile("A"), freshProfile("B"));
   assert(validateProfile(empty));
