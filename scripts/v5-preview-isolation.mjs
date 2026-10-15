@@ -2,7 +2,7 @@ import { chromium, webkit } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const url = process.argv[2];
-const expected = 'b7607aed5df76b9d562ea3264554687c72e9e6d6';
+const expected = '6dd8ae6b6bd26b8e46f7d1ba8a0aa0477aeba82d';
 const metadata = await fetch(new URL('preview.json', url)).then(r => { assert.equal(r.status, 200); return r.json(); });
 assert.equal(metadata.commit, expected);
 assert.equal(metadata.cloud, false);
@@ -63,13 +63,16 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     await page.locator('#leave-run').tap();
     await page.locator('#confirm-leave').tap();
     await page.locator('[data-map="emerald"]').tap();
+    await page.waitForLoadState('networkidle');
     await page.screenshot({path:`test-results/public-preview/${name}-preparation.png`});
     await page.locator('#begin-adventure').tap();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(200);
     for(const [width,height] of [[844,330],[667,320],[390,730]]) {
       await page.setViewportSize({width,height});
       await page.waitForTimeout(300);
       const outside=await page.locator('.tower-card').evaluateAll(cards=>cards.flatMap(c=>{
-        const b=c.getBoundingClientRect();return ['.tower-cost','.tower-name b',...(c.classList.contains('locked')?['.tower-lock']:[])].flatMap(selector=>{const p=c.querySelector(selector).getBoundingClientRect();return p.left<b.left-1||p.right>b.right+1||p.top<b.top-1||p.bottom>b.bottom+1?[c.dataset.tower,selector]:[];});
+        const b=c.getBoundingClientRect();const icon=c.querySelector('.tower-icon img').getBoundingClientRect(),label=c.querySelector('.tower-name b').getBoundingClientRect();if(icon.bottom>label.top+1)return[c.dataset.tower,'icon overlaps label'];return ['.tower-icon img','.tower-cost','.tower-name b',...(c.classList.contains('locked')?['.tower-lock']:[])].flatMap(selector=>{const p=c.querySelector(selector).getBoundingClientRect();return p.left<b.left-1||p.right>b.right+1||p.top<b.top-1||p.bottom>b.bottom+1?[c.dataset.tower,selector]:[];});
       }));
       assert.deepEqual(outside,[]);
       await page.screenshot({path:`test-results/public-preview/${name}-hero-shop-${width}x${height}.png`});
