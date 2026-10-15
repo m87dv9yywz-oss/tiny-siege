@@ -2,7 +2,7 @@ import { chromium, webkit } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const url = process.argv[2];
-const expected = 'e121297d9028c0e6a54c7d60dbc2e7e41d9d0fb7';
+const expected = 'b7607aed5df76b9d562ea3264554687c72e9e6d6';
 const metadata = await fetch(new URL('preview.json', url)).then(r => { assert.equal(r.status, 200); return r.json(); });
 assert.equal(metadata.commit, expected);
 assert.equal(metadata.cloud, false);
@@ -29,6 +29,9 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     assert.equal(await page.locator('#google-sign-in').count(),0);
     await page.screenshot({path:`test-results/public-preview/${name}-isolated-saves.png`});
     await page.locator('#back').tap();
+    await page.locator('#new-profile').tap();
+    await page.locator('#nickname').fill('Isolated phone tester');
+    await page.locator('#profile-form button').tap();
     await page.locator('#play').tap();
     await page.locator('[data-tower="archer"]').tap();
     let b=await page.locator('canvas').boundingBox();
@@ -57,10 +60,25 @@ for (const [name, engine] of [['chromium', chromium], ['webkit', webkit]]) {
     b=await page.locator('canvas').boundingBox();
     await page.touchscreen.tap(b.x+b.width*745/960,b.y+b.height*330/640);
     await page.waitForFunction(expected=>Number(document.querySelector('#gold').textContent)===expected,beforePlacement-75);
+    await page.locator('#leave-run').tap();
+    await page.locator('#confirm-leave').tap();
+    await page.locator('[data-map="emerald"]').tap();
+    await page.screenshot({path:`test-results/public-preview/${name}-preparation.png`});
+    await page.locator('#begin-adventure').tap();
+    for(const [width,height] of [[844,330],[667,320],[390,730]]) {
+      await page.setViewportSize({width,height});
+      await page.waitForTimeout(300);
+      const outside=await page.locator('.tower-card').evaluateAll(cards=>cards.flatMap(c=>{
+        const b=c.getBoundingClientRect();return ['.tower-cost','.tower-name b',...(c.classList.contains('locked')?['.tower-lock']:[])].flatMap(selector=>{const p=c.querySelector(selector).getBoundingClientRect();return p.left<b.left-1||p.right>b.right+1||p.top<b.top-1||p.bottom>b.bottom+1?[c.dataset.tower,selector]:[];});
+      }));
+      assert.deepEqual(outside,[]);
+      await page.screenshot({path:`test-results/public-preview/${name}-hero-shop-${width}x${height}.png`});
+    }
     await page.waitForTimeout(1500);
     const safety=await page.evaluate(()=>({keys:Object.keys(localStorage),original:localStorage.getItem('tiny-siege-profiles-v3'),csp:document.querySelector('meta[http-equiv="Content-Security-Policy"]').content,dev:typeof window.__tinySiege}));
     assert.equal(safety.original,'PRODUCTION_SENTINEL_DO_NOT_TOUCH');
     assert.equal(safety.dev,'undefined');
+    assert.ok(safety.keys.includes('tiny-siege-v5-pr17-preview-e121297'));
     assert.match(safety.csp,/connect-src 'self'/);
     assert.deepEqual(external,[]);
     assert.deepEqual(errors,[]);
