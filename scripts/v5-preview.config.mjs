@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { readFileSync, writeFileSync } from 'node:fs';
-const commit = 'e121297d9028c0e6a54c7d60dbc2e7e41d9d0fb7';
+const commit = 'b7607aed5df76b9d562ea3264554687c72e9e6d6';
 const cloudDisabled = `  async loadCloud() {
     throw new Error("Cloud saves are disabled in this isolated V5 preview.");
   }
