@@ -468,7 +468,9 @@ export class GameScene extends Phaser.Scene {
           const gd = enemyDisplaySize((ENEMIES[enemy.type] || {}).radius || 12);
           ghost.setDisplaySize(gd, gd);
         }
-        this.effects.push({ type: "death", text: ghost, age: 0, life: 0.24 });
+        // Fade relative to the displayed enemy, not the 256px source PNG.
+        this.effects.push({ type: "death", text: ghost, scaleX: ghost.scaleX,
+          scaleY: ghost.scaleY, age: 0, life: 0.24 });
       }
       if (this.effects.filter((e) => e.type === "gold").length < 20) {
         const text = this.add
@@ -999,7 +1001,8 @@ export class GameScene extends Phaser.Scene {
         }
       }
       if (e.type === "death") {
-        e.text.setAlpha(alpha).setScale(0.75 + 0.25 * alpha);
+        const shrink = 0.75 + 0.25 * alpha;
+        e.text.setAlpha(alpha).setScale(e.scaleX * shrink, e.scaleY * shrink);
       }
       if (e.type === "gold") {
         e.text.y -= dt * 35;

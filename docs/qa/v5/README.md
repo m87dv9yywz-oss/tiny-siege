@@ -8,6 +8,11 @@ fixtures used to inspect individual pictures, end screens and crowded combat.
 Nothing was tested with a real player's account. Firebase rules, configuration,
 billing, save schemas, tower/enemy statistics and enemy routes are unchanged.
 
+## Owner phone-playtest follow-up
+
+The owner found label collisions and a brief enemy death-image flash after this
+audit. See the [follow-up fixes, real captures and stronger regression checks](phone-playtest/README.md). The earlier visual grades do not override that evidence.
+
 ## Status
 
 **READY TO MERGE AND DEPLOY after owner authorization and the final head's green

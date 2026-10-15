@@ -4686,3 +4686,95 @@ h3,
 @media (orientation: landscape) and (max-height: 400px) {
  .home-card.v5-home { gap: 1px; padding-block: 4px; }
 }
+
+/* iPhone playtest: reserve the ornament borders instead of painting them
+   underneath text. All shells retain their approved artwork. */
+.v5-btn {
+  --frame-y: 10px;
+  --frame-x: 26px;
+  border-width: var(--frame-y) var(--frame-x);
+  /* Override legacy per-screen border-image widths; 1 follows real borders. */
+  border-image-width: 1 !important;
+  padding: 2px 8px;
+  line-height: 1.1;
+  letter-spacing: .01em;
+}
+.v5-btn.v5-btn-sm { --frame-y: 8px; --frame-x: 20px; padding: 2px 6px; }
+.v5-btn.v5-btn-start { --frame-y: 12px; --frame-x: 32px; padding: 2px 8px; }
+.modal-card:has(#profile-form) > .v5-btn,
+#profile-form > .v5-btn { display: flex; width: 100%; margin-top: 10px; }
+/* A single centered difficulty label belongs in the ribbon. Extra help lives
+   below the choices, rather than sharing the narrow decorative ends. */
+.v5-prep-side .difficulty-picker .v5-btn {
+  justify-content: center; padding: 2px 8px; gap: 0; font-size: 14px;
+}
+.v5-prep-side .difficulty-picker small { display: none; }
+.v5-prep-side .difficulty-picker .v5-btn > span { line-height: 1.1; }
+.v5-prep-side #choose-hero { --frame-x: 16px; padding: 2px 6px; }
+.v5-prep-actions .v5-btn { padding: 2px 8px; }
+/* The supplied map ribbon is centered at 87.5% of its painted frame. */
+.v5-map-card .v5-map-name,
+.v5-home .v5-map-card .v5-map-name {
+  top: 87.5%; bottom: auto; left: 19%; right: 19%; transform: translateY(-50%);
+  line-height: 1; font-size: 11px;
+}
+.v5-map-card .v5-map-stars,
+.v5-home .v5-map-card .v5-map-stars {
+  top: 74%; bottom: auto; transform: translateY(-50%); gap: 4px;
+}
+.v5-map-card .v5-map-stars img,
+.v5-home .v5-map-card .v5-map-stars img { width: 7%; height: auto; max-width: 21px; }
+/* Shop icons flex inside their row; names and prices each own a fixed row. */
+#tower-shop .tower-card {
+  position: relative; display: grid; grid-template-columns: minmax(0,1fr);
+  grid-template-rows: minmax(12px,1fr) 13px 15px; align-content: stretch;
+  justify-items: center; gap: 0; padding: 2px; overflow: hidden;
+}
+#tower-shop .tower-card .tower-icon,
+#tower-shop .tower-card .tower-icon img {
+  min-height: 0; height: 100%; width: 100%; max-width: 48px; object-fit: contain;
+}
+#tower-shop .tower-card .tower-name { min-width: 0; width: 100%; line-height: 13px; }
+#tower-shop .tower-card .tower-name b { display: block; font-size: 10px; line-height: 13px; white-space: nowrap; }
+#tower-shop .tower-card .tower-cost { display: flex; align-items: center; justify-content: center; gap: 2px; font-size: 12px; line-height: 15px; white-space: nowrap; }
+#tower-shop .tower-card .tower-cost img { width: 12px; height: 12px; }
+#tower-shop .tower-card .tower-lock { top: 3px; right: 3px; width: 11px; height: 14px; }
+/* Avoid a half-width life badge competing with the enemy counter. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hud { grid-template-columns: minmax(0,1fr); gap: 3px; padding: 0; }
+  .hud .gold, .hud .lives { grid-column: 1; grid-row: auto; min-height: 33px; padding: 2px 6px; }
+  .hud .resource > div { min-width: 0; }
+  .hud .resource small { font-size: 8px; line-height: 1; white-space: nowrap; }
+  .hud .resource b { display: block; line-height: 1; font-size: 20px; }
+  .hud .wave-counter { grid-column: 1; grid-row: 3; display: flex; align-items: center; gap: 5px; min-height: 22px; }
+  .hud .wave-counter b { font-size: 18px; }
+  .hud .remaining { grid-column: 1; grid-row: 4; display: flex; align-items: center; gap: 5px; min-height: 18px; }
+  .hud .remaining > span { font-size: 16px; line-height: 1; }
+  .hud .remaining small { font-size: 8px; line-height: 1; }
+  #start-wave.v5-btn-start { --frame-x: 16px; --frame-y: 10px; padding: 2px; font-size: 12px; min-height: 52px; }
+  #start-wave > span { display: none; }
+  .v5-home .home-actions .v5-btn,
+  .v5-home .kingdom-actions .v5-btn { --frame-x: 12px; --frame-y: 7px; padding: 2px 4px; }
+  .v5-prep-side .difficulty-picker .v5-btn { --frame-x: 14px; font-size: 12px; }
+  #tower-shop .tower-card { grid-template-rows: minmax(10px,1fr) 11px 13px; border-bottom-width: 2px; }
+  #tower-shop .tower-card .tower-name,
+  #tower-shop .tower-card .tower-name b { font-size: 9px; line-height: 11px; }
+  #tower-shop .tower-card .tower-cost { font-size: 11px; line-height: 13px; }
+}
+/* Legacy difficulty button borders must not compress the ornamental slices. */
+.v5-prep-side .difficulty-picker .v5-btn {
+  border-width: var(--frame-y) var(--frame-x); border-style: solid;
+  border-color: transparent; border-radius: 0; background: none;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  #tower-shop .tower-card { padding: 0; grid-template-rows: minmax(10px,1fr) 15px 15px; }
+  #tower-shop .tower-card .tower-name,
+  #tower-shop .tower-card .tower-name b { line-height: 15px; }
+  #tower-shop .tower-card .tower-cost { line-height: 15px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  #tower-shop .tower-card .tower-name b { font-size: 8.5px; }
+}
+@media (orientation: landscape) and (max-width: 700px) {
+  #tower-shop .tower-card .tower-name b { font-size: 8px; }
+}

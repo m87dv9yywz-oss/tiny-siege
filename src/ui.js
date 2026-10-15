@@ -26,7 +26,7 @@ export class UI {
     $("tower-shop").innerHTML = Object.entries(TOWERS)
       .map(
         ([key, t], i) =>
-          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span class="tower-lock" aria-hidden="true"><img src="${V5UI("ui_icon_lock.png")}" alt=""></span><span><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
+          `<button class="tower-card" data-tower="${key}" style="--tower-color:${t.hex}" aria-label="Buy ${t.name}, ${t.cost} gold"><span class="key">${i + 1}</span><span class="tower-icon">${t.icon}</span><span class="tower-lock" aria-hidden="true"><img src="${V5UI("ui_icon_lock.png")}" alt=""></span><span class="tower-name"><b>${t.name}</b><small>${t.subtitle}</small></span><span class="tower-cost"><span>◈</span>${t.cost}</span></button>`,
       )
       .join("");
     document.querySelectorAll("[data-tower]").forEach(
