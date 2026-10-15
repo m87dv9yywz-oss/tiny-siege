@@ -13,6 +13,7 @@ import {
   enemyTexture,
 } from "../enemyArtwork.js";
 import { MAP_IDS, mapArtwork, mapTexture } from "../mapArtwork.js";
+import { heroArtwork, heroTexture } from "../heroArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -61,11 +62,14 @@ export class GameScene extends Phaser.Scene {
             { width: 96, height: 100 },
           );
     }
-    for (const type of Object.keys(HEROES))
+    for (const type of Object.keys(HEROES)) {
       this.load.svg(`hero-${type}`, `${base}heroes/${type}.svg`, {
         width: 80,
         height: 84,
       });
+      if (heroTexture(type))
+        this.load.image(heroTexture(type), base + heroArtwork(type));
+    }
   }
   create() {
     textures(this);
@@ -497,14 +501,16 @@ export class GameScene extends Phaser.Scene {
       }
     const hero = this.model.hero;
     if (hero) {
-      if (!this.heroSprite)
+      if (!this.heroSprite) {
         this.heroSprite = this.add.image(
           hero.x,
           hero.y - 15,
-          `hero-${hero.type}`,
+          heroTexture(hero.type) || `hero-${hero.type}`,
         );
+        if (heroTexture(hero.type)) this.heroSprite.setDisplaySize(72, 72);
+      }
       this.heroSprite
-        .setTexture(`hero-${hero.type}`)
+        .setTexture(heroTexture(hero.type) || `hero-${hero.type}`)
         .setPosition(
           hero.x,
           hero.y - 15 + (this.model.paused ? 0 : Math.sin(time * 0.004) * 2),
