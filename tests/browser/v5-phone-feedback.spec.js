@@ -15,14 +15,22 @@ for(const[width,height]of[[375,680],[390,730],[844,330],[844,390],[932,360],[667
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Phone playtest');
  await textFits(page,'#profile-form .v5-btn,.modal-card > .v5-btn');
  await page.screenshot({path:`test-results/phone-feedback/profile-${width}x${height}.png`});
- await page.locator('#profile-form button').tap();await textFits(page,'.home-actions .v5-btn,.kingdom-actions .v5-btn');await page.locator('[data-map="emerald"]').tap();
+ await page.locator('#profile-form button').tap();await textFits(page,'.home-actions .v5-btn,.kingdom-actions .v5-btn');
+ if(width>height&&height<=360)for(const id of ['heroes','relics','collection']){
+  await page.locator('#'+id).tap();
+  await expect.poll(()=>page.locator('.modal-card').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
+  await page.screenshot({path:`test-results/phone-feedback/${id}-${width}x${height}.png`});
+  await page.locator('#back').tap();
+ }
+ await page.locator('[data-map="emerald"]').tap();
  await textFits(page,'.difficulty-picker .v5-btn,.v5-prep-actions .v5-btn,#choose-hero');
  await expect(page.locator('.v5-relic-line')).not.toContainText('14 gentle waves');
  await page.screenshot({path:`test-results/phone-feedback/preparation-${width}x${height}.png`});
  await page.locator('#begin-adventure').tap();
- const cards=await page.locator('.tower-card').evaluateAll(cards=>cards.map(c=>{const b=c.getBoundingClientRect();return{name:c.dataset.tower,box:b.toJSON(),parts:['.tower-name b','.tower-cost',...(c.classList.contains('locked')?['.tower-lock']:[])].map(s=>({selector:s,box:c.querySelector(s).getBoundingClientRect().toJSON()}))};}));
+ const cards=await page.locator('.tower-card').evaluateAll(cards=>cards.map(c=>{const b=c.getBoundingClientRect();return{name:c.dataset.tower,box:b.toJSON(),parts:['.tower-icon img','.tower-name b','.tower-cost',...(c.classList.contains('locked')?['.tower-lock']:[])].map(s=>({selector:s,box:c.querySelector(s).getBoundingClientRect().toJSON()}))};}));
  for(const c of cards)for(const p of c.parts){expect(p.box.x,`${c.name} ${p.selector} left`).toBeGreaterThanOrEqual(c.box.x);expect(p.box.right,`${c.name} ${p.selector} right`).toBeLessThanOrEqual(c.box.right);expect(p.box.y).toBeGreaterThanOrEqual(c.box.y);expect(p.box.bottom,`${c.name} ${p.selector} bottom`).toBeLessThanOrEqual(c.box.bottom);}
- expect(cards.filter(c=>c.parts.length===3)).toHaveLength(5);
+ expect(cards.filter(c=>c.parts.length===4)).toHaveLength(5);
+ for(const c of cards)expect(c.parts[0].box.bottom, `${c.name} icon stays above its label`).toBeLessThanOrEqual(c.parts[1].box.top+1);
  await textFits(page,'.tower-card,#start-wave');
  const overlap=await page.locator('.hud').evaluate(h=>{const kids=[...h.children].map(e=>({label:e.className,b:e.getBoundingClientRect()}));return kids.flatMap((a,i)=>kids.slice(i+1).filter(b=>Math.min(a.b.right,b.b.right)>Math.max(a.b.left,b.b.left)+1&&Math.min(a.b.bottom,b.b.bottom)>Math.max(a.b.top,b.b.top)+1).map(b=>[a.label,b.label]));});expect(overlap).toEqual([]);
  await page.screenshot({path:`test-results/phone-feedback/battle-${width}x${height}.png`});

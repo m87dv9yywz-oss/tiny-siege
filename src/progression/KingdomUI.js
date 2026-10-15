@@ -502,7 +502,7 @@ export class KingdomUI {
             .map((path, i) => {
               const tier = p.unlockedUpgrades[type][i],
                 next = tier + 1;
-              return `<div class="collection-path"><b>${path.name}</b><span class="v5-pips" aria-hidden="true">${[1, 2, 3].map((n) => `<i class="${tier >= n ? "on" : ""}"></i>`).join("")}</span><span>Tier ${tier} permanently unlocked</span>${tier < 3 ? `<button data-unlock-path="${type}:${i}" class="v5-btn v5-btn-primary v5-btn-sm" ${!owned || xp.earned - xp.spent < XP_COSTS[next] ? "disabled" : ""}>Unlock Tier ${next} · ${XP_COSTS[next]} XP</button>` : "<strong>Evolution unlocked ★</strong>"}</div>`;
+              return `<div class="collection-path"><b>${path.name}</b><span class="v5-pips" aria-hidden="true">${[1, 2, 3].map((n) => `<i class="${tier >= n ? "on" : ""}"></i>`).join("")}</span><span>Tier ${tier} unlocked</span>${tier < 3 ? `<button data-unlock-path="${type}:${i}" class="v5-btn v5-btn-primary v5-btn-sm" ${!owned || xp.earned - xp.spent < XP_COSTS[next] ? "disabled" : ""}>Unlock Tier ${next} · ${XP_COSTS[next]} XP</button>` : "<strong>Evolution unlocked ★</strong>"}</div>`;
             })
             .join("")}</section>`;
         })

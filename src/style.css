@@ -4781,3 +4781,64 @@ h3,
 @media (orientation: landscape) and (max-width: 700px) and (max-height: 600px) {
   .v5-home .v5-map-card { flex-basis: 132px; }
 }
+/* Hero-specific legacy height rules must not force a 30px image into a
+   shorter shop row. Scope the override to the real card, including its image. */
+#tower-shop .tower-card[data-tower] .tower-icon,
+#tower-shop .tower-card[data-tower] .tower-icon img {
+  display: block; height: 100%; max-height: 100%; min-height: 0;
+  width: 100%; object-fit: contain;
+}
+/* Collection shells also supersede older plain-button border shorthands. */
+.modal-card button.v5-btn {
+  border-width: var(--frame-y) var(--frame-x); border-style: solid;
+  border-color: transparent;
+}
+.v5-banner h1 { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.v5-banner h1 .v5-icon-lg { width: 22px; height: 22px; flex: 0 0 22px; }
+.v5-tabs .v5-tab { background: url('/tiny-siege/assets/v5/ui/ui_tab_unselected.png') center / 100% 100% no-repeat; color: var(--v5-ink); text-shadow: none; }
+.v5-tabs .v5-tab[aria-pressed="true"] { background-image: url('/tiny-siege/assets/v5/ui/ui_tab_selected.png'); }
+.collection-card .collection-path .v5-btn,
+.collection-card .v5-xpline .v5-btn { --frame-x: 12px; --frame-y: 6px; padding: 2px 4px; min-height: 44px; }
+.hero-card.v5-screen .v5-hero-card.is-locked .v5-hero-name { white-space: normal; font-size: 10px; line-height: 1.05; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .collection-card.v5-screen > .v5-banner,
+  .hero-card .v5-screen-head .v5-banner,
+  .relic-card .v5-screen-head .v5-banner {
+    min-height: 44px; border-width: 8px 40px; border-image-width: 1;
+    margin-block: 0 2px;
+  }
+  .collection-card .v5-collection-sub { margin: 2px 0 5px; font-size: 11px; line-height: 1.2; }
+  .collection-card .v5-tabs { margin-bottom: 4px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  .hero-card.v5-screen .v5-hero-card:not(.is-locked) { max-width: 110px; }
+  .hero-card.v5-screen .v5-hero-card.is-locked { height: 52px; }
+  .collection-card.v5-screen > .v5-banner { min-height: 38px; }
+  .collection-card.v5-screen .v5-tower-card { width: 100px; }
+}
+.collection-card #save-message:empty { display: none; }
+.collection-card .collection-path {
+  display: grid; grid-template-columns: auto minmax(0,1fr); gap: 2px;
+}
+.collection-card .collection-path > b { grid-column: 1/-1; line-height: 1.15; }
+.collection-card .collection-path .v5-pips {
+  display: flex; align-items: center; gap: 2px; height: 10px; margin: 0;
+}
+.collection-card .v5-pips i { display: block; flex: 0 0 7px; width: 7px; height: 7px; border-width: 1px; }
+.collection-card .collection-path > span:not(.v5-pips) { margin: 0; line-height: 1.15; font-size: 9px; }
+.collection-card .collection-path > button,
+.collection-card .collection-path > strong { grid-column: 1/-1; }
+@media (orientation: landscape) and (max-height: 600px) {
+ .collection-grid.v5-tower-showcase { grid-template-columns: 128px minmax(0,1fr); }
+ .collection-grid.v5-tower-showcase > section { padding: 4px; gap: 3px 8px; }
+ .collection-card #back { --frame-y: 8px; min-height: 44px; padding: 2px 8px; font-size: 15px; }
+ .collection-card .v5-xpline { margin: 1px 0 3px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+ .collection-grid.v5-tower-showcase { grid-template-columns: 100px minmax(0,1fr); }
+ .collection-card .v5-collection-sub { display: none; }
+ .collection-grid.v5-tower-showcase > section > h2 { display: none; }
+ .collection-grid.v5-tower-showcase > section > .v5-xpline { grid-row: 1; }
+ .collection-grid.v5-tower-showcase > section > .collection-path { grid-row: 2; }
+}
+.v5-tabs .v5-tab[aria-pressed="true"] { color: var(--v5-mint); text-shadow: 0 1px 0 #27513c; }
