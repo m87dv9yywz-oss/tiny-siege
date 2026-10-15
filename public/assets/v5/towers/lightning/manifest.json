@@ -1,0 +1,335 @@
+{
+ "masterSize": 1254,
+ "origin": [
+  0.5,
+  0.96
+ ],
+ "displaySize": 80,
+ "states": {
+  "0-0-0": {
+   "masterSha256": "6ef8eb29894cf12054def94003cdcf892f920eeb6cfd9d69366470dc0344b788",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 60198,
+     "sha256": "29dec4acae560d9f044e2e26cc507d5e24ded2a826bf0bab547fc5f2ad119b1d"
+    },
+    "card_512": {
+     "bytes": 201551,
+     "sha256": "86f7eb4468b7332ebf18b4165643efd2e942bbfc313145ee999c859ca42a2e23"
+    }
+   }
+  },
+  "0-0-1": {
+   "masterSha256": "186a7dce4b70bd1d637c39262c2050a3a40ab82559f64ccd660059cc70f77ade",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 65253,
+     "sha256": "a754ddd8197221c21cb54d4fd1b73b19bf0b22bd481ce246a7e2d4e6698976f0"
+    },
+    "card_512": {
+     "bytes": 218758,
+     "sha256": "6618a9adbee129183836a71f7cb13f9131f39cee2e8ac492325175ecc3999019"
+    }
+   }
+  },
+  "0-0-2": {
+   "masterSha256": "cb1aa172cdc85225bd97faaac4262a72426bd619aeb18b7a6167363f0eb0730e",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 67380,
+     "sha256": "f20fa3828a825a05016a0592aeb07c374b8840223b19f0db8d0dd44e066ad8a9"
+    },
+    "card_512": {
+     "bytes": 226847,
+     "sha256": "e302e469c3b3436b3ed823a6590d388a39ad90b488d77e2bda7f87fbba3eb5df"
+    }
+   }
+  },
+  "0-0-3": {
+   "masterSha256": "692cb202bba970861de21d2cc20eb20ace55fd2ab349310b86cd58640cb4e657",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 88828,
+     "sha256": "104027383a5963df30b36fbcf50a614e170b76a61a043b60b434b3280ce27379"
+    },
+    "card_512": {
+     "bytes": 298042,
+     "sha256": "c5a061463ada1a7617c5f2b8a4149a5691af65ab703dc7bf3f2363fcc6827145"
+    }
+   }
+  },
+  "0-1-0": {
+   "masterSha256": "13441b0705c75b91e7627a5bd3589b87288eeeb5416462e636178093166f233d",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 58949,
+     "sha256": "7e7f6f78dda66a74b6901d6fe865e9b451e8c7cab8387893d2563b4eeae6d310"
+    },
+    "card_512": {
+     "bytes": 198104,
+     "sha256": "ec7cedaa62f720490f719559aa205f583b3b098f56ff3005089bdbab4c4514af"
+    }
+   }
+  },
+  "0-1-1": {
+   "masterSha256": "c74f0554d3ec11bd6166095a17fe555270c29b45f49d49b7a971c9ce0f7342a9",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 59277,
+     "sha256": "349f859f06bdf24d1208d013377fa5328baa4277330bcf6080421f931df7c24b"
+    },
+    "card_512": {
+     "bytes": 198813,
+     "sha256": "4a56ad91ba11ea8a2d8ce9e85065f8790c1103086ebd45fb7c36bade5720a790"
+    }
+   }
+  },
+  "0-1-2": {
+   "masterSha256": "71d77ddc89f790407307f4f1769c35e770bbc2f82a503db843ac8ec79da33352",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 66983,
+     "sha256": "a507f87e8119508e55b7bb51391942aa3190bd1ef56409f122c43a2701edb803"
+    },
+    "card_512": {
+     "bytes": 225807,
+     "sha256": "0a7eab4f8b30c829cfc6694be268d4e34152132e87a324d50d7d3e6fb8e2cc3b"
+    }
+   }
+  },
+  "0-1-3": {
+   "masterSha256": "9f9ac0ef61b34df2b68b9fa88858fb72510d4ef8b6210a8ff337f35714feeaf8",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 89921,
+     "sha256": "dbbf2464f4a03a6f3c8b31c937aa837b63c6a399def8faac63079de84e2744ee"
+    },
+    "card_512": {
+     "bytes": 297284,
+     "sha256": "5a5d83f0b68e45fb8d31094de94e16163e8844db11003e3145b989a536f0b6a3"
+    }
+   }
+  },
+  "0-2-0": {
+   "masterSha256": "9b4e27ae29e1ffecb6a9409a2e187b9ae81ba8ea4e26f5dd4423ec41ac3d2046",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 70280,
+     "sha256": "d727f9799b3c0e053c904ea93c0c32db1b84bf4b366d2404b8fc67f161cc60f3"
+    },
+    "card_512": {
+     "bytes": 233481,
+     "sha256": "e67f8928b8d41ee4ec1ecc8034be9ea11d99e4ad52d487d9319892891ac98ccc"
+    }
+   }
+  },
+  "0-2-1": {
+   "masterSha256": "b91ae6c650844455593c2ebf92bcd3f753a5875fc056eb5dd1e45f3c4da2e9e8",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 63796,
+     "sha256": "23bfd6300b74dfb0485b13ad82c37201613f4fedb2d25c6432555e72244c7f87"
+    },
+    "card_512": {
+     "bytes": 213868,
+     "sha256": "ccc94193a430aaf0a9a9fb4d7b2f9cabb5aacdfa5b3a1374fcc1bfede7bec76e"
+    }
+   }
+  },
+  "0-3-0": {
+   "masterSha256": "c284a91e21ea40badcfe6f5fc3342afef8c05498020365ca2779b7c2a24ebb49",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 66174,
+     "sha256": "4d06d143b2f104777d2a2438856be6aaeb4808e0ba39c440162631fe4e90146d"
+    },
+    "card_512": {
+     "bytes": 220835,
+     "sha256": "1170efe170d8516e8c0ecb0bcefbdfb4cbfc82ce75be0f5f6819a75c89d56819"
+    }
+   }
+  },
+  "0-3-1": {
+   "masterSha256": "3f42e8114a3f5cc7ff910bf36b213f789e81a1becde8dac833d376fbee8e0fa9",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 72516,
+     "sha256": "5745707b690f6d62fcd5f97f89c9d7d5c23f8b9984fa707ea136e51721bec22f"
+    },
+    "card_512": {
+     "bytes": 238827,
+     "sha256": "9a6b5da641ed214161a6ce21569d256ea882334cec388d4524bc073a3480a2b5"
+    }
+   }
+  },
+  "1-0-0": {
+   "masterSha256": "01327180ae0f06525bf67996a46f63ee5b3626301569bc1a3ba6f9b44fe82bf5",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 87889,
+     "sha256": "f8b7980981dd7f47072f751f86287aa977ec7d17452a4efcd88594504b549c62"
+    },
+    "card_512": {
+     "bytes": 290045,
+     "sha256": "416ccacb8ca9eaf9506025c172434c36b0caf67b9a9c4d027819a77bb444b00d"
+    }
+   }
+  },
+  "1-0-1": {
+   "masterSha256": "ad9663adec1554405e796c33e3b456915b2ed6b3392a52979faaffb2c99ccd12",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 97426,
+     "sha256": "995c69b7f8dc05745dd0194cde54c043300b9c08c811b77a3e1b795890859f29"
+    },
+    "card_512": {
+     "bytes": 320341,
+     "sha256": "658c1339cb849d1e16366c48bbabe2828998c3fe9a9b26a217f38e016a075787"
+    }
+   }
+  },
+  "1-0-2": {
+   "masterSha256": "1887ddc79167efff11c1000a26f3acddfd53c611e89eef79959de46c24c6f637",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 91215,
+     "sha256": "0914ef8cc7e753a6a55a1bcea6d67ec44e31a154c1d4f75fcbd0f1ff4f994d4a"
+    },
+    "card_512": {
+     "bytes": 301740,
+     "sha256": "f419314b707de29341c6e9c3d08b9a206f24d084bdba034c7368d2a5eaa5cd65"
+    }
+   }
+  },
+  "1-0-3": {
+   "masterSha256": "91283b3ae7d40000f1777458e80fff12a355f1568d6007aa2a2578699cdfb8ec",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 97053,
+     "sha256": "07c3923fea455acfe5b23a304ada6f6188bf304447cca3451f46d44da5c478c2"
+    },
+    "card_512": {
+     "bytes": 322696,
+     "sha256": "b573a6cff9f8f6323fcbd11a48d97a674983eea0e38418d7f7edc563f5317ac6"
+    }
+   }
+  },
+  "1-1-0": {
+   "masterSha256": "e4d58f22aeaf2fc4d3c355036a59430dfbe5772d84f29955f241be6e5aefceb0",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 84484,
+     "sha256": "5c1d293c59dedd03afac4820f0a162c81b3b4ccec5d9518a8cab0579de7afc45"
+    },
+    "card_512": {
+     "bytes": 279562,
+     "sha256": "a4bd1f0c1831ce435b2e5d2e52c7939f50bd9d81364a277f98b5b1cc1d01c34f"
+    }
+   }
+  },
+  "1-2-0": {
+   "masterSha256": "f1e6930f7ec0ee4a48b6ed5823e98a4088133ba965a978daa8b3d719d15bc882",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 84810,
+     "sha256": "881965d69022472b6eb224bb06045ffad37038e626f48104f45dd8d55c031188"
+    },
+    "card_512": {
+     "bytes": 279377,
+     "sha256": "00fcae5cf3afe5488d5d9a46ebbf563ebd2b5318adb1941979de1cde91c1a69a"
+    }
+   }
+  },
+  "1-3-0": {
+   "masterSha256": "0e33a51b8c68c5dc93d738a22363c7e4718444fc06d5425b22f6e50e6370fdfe",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 98307,
+     "sha256": "22f1615cc07435957c1e11eec7c6199455a389299ce6797d6154d0e5dffa24ff"
+    },
+    "card_512": {
+     "bytes": 318390,
+     "sha256": "ff02665560558ebe43982b92eebd202ce94f5ef0589587a184f90ef0874185b1"
+    }
+   }
+  },
+  "2-0-0": {
+   "masterSha256": "f70e274d44ed080a09590496187b8b3ae03b621c0af60f1df18be4a725c10d69",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 93550,
+     "sha256": "c670f4b8bcd5813b8bf4b5c7d5e4fe96947e6aa2fdcb6a624f2645dfd2b22544"
+    },
+    "card_512": {
+     "bytes": 312338,
+     "sha256": "ff086b09e7d18790abf8b606db40e644f5c2f8ad95e53a36eae8da28e2a2d450"
+    }
+   }
+  },
+  "2-0-1": {
+   "masterSha256": "1382a1d655d69f91720fcc1ac100a4d39bc5a6260fec5cc85a4e66cad7656eee",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 69555,
+     "sha256": "ffe240b22975e525a797ff2af611ee580b217b9cf14555fa7217d663ba8ace58"
+    },
+    "card_512": {
+     "bytes": 232204,
+     "sha256": "0b9496709aff1c4cd5731dd51af401ac24a62d14c7be12b086981ba06ba4dce4"
+    }
+   }
+  },
+  "2-1-0": {
+   "masterSha256": "710d14933fb4b272d04aaa266c06ccec275a5b4d7fa86c34d7a4f7d60d8dd43d",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 87164,
+     "sha256": "ac3f16394936ee9ba000674af101ff9add3d90a90de619a05096bdbea1851e52"
+    },
+    "card_512": {
+     "bytes": 289788,
+     "sha256": "f75cdfa82c816c3ed06b6d034bf9badfed50c9a667a25be381687e8b062dc42a"
+    }
+   }
+  },
+  "3-0-0": {
+   "masterSha256": "437f502e595ce68c60b982862ae87bf2548aa233cd8297a688aa41f7c332d9e5",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 70970,
+     "sha256": "ed3033ce07396b1d6ae0fb628178aa9c5505fe5aafdd1e936827d318e1ecae9b"
+    },
+    "card_512": {
+     "bytes": 236308,
+     "sha256": "f7ae0605bb36c39999014e34faff04b5b9eacdab1c31407511ce987234f01f03"
+    }
+   }
+  },
+  "3-0-1": {
+   "masterSha256": "11639ae759406e134fdb3216494c20b59d976c36ba2b1f7c24360fb17bad8996",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 68506,
+     "sha256": "288b4d9cee14be5ec125005a27f6a91d2af28755d1ce995c187c747ab733cd65"
+    },
+    "card_512": {
+     "bytes": 229825,
+     "sha256": "e4866497c1d7b754552a8ce4d34e31a34918a63613eed3127126bb0a66843811"
+    }
+   }
+  },
+  "3-1-0": {
+   "masterSha256": "3c15d0dae396b05097ca32b132efc6cc57aac4e35a993b74ce6938634379fd61",
+   "exports": {
+    "battlefield_256": {
+     "bytes": 71181,
+     "sha256": "db9996c9cafe5fc70f9c4416275759c27e5171038f1a96983ff35934d17a003e"
+    },
+    "card_512": {
+     "bytes": 236337,
+     "sha256": "9896a4bb721a288241746711431f02338bfd2cd0acafd2848e3e2e884d953433"
+    }
+   }
+  }
+ }
+}

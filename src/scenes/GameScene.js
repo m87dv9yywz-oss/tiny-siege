@@ -1,5 +1,17 @@
 import { HEROES } from "../data/heroes.js";
-import { ARCHER_STATES, towerArtwork } from "../towerArtwork.js";
+import { ENEMIES } from "../data/enemies.js";
+import {
+  TOWER_STATES,
+  TOWER_TYPES,
+  artworkTexture,
+  towerArtwork,
+} from "../towerArtwork.js";
+import {
+  ENEMY_TYPES,
+  enemyArtwork,
+  enemyDisplaySize,
+  enemyTexture,
+} from "../enemyArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
 import {
@@ -19,15 +31,18 @@ export class GameScene extends Phaser.Scene {
   }
   preload() {
     const base = import.meta.env.BASE_URL;
-    for (const state of ARCHER_STATES)
-      this.load.image(
-        `v5-archer-${state}`,
-        base +
-          towerArtwork(
-            { type: "archer", paths: state.split("-").map(Number) },
-            "battlefield_256",
-          ),
-      );
+    for (const type of TOWER_TYPES)
+      for (const state of TOWER_STATES)
+        this.load.image(
+          `v5-${type}-${state}`,
+          base +
+            towerArtwork(
+              { type, paths: state.split("-").map(Number) },
+              "battlefield_256",
+            ),
+        );
+    for (const type of ENEMY_TYPES)
+      this.load.image(enemyTexture(type), base + enemyArtwork(type));
     for (const type of ["wind", "rune"]) {
       for (const level of [1, 2, 3])
         this.load.svg(
@@ -162,7 +177,7 @@ export class GameScene extends Phaser.Scene {
       .map((t) => {
         const sprite = this.towerSprites.get(t.id),
           frame = this.textures.getFrame(towerTexture(t));
-        const illustrated = t.type === "archer";
+        const illustrated = artworkTexture(t) !== null;
         const x = sprite?.x ?? t.x,
           y = sprite?.y ?? t.y - (illustrated ? 0 : 13);
         const width = sprite?.displayWidth || (illustrated ? 80 : frame.width),
@@ -412,7 +427,11 @@ export class GameScene extends Phaser.Scene {
       ].explode(this.ui.reducedEffects ? 2 : 7, enemy.x, enemy.y);
       if (this.effects.length < 70) {
         const ghost = this.add
-          .image(enemy.x, enemy.y - 7, `enemy-${enemy.type}`)
+          .image(
+            enemy.x,
+            enemy.y - 7,
+            enemyTexture(enemy.type) || `enemy-${enemy.type}`,
+          )
           .setDepth(enemy.y + 30);
         this.effects.push({ type: "death", text: ghost, age: 0, life: 0.24 });
       }
@@ -490,7 +509,7 @@ export class GameScene extends Phaser.Scene {
       let sprite = this.towerSprites.get(t.id);
       if (!sprite) {
         sprite = this.add.image(t.x, t.y - 13, towerTexture(t));
-        if (t.type === "archer")
+        if (artworkTexture(t) !== null)
           sprite.setDisplaySize(80, 80).setOrigin(0.5, 0.96).setY(t.y);
         this.towerSprites.set(t.id, sprite);
       }
@@ -498,7 +517,7 @@ export class GameScene extends Phaser.Scene {
       if (!this.model.paused)
         sprite.y =
           t.y -
-          (t.type === "archer" ? 0 : 13) +
+          (artworkTexture(t) !== null ? 0 : 13) +
           Math.sin(time * 0.002 + t.id) * 0.7;
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)
@@ -554,7 +573,12 @@ export class GameScene extends Phaser.Scene {
     for (const e of this.model.enemies) {
       let sprite = this.enemySprites.get(e.id);
       if (!sprite) {
-        sprite = this.add.image(e.x, e.y, `enemy-${e.type}`);
+        const tex = enemyTexture(e.type) || `enemy-${e.type}`;
+        sprite = this.add.image(e.x, e.y, tex);
+        if (enemyTexture(e.type)) {
+          const d = enemyDisplaySize((ENEMIES[e.type] || {}).radius || 12);
+          sprite.setDisplaySize(d, d);
+        }
         this.enemySprites.set(e.id, sprite);
       }
       const special = [
@@ -569,7 +593,12 @@ export class GameScene extends Phaser.Scene {
         max = e.type === "warden" ? e.maxShield : e.maxArmor;
       const state =
         pool <= 0 ? "broken" : pool < max * 0.55 ? "cracked" : "intact";
-      if (special) sprite.setTexture(`enemy-${e.type}-${state}`);
+      if (special)
+        if (enemyTexture(e.type))
+          sprite
+            .setTexture(enemyTexture(e.type))
+            .setTint(state === "broken" ? 0x777777 : state === "cracked" ? 0xbbbbbb : 0xffffff);
+        else sprite.setTexture(`enemy-${e.type}-${state}`);
       if (e.elite) {
         sprite.setScale(1.3);
         g.lineStyle(2, 0xe7be75);
