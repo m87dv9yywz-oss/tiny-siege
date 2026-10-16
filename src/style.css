@@ -4550,7 +4550,7 @@ h3,
   .hero-card.v5-screen .v5-hero-roster,
   .relic-card.v5-screen .v5-relic-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 6px; }
   .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
-  .relic-card.v5-screen .v5-relic-card { max-width: 118px; }
+  .relic-card.v5-screen .v5-relic-card { max-width: min(118px, 31vh); }
   .home-card.v5-home { gap: 2px; }
   .v5-home #save-message { margin: 0; line-height: 1.1; }
   .v5-home .home-heading .menu-icon { width: 24px; height: 24px; }
@@ -4560,6 +4560,9 @@ h3,
 @media (max-width: 700px) and (orientation: portrait) {
   .hero-card.v5-screen .v5-hero-card { max-width: 112px; }
   .relic-card.v5-screen .v5-relic-card { max-width: 112px; }
+  .relic-card.v5-screen .relic-grid .v5-relic-card .v5-relic-desc { font-size: 8px; letter-spacing: -0.2px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
   .relic-card.v5-screen .relic-grid .v5-relic-card .v5-relic-desc { font-size: 8px; letter-spacing: -0.2px; }
 }
 /* Keep unsupported friends decorative; give playable hero actions real tap areas. */
@@ -4621,7 +4624,7 @@ h3,
 .relic-card.v5-screen .v5-relic-action:disabled { color: #746651; text-shadow: none; }
 .relic-grid .v5-relic-info::after { content: "ⓘ"; position: absolute; right: -4px; top: -2px; font-size: 14px; color: #264e42; }
 /* Percentage vertical padding resolved against width made these dialogs scroll. */
-.modal-card.v5-dialog-card { padding: clamp(64px,min(24vw,20vh),132px) clamp(44px,13.5vw,118px) clamp(34px,11vw,84px); }
+.modal-card.v5-dialog-card { padding: clamp(56px,min(22vw,15vh),120px) clamp(44px,13.5vw,118px) clamp(28px,min(9vw,7vh),84px); }
 .modal-card.v5-dialog-card h1 { margin: 0 0 8px; font-size: 26px; }
 .modal-card.v5-dialog-card p { margin: 8px 0; }
 @media (orientation: landscape) and (max-height: 600px) {
