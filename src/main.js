@@ -18,7 +18,23 @@ document.addEventListener("dblclick", (e) => e.preventDefault(), {
 document.addEventListener(
   "touchmove",
   (e) => {
-    if (e.touches.length > 1) e.preventDefault();
+    if (e.touches.length > 1) return e.preventDefault();
+    // In battle, a one-finger drag is gameplay — grabbing a tower, sliding
+    // along the shop — never a page gesture. Left alone, iOS Safari
+    // answers it with pull-to-refresh or by sliding its menus in over the
+    // battle. Swallow the move unless it starts inside an element that
+    // genuinely scrolls (help text, the full upgrade tree), which keeps
+    // its own gesture.
+    if (!ui || ui.inMenu) return;
+    for (let el = e.target; el && el.nodeType === 1; el = el.parentElement) {
+      const oy = getComputedStyle(el).overflowY;
+      if (
+        (oy === "auto" || oy === "scroll") &&
+        el.scrollHeight > el.clientHeight + 1
+      )
+        return;
+    }
+    e.preventDefault();
   },
   { passive: false },
 );
