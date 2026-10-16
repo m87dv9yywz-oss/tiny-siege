@@ -4595,6 +4595,7 @@ h3,
 }
 .v5-hero-cell { min-width: 0; width: min(100%,150px); margin-inline: auto; }
 .v5-hero-caption { display: block; margin: 0; line-height: 1.1; font-size: 10px; text-transform: capitalize; color: #315343; }
+.v5-hero-next { display: block; margin: 0; line-height: 1.1; font-size: 10px; font-weight: 700; color: #8a6410; }
 .hero-roster .v5-hero-card .v5-hero-name { font-size: 13px; top: 58%; white-space: nowrap; }
 .hero-roster .v5-hero-card .v5-hero-action { white-space: nowrap; font-size: 11px; padding: 22px 0 0; line-height: 1; gap: 3px; }
 .hero-roster .v5-hero-card .v5-hero-action img { width: 15px; height: 15px; }
@@ -4608,6 +4609,11 @@ h3,
 @media (orientation: landscape) and (max-height: 600px) {
   .v5-hero-cell { max-width: 128px; }
   .hero-card .v5-screen-head .v5-banner { min-height: 44px; }
+}
+/* The hero "next level" line is an enhancement: on the shortest landscape
+   phones it yields so the roster still fits without scrolling. */
+@media (orientation: landscape) and (max-height: 340px) {
+  .v5-hero-next { display: none; }
 }
 
 /* Placement hints must never swallow a valid battlefield tap. */

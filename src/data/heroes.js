@@ -12,7 +12,7 @@ export const HEROES = {
     ability: "Dragonfire",
     cooldown: 28,
     description:
-      "Friendly flame breath burns groups. Dragonfire ignites a broad circle. Nearby Fire towers gain 15% damage and burn.",
+      "Friendly flame breath burns groups. Dragonfire ignites a broad circle. Nearby Fire towers gain 15% damage and burn, 20% from Teen. As an Adult, Dragonfire reaches farther and recharges faster.",
   },
   dinosaur: {
     name: "Rex · Dinosaur",
@@ -27,7 +27,7 @@ export const HEROES = {
     ability: "Thunder Stomp",
     cooldown: 30,
     description:
-      "Strong tail sweeps crack armor. Thunder Stomp briefly stuns and pushes enemies. Nearby Cannons gain 25% armor damage.",
+      "Strong tail sweeps crack armor. Thunder Stomp briefly stuns and pushes enemies. Nearby Cannons gain 25% armor damage, 30% from Teen. As an Adult, Thunder Stomp reaches farther and recharges faster.",
   },
   tiger: {
     name: "Stripe · Tiger",
@@ -42,7 +42,7 @@ export const HEROES = {
     ability: "Pounce Rush",
     cooldown: 24,
     description:
-      "Fast claws pierce weak plates. Pounce Rush hits the leading threats. Nearby Archers attack 12% faster.",
+      "Fast claws pierce weak plates. Pounce Rush hits the leading threats. Nearby Archers attack 12% faster, 16% from Teen. As an Adult, Pounce Rush reaches farther and recharges faster.",
   },
 };
 export const heroLevel = (xp) =>
