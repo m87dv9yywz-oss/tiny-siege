@@ -127,6 +127,19 @@ export class UI {
       this.refresh(true);
     };
     $("auto-wave").onclick = () => this.toggleAutoWave();
+    $("royal-tip-close").onclick = () => this.hideRoyalTip();
+    $("royal-tip-never").onclick = () => {
+      this.saveRoyalTip({ done: true });
+      this.hideRoyalTip();
+    };
+    $("royal-tip-try").onclick = () => {
+      this.hideRoyalTip();
+      const b = $("start-wave");
+      b.classList.remove("royal-pulse");
+      void b.offsetWidth;
+      b.classList.add("royal-pulse");
+      b.focus?.();
+    };
     $("leave-run").onclick = () => this.leaveRun();
     $("help-button").onclick = () => this.help();
     document.querySelector(".brand").onclick = (e) => {
@@ -146,6 +159,12 @@ export class UI {
       if (e.target.closest?.("select") ||
           (e.code === "Space" && e.target.closest?.("summary"))) {
         e.stopPropagation();
+        return;
+      }
+      if (e.key === "Escape" && $("royal-tip")?.classList.contains("visible")) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.hideRoyalTip();
         return;
       }
       if (e.key === "Escape" && $("battle-settings").open && $("modal").hidden) {
@@ -325,6 +344,7 @@ export class UI {
     this.scene?.effect(event);
     this.tone(event);
     if (event.type === "invalid") this.toast(event.message);
+    if (event.type === "clear") this.maybeRoyalTip();
     if (event.type === "clear")
       this.kingdom?.safe(() => {
         this.kingdom.checkpoint();
@@ -581,8 +601,66 @@ export class UI {
       this.refresh(true);
     }
   }
+  // The Royal Tip teaches hold-for-auto once, between waves. It retires
+  // for good when auto waves are actually switched on (doing it once is
+  // the proof), when the player says "Don't show again", or after three
+  // snoozed showings. State is device-local on purpose: it is a teaching
+  // hint, not progression, so it stays out of the profile schema.
+  royalTipState() {
+    try {
+      return JSON.parse(localStorage.getItem("ts.royalTipAuto.v1")) || {};
+    } catch {
+      return {};
+    }
+  }
+  saveRoyalTip(patch) {
+    try {
+      localStorage.setItem(
+        "ts.royalTipAuto.v1",
+        JSON.stringify({ ...this.royalTipState(), ...patch }),
+      );
+    } catch {
+      /* private browsing: the tip simply lasts one session */
+    }
+  }
+  maybeRoyalTip() {
+    const s = this.royalTipState();
+    if (s.done || (s.shows || 0) >= 3 || this.model.autoWave) return;
+    clearTimeout(this.royalTipTimer);
+    this.royalTipTimer = setTimeout(() => {
+      const m = this.model;
+      if (
+        this.inMenu ||
+        this.helpOpen ||
+        !$("modal").hidden ||
+        m.active ||
+        m.ended ||
+        m.autoWave ||
+        m.wave < 1
+      )
+        return;
+      const now = this.royalTipState();
+      if (now.done || (now.shows || 0) >= 3) return;
+      this.saveRoyalTip({ shows: (now.shows || 0) + 1 });
+      const el = $("royal-tip");
+      el.classList.add("visible");
+      el.setAttribute("aria-hidden", "false");
+    }, 2200);
+  }
+  hideRoyalTip() {
+    const el = $("royal-tip");
+    if (!el) return;
+    el.classList.remove("visible");
+    el.setAttribute("aria-hidden", "true");
+  }
   toggleAutoWave() {
     this.model.autoWave = !this.model.autoWave;
+    if (this.model.autoWave) {
+      // Used it once: the lesson is learned, retire the tip forever.
+      this.saveRoyalTip({ done: true });
+      this.hideRoyalTip();
+      clearTimeout(this.royalTipTimer);
+    }
     this.toast(
       this.model.autoWave
         ? "Auto waves on — each wave starts by itself. Losing a life turns it off."
