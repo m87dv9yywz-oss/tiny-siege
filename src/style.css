@@ -416,6 +416,15 @@ aside {
   flex: 1;
   min-height: 0;
 }
+
+/* Battle chrome is gameplay surface: a drag that starts on the shop
+   frame, in a gap between cards, or on the control rail must never be
+   reinterpreted as a browser scroll or pull gesture. */
+main aside,
+#tower-shop,
+.battle-controls {
+  touch-action: none;
+}
 .tower-card {
   min-width: 0;
   min-height: 0;
