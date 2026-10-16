@@ -10,7 +10,7 @@ import {
 import { ENEMIES } from "../data/enemies.js";
 import { waveQueue, CAMPAIGNS } from "../data/waves.js";
 import { campaignFor } from "../data/difficulties.js";
-import { MAP, TRAILS, OBSTACLES } from "../data/map.js";
+import { MAP, TRAILS, TRAIL_SETS, OBSTACLES, inPond } from "../data/map.js";
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export class Game {
   constructor(onEvent = () => {}, options = {}) {
@@ -28,7 +28,8 @@ export class Game {
     this.campaign = campaignFor(map, difficulty);
     this.heroType = hero;
     this.relics = relics;
-    this.trail = TRAILS[this.campaign.id];
+    this.trails = TRAIL_SETS[this.campaign.id] || [TRAILS[this.campaign.id]];
+    this.trail = this.trails[0];
     this.profile = profile;
   }
   get totalWaves() {
@@ -71,6 +72,7 @@ export class Game {
       paused: false,
       speed: 1,
       skippedWaves: 0,
+      trailCursor: 0,
       goldenSpawned: false,
       autoWave: false,
       autoTimer: 0,
@@ -102,7 +104,17 @@ export class Game {
     if (this.gold < TOWERS[type].cost) return "Not enough gold for this tower.";
     if (x < 30 || x > MAP.width - 30 || y < 60 || y > MAP.height - 30)
       return "Stay inside the battlefield.";
-    if (this.trail.distanceToPath(x, y) < MAP.pathWidth / 2 + MAP.towerRadius)
+    // Water rules: the Tidecaller sails only on pond/lake water, and land
+    // towers may not stand in it. Everywhere else the usual rules apply.
+    if (TOWERS[type].waterOnly) {
+      if (!inPond(this.campaign.id, x, y, 8))
+        return "The Tidecaller needs open water — place it in a pond or lake.";
+    } else if (inPond(this.campaign.id, x, y))
+      return "Only the Tidecaller can sail there.";
+    if (
+      Math.min(...this.trails.map((t) => t.distanceToPath(x, y))) <
+      MAP.pathWidth / 2 + MAP.towerRadius
+    )
       return "Keep the trail clear.";
     if (
       (OBSTACLES[this.campaign.id] || []).some(
@@ -249,7 +261,9 @@ export class Game {
         b.progress - a.progress,
     };
     return this.enemies
-      .filter((e) => e.alive && distance(e, t) <= stats.range)
+      .filter(
+        (e) => e.alive && !e.burrowed && distance(e, t) <= stats.range,
+      )
       .sort((a, b) => compare[t.targeting || "FIRST"](a, b) || a.id - b.id);
   }
   sell(id) {
@@ -326,6 +340,9 @@ export class Game {
                     : 0))
             : 1 + Math.max(0, this.wave - 1) * 0.055) *
         (this.campaign.mode && !config.boss ? 1 + stage * 0.15 : 1);
+    // Each enemy walks one trail. Queue spawns are dealt round-robin across
+    // the map's trails by step(); children/summons inherit their parent's.
+    const trail = traits.trail || this.trails[0];
     const e = {
       id: ++this.id,
       type,
@@ -338,6 +355,14 @@ export class Game {
       abilityTime: config.abilityPeriod || 1,
       phase: 1,
       summons: 0,
+      trail,
+      burrowTimer: config.burrowPeriod
+        ? (config.burrowGrace ?? 1) + config.burrowPeriod
+        : 0,
+      burrowLeft: 0,
+      burrowed: false,
+      hatchLeft: config.hatchTime || 0,
+      slipX: 0,
       freezeImmunity: 0,
       pushCooldown: 0,
       brittle: 1,
@@ -358,7 +383,7 @@ export class Game {
       slow: 1,
       slowLeft: 0,
       frozen: 0,
-      ...this.trail.onPath(0),
+      ...trail.onPath(0),
     };
     if (this.campaign.mode && e.heal) e.heal *= Math.sqrt(scale);
     e.stage = stage;
@@ -406,6 +431,23 @@ export class Game {
         damageType: packet ? "magic" : "physical",
         bypass: packet ? 1 : 0,
       };
+    // Burrowed enemies are underground: nothing new can hit them. Damage
+    // already burning keeps ticking — it arrives as tick packets.
+    if (e.burrowed && !packet.tick) return;
+    // Shade Slip (Shadowhart): direct hits can be dodged; ticks and area
+    // damage cannot, and the dodge switches off while slowed or burning.
+    if (
+      e.dodge &&
+      !packet.tick &&
+      !packet.area &&
+      e.slowLeft <= 0 &&
+      e.burnLeft <= 0 &&
+      Math.random() < e.dodge
+    ) {
+      e.slipX = Math.random() * 12 - 6;
+      this.emit("dodge", { enemy: e });
+      return;
+    }
     const beforeHealth = e.health,
       beforeArmor = e.armor;
     const magic = packet.damageType === "magic";
@@ -415,6 +457,7 @@ export class Game {
         (w) =>
           w !== e &&
           w.alive &&
+          !w.burrowed &&
           w.protection &&
           w.shield > 0 &&
           distance(w, e) <= w.abilityRange,
@@ -468,12 +511,17 @@ export class Game {
       if (e.golden) this.emit("goldenPop", { enemy: e });
       if (e.split)
         for (let i = 0; i < e.split; i++) {
-          const child = this.spawn("sprout");
+          const child = this.spawn(e.splitType || "sprout", {
+            trail: e.trail,
+          });
           child.progress = Math.max(0, e.progress - i * 10);
-          child.speed *= 1.25;
-          child.reward = 3;
+          child.speed *= e.splitSpeed ?? 1.25;
+          // Legacy splits (Shardling) pay a flat 3g per sprout; typed splits
+          // keep their own config bounty unless splitReward overrides it.
+          if (e.splitReward != null) child.reward = e.splitReward;
+          else if (!e.splitType) child.reward = 3;
           child.split = 0;
-          Object.assign(child, this.trail.onPath(child.progress));
+          Object.assign(child, e.trail.onPath(child.progress));
         }
     } else if (healthDamage > 2) this.emit("hit", { enemy: e });
     if (e.alive && e.boss) this.bossPhase(e);
@@ -549,7 +597,7 @@ export class Game {
         0,
         e.progress - p.stats.knockback * (1 - (e.controlResistance || 0)),
       );
-      Object.assign(e, this.trail.onPath(e.progress));
+      Object.assign(e, e.trail.onPath(e.progress));
       e.pushCooldown = e.boss ? 3 : 1.2;
     }
     if (p.type === "fire") {
@@ -565,7 +613,7 @@ export class Game {
     for (const e of this.enemies.filter(
       (e) => e.alive && distance(e, center) <= radius,
     ))
-      this.damage(e, amount, stats);
+      this.damage(e, amount, { ...stats, area: true });
     this.emit("impact", { ...center, attack: type, radius });
   }
   impact(p) {
@@ -595,7 +643,14 @@ export class Game {
       // Each enemy receives one hit even when it lies inside both areas.
       victims = [...new Set([...victims, ...blastVictims])];
     }
-    for (const e of victims) this.applyHit(p, e);
+    const blastSet = new Set(blastVictims);
+    for (const e of victims)
+      // Splash victims take area damage, which cannot be dodged; pierce and
+      // direct victims take a normal dodgeable hit.
+      this.applyHit(
+        blastSet.has(e) ? { ...p, stats: { ...p.stats, area: true } } : p,
+        e,
+      );
     if (p.stats.trap && this.zones.length < 32)
       this.zones.push({
         x: center.x,
@@ -774,11 +829,31 @@ export class Game {
     e.abilityTime -= dt;
     if (e.abilityTime > 0) return;
     e.abilityTime = e.abilityPeriod || 1;
+    if (e.burrowed) return;
     if (e.heal) {
       for (const ally of this.enemies)
-        if (ally.alive && ally !== e && distance(ally, e) <= e.abilityRange)
+        if (
+          ally.alive &&
+          !ally.burrowed &&
+          ally !== e &&
+          distance(ally, e) <= e.abilityRange
+        )
           ally.health = Math.min(ally.maxHealth, ally.health + e.heal);
       this.emit("heal", { enemy: e, radius: e.abilityRange });
+    }
+    if (e.laysEggs) {
+      const live = this.enemies.filter(
+        (a) => a.alive && a.type === "eggsac" && a.layerId === e.id,
+      ).length;
+      if (live < (e.eggCap || 12)) {
+        const sac = this.spawn("eggsac", { trail: e.trail });
+        sac.progress = e.progress;
+        Object.assign(sac, e.trail.onPath(sac.progress));
+        sac.layerId = e.id;
+        // Egg sacs keep their flat paper-thin health at every wave.
+        sac.health = sac.maxHealth = ENEMIES.eggsac.health;
+        this.emit("egg", { enemy: sac, layer: e });
+      }
     }
     if (
       e.boss &&
@@ -791,9 +866,9 @@ export class Game {
         "runner",
         "sprout",
       ]) {
-        const ally = this.spawn(type);
+        const ally = this.spawn(type, { trail: e.trail });
         ally.progress = Math.max(0, e.progress - 30);
-        Object.assign(ally, this.trail.onPath(ally.progress));
+        Object.assign(ally, e.trail.onPath(ally.progress));
         // Finite summons grant small bounties; the boss cannot farm a stalled wave.
         ally.reward = Math.min(ally.reward, 6);
       }
@@ -824,6 +899,9 @@ export class Game {
     this.waveTime += dt;
     while (this.queue.length && this.queue[0].at <= this.waveTime) {
       const entry = this.queue.shift();
+      // Deal queue spawns round-robin across the map's trails (only
+      // Two Fronts has more than one; single-trail maps are unaffected).
+      entry.trail = this.trails[this.trailCursor++ % this.trails.length];
       this.spawn(entry.type, entry);
     }
     for (const e of this.enemies) {
@@ -862,11 +940,46 @@ export class Game {
       e.brittleLeft = Math.max(0, e.brittleLeft - dt);
       e.slowLeft = Math.max(0, e.slowLeft - dt);
       if (!e.slowLeft) e.slow = 1;
+      // Diving (Dustdiver): alternate marching on the surface with
+      // burrowing underground, where it cannot be targeted or hit.
+      if (e.burrowPeriod) {
+        if (e.burrowed) {
+          e.burrowLeft -= dt;
+          if (e.burrowLeft <= 0) {
+            e.burrowed = false;
+            e.burrowTimer = e.burrowPeriod;
+            this.emit("surface", { enemy: e });
+          }
+        } else {
+          e.burrowTimer -= dt;
+          if (e.burrowTimer <= 0 && e.frozen <= 0) {
+            e.burrowed = true;
+            e.burrowLeft = e.burrowTime;
+            this.emit("dive", { enemy: e });
+          }
+        }
+      }
+      // Egg sacs hatch where they were laid; freezing pauses the countdown.
+      if (e.hatchTime && e.frozen <= 0) {
+        e.hatchLeft -= dt;
+        if (e.hatchLeft <= 0) {
+          e.alive = false;
+          for (let i = 0; i < (e.hatchCount || 2); i++) {
+            const chick = this.spawn(e.hatchType || "sprout", {
+              trail: e.trail,
+            });
+            chick.progress = Math.max(0, e.progress - i * 8);
+            Object.assign(chick, e.trail.onPath(chick.progress));
+          }
+          this.emit("hatch", { enemy: e });
+          continue;
+        }
+      }
       const stopped = Math.min(dt, e.frozen);
       e.frozen = Math.max(0, e.frozen - dt);
       e.progress += e.speed * e.slow * (dt - stopped);
-      Object.assign(e, this.trail.onPath(e.progress));
-      if (e.progress >= this.trail.PATH_LENGTH) {
+      Object.assign(e, e.trail.onPath(e.progress));
+      if (e.progress >= e.trail.PATH_LENGTH) {
         e.alive = false;
         const livesBefore = this.lives;
         this.lives = Math.max(0, this.lives - e.lives);
@@ -956,6 +1069,13 @@ export class Game {
       p.y += ((p.target.y - p.y) * move) / d;
       return true;
     });
+    // Leftover egg sacs are cleared unhatched once nothing else remains:
+    // a wave never waits on eggs alone.
+    if (
+      !this.queue.length &&
+      this.enemies.every((e) => !e.alive || e.stationary)
+    )
+      for (const e of this.enemies) if (e.stationary) e.alive = false;
     this.enemies = this.enemies.filter((e) => e.alive);
     if (!this.remaining) {
       this.active = false;

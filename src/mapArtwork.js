@@ -8,6 +8,12 @@ export const MAP_IDS = [
   "garden",
   "crystal",
   "coast",
+  "twinponds",
+  "roundabout",
+  "switchbacks",
+  "twofronts",
+  "spiral",
+  "riverbend",
 ];
 export function mapArtwork(id) {
   return MAP_IDS.includes(id) ? `assets/v5/maps/map_${id}.png` : null;

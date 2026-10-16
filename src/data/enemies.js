@@ -43,4 +43,39 @@ export const ENEMIES = {
     abilityPeriod: 8,
     controlResistance: 0.65,
   }),
+  // Expansion enemies (2026-10). Traits are implemented in Game.js:
+  // dodge (Shade Slip), burrowPeriod/burrowTime/burrowGrace (diving),
+  // laysEggs/eggCap (spawning), splitType/splitSpeed (generalized splits),
+  // hatchTime/stationary (the egg sac itself). See ENGINE_TRAITS_DESIGN.md.
+  dustdiver: enemy("Dustdiver", 95, 72, 13, 12, 0xd9a45b, {
+    burrowPeriod: 3.5,
+    burrowTime: 1.2,
+    burrowGrace: 1,
+  }),
+  umbraling: enemy("Umbraling", 60, 108, 5, 9, 0x5a4a7a),
+  shadowhart: enemy("Shadowhart", 2400, 85, 150, 22, 0x4a3a63, {
+    miniboss: true,
+    lives: 5,
+    dodge: 0.5,
+    split: 5,
+    splitType: "umbraling",
+    splitSpeed: 1,
+    controlResistance: 0.25,
+  }),
+  broodmother: enemy("The Broodmother", 3200, 26, 175, 24, 0xb5793a, {
+    miniboss: true,
+    lives: 5,
+    armor: 150,
+    laysEggs: true,
+    eggCap: 12,
+    abilityPeriod: 4,
+    controlResistance: 0.5,
+  }),
+  eggsac: enemy("Egg Sac", 60, 0, 1, 10, 0xe8a84b, {
+    lives: 0,
+    stationary: true,
+    hatchTime: 3,
+    hatchType: "sprout",
+    hatchCount: 2,
+  }),
 };

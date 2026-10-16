@@ -197,4 +197,82 @@ export const EXPANSION_TOWERS = {
       ]),
     ],
   },
+  tidecaller: {
+    name: "Tidecaller",
+    subtitle: "Water · sails the ponds",
+    icon: "⚓",
+    color: 0x4db8c8,
+    hex: "#4db8c8",
+    cost: 240,
+    prices: [300, 750, 2100],
+    waterOnly: true,
+    base: {
+      damage: 26,
+      range: 150,
+      cooldown: 1.1,
+      damageType: "physical",
+      armorDamage: 6,
+    },
+    paths: [
+      path("Leviathan Harpoon", [
+        tier("Reinforced Harpoon", "A heavier harpoon that cracks shells and armor.", {
+          damage: 44,
+          armorDamage: 14,
+        }),
+        tier("Twin Harpoons", "Paired harpoons punch through the first two targets.", {
+          damage: 66,
+          armorDamage: 22,
+          pierce: 2,
+        }),
+        tier("Leviathan Harpooner", "A warship cannon firing ship-killer harpoons.", {
+          damage: 190,
+          armorDamage: 60,
+          range: 165,
+          rate: 0.85,
+        }),
+      ]),
+      path("Storm Paddlewheel", [
+        tier("Stern Paddlewheel", "The wheel churns — shots come far faster.", {
+          damage: 19,
+          rate: 0.62,
+        }),
+        tier("Twin Paddlewheels", "Twin wheels throw up a soaking spray.", {
+          damage: 24,
+          rate: 0.55,
+          splash: 30,
+        }),
+        tier("Storm Paddlewheel", "A storm engine: rapid spray and arcing storm bolts.", {
+          damage: 30,
+          rate: 0.5,
+          splash: 44,
+          storm: 2,
+        }),
+      ]),
+      path("Maelstrom Keeper", [
+        tier("Rippling Wake", "Every shot spreads a slowing ripple.", {
+          damage: 16,
+          splash: 36,
+          slow: 0.8,
+          duration: 1.2,
+        }),
+        tier("Whirlpool", "Shots leave a swirling pool that chews and slows.", {
+          damage: 20,
+          pool: 54,
+          poolDamage: 11,
+          poolDuration: 3,
+          slow: 0.7,
+          duration: 1.6,
+        }),
+        tier("Maelstrom Keeper", "A living maelstrom that drags enemies backward.", {
+          damage: 34,
+          pool: 76,
+          poolDamage: 20,
+          poolDuration: 4,
+          slow: 0.6,
+          duration: 2,
+          knockback: 18,
+        }),
+      ]),
+    ],
+  },
 };

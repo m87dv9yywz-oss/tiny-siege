@@ -29,7 +29,7 @@ for(const[width,height]of[[375,680],[390,730],[844,330],[844,390],[932,360],[667
  await page.locator('#begin-adventure').tap();
  const cards=await page.locator('.tower-card').evaluateAll(cards=>cards.map(c=>{const b=c.getBoundingClientRect();return{name:c.dataset.tower,box:b.toJSON(),parts:['.tower-icon img','.tower-name b','.tower-cost',...(c.classList.contains('locked')?['.tower-lock']:[])].map(s=>({selector:s,box:c.querySelector(s).getBoundingClientRect().toJSON()}))};}));
  for(const c of cards)for(const p of c.parts){expect(p.box.x,`${c.name} ${p.selector} left`).toBeGreaterThanOrEqual(c.box.x);expect(p.box.right,`${c.name} ${p.selector} right`).toBeLessThanOrEqual(c.box.right);expect(p.box.y).toBeGreaterThanOrEqual(c.box.y);expect(p.box.bottom,`${c.name} ${p.selector} bottom`).toBeLessThanOrEqual(c.box.bottom);}
- expect(cards.filter(c=>c.parts.length===4)).toHaveLength(5);
+ expect(cards.filter(c=>c.parts.length===4)).toHaveLength(6);
  for(const c of cards)expect(c.parts[0].box.bottom, `${c.name} icon stays above its label`).toBeLessThanOrEqual(c.parts[1].box.top+1);
  await textFits(page,'.tower-card,#start-wave');
  const overlap=await page.locator('.hud').evaluate(h=>{const kids=[...h.children].map(e=>({label:e.className,b:e.getBoundingClientRect()}));return kids.flatMap((a,i)=>kids.slice(i+1).filter(b=>Math.min(a.b.right,b.b.right)>Math.max(a.b.left,b.b.left)+1&&Math.min(a.b.bottom,b.b.bottom)>Math.max(a.b.top,b.b.top)+1).map(b=>[a.label,b.label]));});expect(overlap).toEqual([]);
@@ -40,14 +40,16 @@ test('death fades and tower attacks never enlarge illustrated PNGs to their sour
  const types=Object.keys(ENEMIES);
  const result=await page.evaluate(async types=>{
   const {ui,model:g}=window.__tinySiege,s=ui.scene;ui.helpOpen=false;
-  g.gold=10000;const towers=Object.keys(g.participation).map((type,i)=>g.place(type,70+i*100,80)).filter(Boolean);
+  // Twin Ponds fixture: the water-only Tidecaller needs a pond to stand in.
+  g.configure({map:'twinponds',difficulty:'medium',profile:null});g.reset();g.gold=10000;
+  const towers=[];for(const type of Object.keys(g.participation)){let placed=null;scan:for(let y=70;y<620;y+=26)for(let x=40;x<930;x+=26){if(!g.canPlace(type,x,y)){placed=g.place(type,x,y);break scan;}}if(placed)towers.push(placed);}
   await new Promise(requestAnimationFrame);
   for(const t of towers)s.effect({type:'attack',tower:t});
   for(const type of types){const e=g.spawn(type);s.effect({type:'death',enemy:e});}
   const frames=[];for(let i=0;i<18;i++){await new Promise(requestAnimationFrame);frames.push({death:s.effects.filter(e=>e.type==='death').map(e=>({width:e.text.displayWidth,height:e.text.displayHeight,type:e.text.texture.key.replace('v5-enemy-','')})),towers:[...s.towerSprites.values()].map(t=>t.displayWidth)});}
   return{frames,towerCount:towers.length};
  },types);
- expect(result.towerCount).toBe(8);
- expect(result.frames.some(f=>f.death.length===14)).toBe(true);
+ expect(result.towerCount).toBe(9);
+ expect(result.frames.some(f=>f.death.length===19)).toBe(true);
  for(const frame of result.frames){for(const e of frame.death){expect(e.width).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);expect(e.height).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);}for(const w of frame.towers)expect(w).toBeLessThanOrEqual(89);}
 });

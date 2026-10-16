@@ -23,7 +23,7 @@ import {
   applyOperation,
   migrateProfile,
 } from "../src/progression/profiles.js";
-const asLegacy=(p)=>{const copy=structuredClone(p);copy.schemaVersion=2;for(const k of ['heroes','relics','mapProgress'])delete copy[k];for(const k of ['wind','rune']){delete copy.towerXP[k];delete copy.unlockedUpgrades[k];}return copy;};
+const asLegacy=(p)=>{const copy=structuredClone(p);copy.schemaVersion=2;for(const k of ['heroes','relics','mapProgress'])delete copy[k];for(const k of ['wind','rune','tidecaller']){delete copy.towerXP[k];delete copy.unlockedUpgrades[k];}return copy;};
 const freshProfile=(...args)=>asLegacy(modernProfile(...args));
 let env;
 before(async () => {

@@ -33,6 +33,7 @@ export class GameScene extends Phaser.Scene {
     this.model = model;
     this.ui = ui;
     this.towerSprites = new Map();
+    this.slips = new Map();
     this.enemySprites = new Map();
     this.effects = [];
   }
@@ -375,6 +376,40 @@ export class GameScene extends Phaser.Scene {
             color: 0xb7c4ca,
           });
     }
+    if (type === "dodge") {
+      this.slips.set(enemy.id, enemy.slipX || 6);
+      this.effects.push({
+        type: "ring",
+        x: enemy.x,
+        y: enemy.y,
+        color: 0xc9a7ff,
+        age: 0,
+        life: 0.35,
+        radius: 26,
+      });
+    }
+    if (type === "dive" || type === "surface")
+      for (let i = 0; i < 7; i++)
+        this.effects.push({
+          type: "debris",
+          x: enemy.x,
+          y: enemy.y + 4,
+          dx: Math.cos(i * 2.4) * 34,
+          dy: -18 - (i % 3) * 9,
+          age: 0,
+          life: 0.5,
+          color: 0xa97d4f,
+        });
+    if (type === "egg" || type === "hatch")
+      this.effects.push({
+        type: "ring",
+        x: enemy.x,
+        y: enemy.y,
+        color: 0xffcf7d,
+        age: 0,
+        life: 0.4,
+        radius: 22,
+      });
     if (type === "attack") {
       const sprite = this.towerSprites.get(tower.id);
       if (sprite && !this.tweens.isTweening(sprite))
@@ -584,7 +619,10 @@ export class GameScene extends Phaser.Scene {
         sprite.y =
           t.y -
           (artworkTexture(t) !== null ? 0 : 13) +
-          Math.sin(time * 0.002 + t.id) * 0.7;
+          Math.sin(
+            time * (TOWERS[t.type].waterOnly ? 0.0011 : 0.002) + t.id,
+          ) *
+            (TOWERS[t.type].waterOnly ? 1.9 : 0.7);
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)
         if (artworkTexture(t) === null && t.paths[path]) {
@@ -629,6 +667,11 @@ export class GameScene extends Phaser.Scene {
         g.fillStyle(TOWERS[t.type].color, 0.07);
         g.fillCircle(t.x, t.y, towerStats(t).range);
       }
+    }
+    for (const [id, v] of this.slips) {
+      const nv = v * Math.max(0, 1 - dt * 6);
+      if (Math.abs(nv) < 0.2) this.slips.delete(id);
+      else this.slips.set(id, nv);
     }
     const enemyIds = new Set(this.model.enemies.map((e) => e.id));
     for (const [id, sprite] of this.enemySprites)
@@ -700,18 +743,50 @@ export class GameScene extends Phaser.Scene {
           }
         }
       }
+      // Direction polish: mirror with hysteresis so hairpins don't make the
+      // sprite flicker, lean a few degrees into the direction of travel,
+      // and honor the sideways slip when a Shadowhart dodges.
+      const cosA = Math.cos(e.angle || 0);
+      let flip = sprite.getData("flip");
+      if (cosA > 0.35) flip = false;
+      else if (cosA < -0.35) flip = true;
+      if (flip === undefined) flip = cosA < 0;
+      sprite.setData("flip", flip);
+      const leanFrom = sprite.getData("lean") || 0,
+        leanTo = cosA * 0.1 * (flip ? -1 : 1),
+        lean = leanFrom + (leanTo - leanFrom) * Math.min(1, dt * 7);
+      sprite.setData("lean", lean);
+      const slip = this.slips.get(e.id) || 0;
       sprite
-        .setPosition(e.x, e.y - 7 + Math.sin(e.progress * 0.12) * 1.5)
+        .setPosition(
+          e.x + slip,
+          e.y -
+            7 +
+            Math.sin(e.progress * 0.12) * 1.5 +
+            (e.burrowed ? e.radius * 0.62 : 0),
+        )
         .setDepth(e.y + 30)
-        .setFlipX(Math.cos(e.angle) < 0);
+        .setFlipX(flip)
+        .setRotation(lean);
+      if (e.burrowed) {
+        // A travelling dust mound and the lamp glow mark the diver below.
+        g.fillStyle(0x8a6a42, 0.85);
+        g.fillEllipse(e.x, e.y + 7, e.radius * 2.1, e.radius * 0.8);
+        g.fillStyle(0x6e5233, 0.9);
+        g.fillEllipse(e.x - 4, e.y + 5, e.radius * 1.1, e.radius * 0.5);
+        g.fillStyle(0xffd98a, 0.95);
+        g.fillCircle(e.x, e.y + 2, 2.4);
+      }
       const hitLeft = Math.max(0, (sprite.getData("hitLeft") || 0) - dt);
       sprite.setData("hitLeft", hitLeft);
       sprite.setAlpha(
         hitLeft > 0
           ? 0.6
-          : e.type === "wraith"
-            ? 0.7 + Math.sin(time * 0.003) * 0.12
-            : 1,
+          : e.burrowed
+            ? 0.5
+            : e.type === "wraith"
+              ? 0.7 + Math.sin(time * 0.003) * 0.12
+              : 1,
       );
       sprite.setTint(
         e.frozen > 0

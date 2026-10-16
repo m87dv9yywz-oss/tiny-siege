@@ -214,3 +214,27 @@ export const CAMPAIGNS = {
 
 CAMPAIGNS.crystal = { id:'crystal', name:'Crystal Caverns', biome:'crystal', first:160, repeat:50, description:'Glowing switchbacks, crystal creatures and the Crystal Colossus.', waves: WAVES.map((groups,i)=> i===19 ? [{type:'crystalBoss',count:1,interval:1},{type:'crystal',count:18,interval:.65}] : [...groups, ...(i>=4?[{type:'crystal',count:4+Math.floor(i/3),interval:.7}]:[])]) };
 CAMPAIGNS.coast = { id:'coast', name:'Ember Coast', biome:'coast', first:170, repeat:55, description:'Coastal straights, lava islands and an Ember Drake.', waves: WAVES.map((groups,i)=> i===19 ? [{type:'drake',count:1,interval:1},{type:'ember',count:20,interval:.6}] : [...groups, ...(i>=4?[{type:'ember',count:4+Math.floor(i/3),interval:.7}]:[])]) };
+// Expansion maps (2026-10): same curriculum treatment as crystal/coast —
+// a themed enemy woven in from wave 5 and a boss finale on wave 20.
+const expansionCampaign = (id, name, first, repeat, description, theme, finale) => ({
+  id, name, biome: id, first, repeat, description,
+  waves: WAVES.map((groups, i) => i === 19 ? finale : [...groups, ...(i >= 4 ? [{ type: theme, count: 4 + Math.floor(i / 3), interval: .7 }] : [])]),
+});
+CAMPAIGNS.twinponds = expansionCampaign('twinponds', 'Twin Ponds', 150, 45,
+  'Two lily ponds in a spring meadow — and the only waters where the Tidecaller sails.',
+  'crystal', [{type:'boss',count:1,interval:1},{type:'crystal',count:16,interval:.6}]);
+CAMPAIGNS.roundabout = expansionCampaign('roundabout', 'Roundabout', 160, 48,
+  'A spiral road around a glowing pond in an enchanted glade. Runners love the loop.',
+  'runner', [{type:'boss',count:1,interval:1},{type:'runner',count:18,interval:.45}]);
+CAMPAIGNS.switchbacks = expansionCampaign('switchbacks', 'Switchbacks', 175, 52,
+  'A red-rock canyon zigzag. The longest road in the kingdom — and the tightest building land.',
+  'armored', [{type:'boss',count:1,interval:1},{type:'armored',count:16,interval:.7}]);
+CAMPAIGNS.twofronts = expansionCampaign('twofronts', 'Two Fronts', 180, 54,
+  'Enemies march from BOTH the west and east gates at once. Defend two roads with one army.',
+  'wraith', [{type:'boss',count:1,interval:1},{type:'wraith',count:14,interval:.6}]);
+CAMPAIGNS.spiral = expansionCampaign('spiral', 'The Spiral', 185, 56,
+  'A gravel garden spiral winding into the castle plaza at its heart.',
+  'shard', [{type:'crystalBoss',count:1,interval:1},{type:'shard',count:14,interval:.65}]);
+CAMPAIGNS.riverbend = expansionCampaign('riverbend', 'Riverbend', 190, 58,
+  'A short, spicy road past a golden lake. The Tidecaller rules these waters.',
+  'ember', [{type:'drake',count:1,interval:1},{type:'ember',count:18,interval:.6}]);

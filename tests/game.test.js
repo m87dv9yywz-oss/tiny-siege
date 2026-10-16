@@ -35,7 +35,7 @@ test("starting resources, prices, legal placement, collisions, and honest refund
   assert.equal(g.active, false);
   assert.deepEqual(
     Object.values(TOWERS).map((t) => t.cost),
-    [75, 160, 130, 150, 200, 115, 145, 175],
+    [75, 160, 130, 150, 200, 115, 145, 175, 240],
   );
   assert.equal(g.place("archer", 150, 170), null);
   assert.equal(g.place("archer", -4, 100), null);
@@ -54,9 +54,15 @@ test("starting resources, prices, legal placement, collisions, and honest refund
 for (const [type, def] of Object.entries(TOWERS))
   for (let path = 0; path < 3; path++)
     test(`${type} path ${path}: every tier, exact prices, distinct evolution and sell investment`, () => {
-      const g = new Game();
+      // Water towers can only be placed in a pond: use Twin Ponds and a
+      // pond-center spot for them, the usual grass spot for everyone else.
+      const g = def.waterOnly
+        ? new Game(() => {}, { map: "twinponds" })
+        : new Game();
       g.gold = 10000;
-      const t = g.place(type, 145, 105);
+      const t = def.waterOnly
+        ? g.place(type, 285, 235)
+        : g.place(type, 145, 105);
       let spent = def.cost;
       const base = towerStats(t);
       for (let n = 0; n < 3; n++) {
@@ -431,8 +437,8 @@ for (const strategy of Object.keys(STRATEGIES))
       report.find((w) => w.towers.some((t) => t.paths.includes(3))).wave <= 16,
     );
   });
-test("fourteen classes and the preserved twenty Classic waves introduce abilities gradually, with one final boss", () => {
-  assert.equal(Object.keys(ENEMIES).length, 14);
+test("nineteen classes and the preserved twenty Classic waves introduce abilities gradually, with one final boss", () => {
+  assert.equal(Object.keys(ENEMIES).length, 19);
   assert.equal(WAVES.length, 20);
   assert.ok(WAVES.slice(0, 3).every((w) => w.every((g) => g.type === "basic")));
   for (const [index, type] of [

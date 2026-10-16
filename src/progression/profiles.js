@@ -21,6 +21,7 @@ export const UNLOCK_COSTS = {
   grove: 90,
   wind: 100,
   rune: 110,
+  tidecaller: 120,
 };
 const LEGACY_TYPES = ["archer", "cannon", "frost", "fire", "lightning"];
 const V31_TYPES = [...LEGACY_TYPES, "grove"];
@@ -30,7 +31,20 @@ const profileTypes = (p) =>
     : p?.schemaVersion === 2
       ? V31_TYPES
       : TYPES;
-const MAP_IDS = ["emerald", "amber", "moon", "garden", "crystal", "coast"];
+const MAP_IDS = [
+  "emerald",
+  "amber",
+  "moon",
+  "garden",
+  "crystal",
+  "coast",
+  "twinponds",
+  "roundabout",
+  "switchbacks",
+  "twofronts",
+  "spiral",
+  "riverbend",
+];
 export const XP_COSTS = { 2: 180, 3: 500 };
 export const freshProfile = (
   nickname = "Little Knight",

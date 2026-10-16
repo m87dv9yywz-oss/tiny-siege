@@ -21,8 +21,8 @@ for (const [width, height] of sizes)
     await page.locator("#new-profile").tap();
     await page.locator("#nickname").fill("Sunny Knight");
     await page.locator("#profile-form button").tap();
-    await expect(page.locator(".map-choice")).toHaveCount(6);
-    await expect(page.locator(".level-state.new")).toHaveCount(6);
+    await expect(page.locator(".map-choice")).toHaveCount(12);
+    await expect(page.locator(".level-state.new")).toHaveCount(12);
     expect(
       await page
         .locator(".home-card")

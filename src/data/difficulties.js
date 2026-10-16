@@ -37,9 +37,25 @@ export function campaignFor(map, mode) {
   const difficulty = DIFFICULTIES[mode];
   if (!difficulty) throw Error("Choose Easy, Medium or Hard.");
   const theme =
-    map === "crystal" ? "crystal" : map === "coast" ? "ember" : null;
+    map === "crystal" || map === "twinponds"
+      ? "crystal"
+      : map === "coast" || map === "riverbend"
+        ? "ember"
+        : map === "roundabout"
+          ? "runner"
+          : map === "switchbacks"
+            ? "armored"
+            : map === "twofronts"
+              ? "wraith"
+              : map === "spiral"
+                ? "shard"
+                : null;
   const boss =
-    map === "crystal" ? "crystalBoss" : map === "coast" ? "drake" : "boss";
+    map === "crystal" || map === "spiral"
+      ? "crystalBoss"
+      : map === "coast" || map === "riverbend"
+        ? "drake"
+        : "boss";
   const waves = Array.from({ length: difficulty.waves }, (_, i) => {
     const wave = i + 1;
     if (wave <= 3) return structuredClone(WAVES[i]);
@@ -69,6 +85,22 @@ export function campaignFor(map, mode) {
     if (stage)
       groups.push(
         g(stage % 2 ? "wraith" : "armored", Math.min(30, stage * 6), 0.65),
+      );
+    // Dustdivers teach the timing game from wave 18, before the first
+    // miniboss arrives: they dive underground and cannot be hit mid-dive.
+    if (wave >= 18)
+      groups.push(
+        g("dustdiver", Math.min(10, 3 + Math.floor((wave - 18) / 8)), 0.9),
+      );
+    // Minibosses from wave 25, alternating every ten waves (Shadowhart,
+    // then the Broodmother), in pairs on the deepest waves.
+    if (wave >= 25 && wave % 10 === 5)
+      groups.push(
+        g(
+          (wave - 25) / 10 % 2 === 0 ? "shadowhart" : "broodmother",
+          wave >= 90 ? 2 : 1,
+          2.5,
+        ),
       );
     return groups;
   });

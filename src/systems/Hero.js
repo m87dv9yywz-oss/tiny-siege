@@ -30,7 +30,7 @@ export function validDestination(game, x, y) {
     x <= 930 &&
     y >= 55 &&
     y <= 610 &&
-    game.trail.distanceToPath(x, y) > 32 &&
+    Math.min(...game.trails.map((t) => t.distanceToPath(x, y))) > 32 &&
     !(OBSTACLES[game.campaign.id] || []).some(
       (o) => Math.hypot(o.x - x, o.y - y) < o.r + 14,
     )
@@ -151,7 +151,7 @@ export function heroAttack(game, ability = false) {
           e.progress - 35 * (1 - (e.controlResistance || 0)),
         );
         e.pushCooldown = 3;
-        Object.assign(e, game.trail.onPath(e.progress));
+        Object.assign(e, e.trail.onPath(e.progress));
       }
     }
   }
