@@ -1,4 +1,5 @@
 import { HEROES } from "../data/heroes.js";
+import { heroStage } from "../heroArtwork.js";
 import { heroStart, moveHero, heroAttack, stepHero } from "./Hero.js";
 import {
   TOWERS,
@@ -218,13 +219,16 @@ export class Game {
         HEROES[this.hero.type].buffRange *
           (this.relics.includes("banner") ? 1.2 : 1)
     ) {
+      // Teen and Adult heroes (level 4+) project a stronger aura.
+      const grown = heroStage(this.hero.level) !== "baby";
       if (this.hero.type === "dragon" && t.type === "fire") {
-        damage += 0.15;
+        damage += grown ? 0.2 : 0.15;
         stats.burn = (stats.burn || 0) * 1.15;
       }
-      if (this.hero.type === "dinosaur" && t.type === "cannon") armor += 0.25;
+      if (this.hero.type === "dinosaur" && t.type === "cannon")
+        armor += grown ? 0.3 : 0.25;
       if (this.hero.type === "tiger" && t.type === "archer")
-        rate = Math.min(0.32, rate + 0.12);
+        rate = Math.min(0.32, rate + (grown ? 0.16 : 0.12));
     }
     if (this.relics.includes("lens")) stats.range *= 1.05;
     stats.damage *= 1 + damage;

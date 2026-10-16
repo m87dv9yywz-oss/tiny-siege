@@ -25,6 +25,15 @@ const RELIC_LABELS = { purse: "Acorn", banner: "Banner", shield: "Shell", lens: 
 const V5UI = (file) => `${import.meta.env.BASE_URL}assets/v5/ui/${file}`;
 const heroCardArt = (id, level = 1) =>
   import.meta.env.BASE_URL + heroArtwork(id, heroStage(level), "card_512");
+// What the next level buys, shown under each hero card. Evolution levels
+// (4 and 7) change the hero's form, aura and ability, so they lead the line.
+const heroNextText = (level) => {
+  if (level >= 10) return "Max level · damage +31.5%";
+  if (level === 3) return "Next: Lv 4 · evolves to Teen, stronger aura";
+  if (level === 6) return "Next: Lv 7 · evolves to Adult, stronger ability";
+  const bonus = (level * 3.5).toFixed(1).replace(/\.0$/, "");
+  return `Next: Lv ${level + 1} · damage +${bonus}%`;
+};
 // Illustrated heroes whose sprites exist but are not playable yet:
 // shown in the collection as locked, decorative cards.
 const LOCKED_HEROES = [
@@ -210,7 +219,7 @@ export class KingdomUI {
                 ? 100
                 : Math.round(((xp - base) / (80 * level ** 2 - base)) * 100),
             [short, species] = h.name.split(" · ");
-          return `<div class="v5-hero-cell"><article class="v5-hero-card ${p.heroes.equipped === id ? "is-equipped" : ""}"><img class="v5-hero-art" src="${heroCardArt(id, level)}" alt="${escape(h.name)}"><div class="v5-hero-level"><img src="${V5UI("ui_badge_level_emerald.png")}" alt=""><span>Lv ${level}</span></div><div class="v5-hero-name">${escape(short)}</div><div class="v5-hero-xp"><i style="width:${pct}%"></i></div><button data-hero="${id}" class="v5-hero-action" ${!p.heroes.unlocked.includes(id) && p.crowns < h.cost ? "disabled" : ""}>${p.heroes.equipped === id ? "Equipped" : p.heroes.unlocked.includes(id) ? "Equip" : `<img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${h.cost}`}</button></article><small class="v5-hero-caption" title="${xp} total XP">${heroStage(level)} · ${xp >= 1000 ? (xp / 1000).toFixed(1) + "k" : xp} XP</small></div>`;
+          return `<div class="v5-hero-cell"><article class="v5-hero-card ${p.heroes.equipped === id ? "is-equipped" : ""}"><img class="v5-hero-art" src="${heroCardArt(id, level)}" alt="${escape(h.name)}"><div class="v5-hero-level"><img src="${V5UI("ui_badge_level_emerald.png")}" alt=""><span>Lv ${level}</span></div><div class="v5-hero-name">${escape(short)}</div><div class="v5-hero-xp"><i style="width:${pct}%"></i></div><button data-hero="${id}" class="v5-hero-action" ${!p.heroes.unlocked.includes(id) && p.crowns < h.cost ? "disabled" : ""}>${p.heroes.equipped === id ? "Equipped" : p.heroes.unlocked.includes(id) ? "Equip" : `<img src="${V5UI("ui_icon_crown.png")}" alt="Crowns"> ${h.cost}`}</button></article><small class="v5-hero-caption" title="${xp} total XP">${heroStage(level)} · ${xp >= 1000 ? (xp / 1000).toFixed(1) + "k" : xp} XP</small><small class="v5-hero-next">${heroNextText(level)}</small></div>`;
         })
         .join("")}${LOCKED_HEROES.map(
           (h) =>
@@ -331,13 +340,37 @@ export class KingdomUI {
     for (const k of Object.keys(stats))
       op.stats[k] = Math.max(0, stats[k] - run.stats[k]);
     const before = this.store.current.crowns;
+    const heroXpBefore = op.hero ? this.store.current.heroes.xp[op.hero] : 0;
     const p = this.store.commit(op);
     this.model.profile = p;
     run.granted = totals;
     run.stats = stats;
     run.heroGranted = heroTotal;
     this.cloud?.sync();
-    return { crowns: p.crowns - before, xp: totals };
+    let hero = null;
+    if (op.hero) {
+      const xpAfter = p.heroes.xp[op.hero],
+        levelAfter = heroLevel(xpAfter),
+        stageAfter = heroStage(levelAfter),
+        nextStageXp =
+          stageAfter === "baby" ? 720 : stageAfter === "teen" ? 2880 : null;
+      hero = {
+        type: op.hero,
+        xp: heroTotal,
+        stage: stageAfter,
+        evolved: stageAfter !== heroStage(heroLevel(heroXpBefore)),
+        toNextStage: nextStageXp
+          ? Math.max(0, nextStageXp - xpAfter)
+          : null,
+        nextStage:
+          stageAfter === "baby"
+            ? "Teen"
+            : stageAfter === "teen"
+              ? "Adult"
+              : null,
+      };
+    }
+    return { crowns: p.crowns - before, xp: totals, hero };
   }
   finishRun() {
     if (this.practice) return "Just for fun · no permanent rewards. Your normal checkpoint is safe.";
@@ -352,13 +385,24 @@ export class KingdomUI {
     }
     this.run.finished = true;
     this.clearBattle();
+    const hero = result.hero,
+      heroLine =
+        hero && hero.xp > 0
+          ? `<br>${HEROES[hero.type].short} +${hero.xp} XP${
+              hero.evolved
+                ? ` · 🎉 Evolved to ${hero.stage[0].toUpperCase()}${hero.stage.slice(1)}!`
+                : hero.toNextStage
+                  ? ` · ${hero.toNextStage} XP to ${hero.nextStage}`
+                  : ""
+            }`
+          : "";
     return `♛ +${result.crowns} Kingdom Crowns · ${this.model.ended === "victory" ? "★".repeat(this.model.lives >= 18 ? 3 : this.model.lives >= 10 ? 2 : 1) : "XP for a brave attempt"}<br>${TYPES.filter(
       (t) => result.xp[t],
     )
       .map((t) => `${TOWERS[t].name} +${result.xp[t]} XP`)
       .join(
         " · ",
-      )}<small>Progress saved. Spend Crowns and XP in your Kingdom.</small>`;
+      )}${heroLine}<small>Progress saved. Spend Crowns and XP in your Kingdom.</small>`;
   }
   saveBattle() {
     if (
