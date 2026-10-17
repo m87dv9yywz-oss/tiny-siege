@@ -156,8 +156,13 @@ export function validateBattle(b) {
     )
       return false;
   }
+  if (!b.participation || typeof b.participation !== "object") return false;
+  // A checkpoint written before a tower launched has no entry for it;
+  // fill zeros (the tower genuinely earned nothing in that run) instead
+  // of discarding the whole run. Unknown towers still reject the save.
+  for (const k of Object.keys(TOWERS))
+    b.participation[k] ||= { time: 0, damage: 0, armor: 0, control: 0, kills: 0 };
   if (
-    !b.participation ||
     Object.keys(b.participation).length !== Object.keys(TOWERS).length ||
     !Object.keys(TOWERS).every(
       (k) =>
@@ -176,7 +181,7 @@ export function validateBattle(b) {
     typeof r.profileId === "string" &&
     r.profileId.length <= 180 &&
     r.finished === false &&
-    Object.keys(TOWERS).every((k) => finite(r.granted?.[k], 800)) &&
+    Object.keys(TOWERS).every((k) => finite(r.granted?.[k] ?? 0, 800)) &&
     ["waves", "damage", "armor", "kills"].every((k) => finite(r.stats?.[k])) &&
     finite(r.heroGranted || 0, 300)
   );

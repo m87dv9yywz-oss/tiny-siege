@@ -83,7 +83,21 @@ export function assembleProfile(core, components) {
   p.heroes.unlocked = [];
   let equipped = 0;
   for (const type of TYPES) {
-    const d = components["towers/" + type];
+    // A tower launched after this cloud save was written has no document
+    // yet; it starts at zero progress rather than blocking the whole load,
+    // and the next save writes its document. Only the expansion-era tower
+    // is optional this way — a missing older document still means the
+    // cloud save is incomplete. (Extend this list when content ships.)
+    const d =
+      components["towers/" + type] ||
+      (type === "tidecaller"
+        ? {
+            earned: 0,
+            spent: 0,
+            paths: [1, 1, 1],
+            unlocked: ["archer", "cannon", "frost"].includes(type),
+          }
+        : null);
     if (!d)
       throw Error("Cloud migration is incomplete; original save retained.");
     p.towerXP[type] = { earned: d.earned, spent: d.spent };
@@ -102,7 +116,22 @@ export function assembleProfile(core, components) {
   }
   if (equipped !== 1) throw Error("Choose one cloud hero.");
   for (const map of MAP_IDS) {
-    const d = components["maps/" + map];
+    // Maps launched after this cloud save was written have no document
+    // yet; they start blank rather than blocking the whole load. Only the
+    // expansion-era maps are optional this way. (Extend when maps ship.)
+    const EXPANSION_MAPS = [
+      "twinponds",
+      "roundabout",
+      "switchbacks",
+      "twofronts",
+      "spiral",
+      "riverbend",
+    ];
+    const d =
+      components["maps/" + map] ||
+      (EXPANSION_MAPS.includes(map)
+        ? { completed: false, stars: 0, ...blankMap() }
+        : null);
     if (!d) throw Error("Cloud map progress is missing.");
     if (d.completed) {
       p.completedMaps.push(map);
