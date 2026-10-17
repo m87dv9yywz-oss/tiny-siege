@@ -1,4 +1,5 @@
 import { heroArtwork, heroStage } from "./heroArtwork.js";
+import { enemyTexture } from "./enemyArtwork.js";
 import { HEROES } from "./data/heroes.js";
 import { towerArtwork } from "./towerArtwork.js";
 import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
@@ -559,9 +560,16 @@ export class UI {
         `<div class="eyebrow">NEXT WAVE · NEW VISITORS</div><h1 id="modal-title">Meet the newcomers</h1><div class="enemy-introductions">${types
           .map((type) => {
             const d = ENEMY_GUIDE[type];
-            const key = this.scene?.textures.exists(`enemy-${type}-intact`)
-              ? `enemy-${type}-intact`
-              : `enemy-${type}`;
+            // Show the same illustrated art the battle uses. The legacy
+            // procedural textures (enemy-<type>-intact) are only a
+            // fallback for types without illustrated sprites.
+            const illustrated = enemyTexture(type);
+            const key =
+              illustrated && this.scene?.textures.exists(illustrated)
+                ? illustrated
+                : this.scene?.textures.exists(`enemy-${type}-intact`)
+                  ? `enemy-${type}-intact`
+                  : `enemy-${type}`;
             const art = this.scene?.textures.getBase64(key);
             return `<article>${art ? `<img class="enemy-portrait" src="${art}" alt="${d.name}">` : `<span>${d.icon}</span>`}<div><h2>${d.name}</h2><b>${d.ability}</b><p>${d.tip}</p></div></article>`;
           })

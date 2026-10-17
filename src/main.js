@@ -64,6 +64,13 @@ const game = new Phaser.Game({
   scene: [new GameScene(model, ui)],
 });
 initCheats(ui, () => model);
+// The page boots behind a splash (see index.html) so the static shell
+// never flashes as a fake game while this bundle loads. The real DOM UI
+// is constructed now; reveal it and retire the splash.
+requestAnimationFrame(() => {
+  document.getElementById("app").style.visibility = "visible";
+  document.getElementById("boot-splash")?.remove();
+});
  // Local browser tests can inspect the simulation without shipping a production cheat API.
 if (import.meta.env.DEV)
   window.__tinySiege = { model, ui, game, profiles, kingdom };
