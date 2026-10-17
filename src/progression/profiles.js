@@ -229,10 +229,10 @@ export function migrateProfile(data) {
   const types = profileTypes(data);
   if (data?.towerXP && Object.hasOwn(data.towerXP, "archerEarned")) {
     const keys = types.flatMap((t) => [t + "Earned", t + "Spent"]);
-    if (
-      Object.keys(data.towerXP).length !== types.length * 2 ||
-      Object.keys(data.towerXP).some((k) => !keys.includes(k))
-    )
+    // Towers added after the save was written are simply absent from the
+    // flattened wire shape; they are backfilled below, not corruption.
+    // Unknown keys still reject the save.
+    if (Object.keys(data.towerXP).some((k) => !keys.includes(k)))
       throw Error("Invalid cloud XP data.");
     data = {
       ...data,
@@ -240,12 +240,21 @@ export function migrateProfile(data) {
         types.map((t) => [
           t,
           {
-            earned: data.towerXP[t + "Earned"],
-            spent: data.towerXP[t + "Spent"],
+            earned: data.towerXP[t + "Earned"] ?? 0,
+            spent: data.towerXP[t + "Spent"] ?? 0,
           },
         ]),
       ),
     };
+  }
+  if (data?.schemaVersion === 3 && data.towerXP && data.unlockedUpgrades) {
+    // A save written before a tower launched (same schema, fewer towers)
+    // gains the new towers at zero progress instead of failing to load.
+    data = structuredClone(data);
+    for (const t of TYPES) {
+      data.towerXP[t] ||= { earned: 0, spent: 0 };
+      data.unlockedUpgrades[t] ||= [1, 1, 1];
+    }
   }
   // The infrastructure prototype used schema 1 with empty nested maps.
   const p = freshProfile(data?.nickname, data?.avatar);

@@ -4,6 +4,7 @@ import { Game } from "../src/systems/Game.js";
 import { TOWERS, towerStats } from "../src/data/towers.js";
 import { HEROES } from "../src/data/heroes.js";
 import { mergeProfiles } from "../src/cloud/firebase.js";
+import { cloudProfile } from "../src/cloud/schema.js";
 import { TRAILS, OBSTACLES } from "../src/data/map.js";
 import { DIFFICULTIES, campaignFor } from "../src/data/difficulties.js";
 import {
@@ -524,4 +525,74 @@ test("adult heroes (level 7) gain a wider, faster-recharging ability", () => {
   g.hero.level = 7;
   assert(g.heroAbility());
   assert.equal(g.hero.abilityLeft, 28 * 0.8);
+});
+
+// Regression (live incident 2026-10-16): a save written before a tower or
+// map launches — same schema 3, fewer entries — must still load with its
+// progress intact; the new content starts at zero. Shaping a current
+// profile by deleting the newest tower reproduces exactly what the
+// previous release wrote to disk and to the cloud.
+const preExpansionProfile = () => {
+  const p = freshProfile("Veteran");
+  p.crowns = 1234;
+  p.towerXP.archer = { earned: 900, spent: 680 };
+  p.completedMaps = ["emerald"];
+  p.mapStars = { emerald: 3 };
+  delete p.towerXP.tidecaller;
+  delete p.unlockedUpgrades.tidecaller;
+  return p;
+};
+test("schema-3 profile written before the Tidecaller loads with progress intact", () => {
+  const out = migrateProfile(preExpansionProfile());
+  assert.equal(out.crowns, 1234);
+  assert.deepEqual(out.towerXP.archer, { earned: 900, spent: 680 });
+  assert.deepEqual(out.towerXP.tidecaller, { earned: 0, spent: 0 });
+  assert.deepEqual(out.unlockedUpgrades.tidecaller, [1, 1, 1]);
+  assert(validateProfile(out));
+});
+test("flattened cloud wire profile from before the Tidecaller loads", () => {
+  const wire = cloudProfile(preExpansionProfile());
+  assert.equal(wire.towerXP.tidecallerEarned, undefined);
+  const out = migrateProfile(wire);
+  assert.equal(out.crowns, 1234);
+  assert.deepEqual(out.towerXP.archer, { earned: 900, spent: 680 });
+  assert(validateProfile(out));
+});
+test("ProfileStore boots a pre-expansion save without the could-not-load warning", () => {
+  const storage = disk();
+  storage.value = JSON.stringify({
+    version: 1,
+    selected: "hero1",
+    profiles: {
+      hero1: { profile: preExpansionProfile(), pending: [], remoteRevision: null },
+    },
+    cloud: {},
+  });
+  const store = new ProfileStore(storage);
+  assert.equal(store.warning, "");
+  assert.equal(store.data.profiles.hero1.profile.crowns, 1234);
+});
+test("cloud assembly tolerates component docs that did not exist when the save was written", () => {
+  const docs = profileDocuments(freshProfile("Veteran"), 1);
+  const { core, ...components } = docs;
+  components["towers/tidecaller"] = null;
+  for (const m of ["twinponds", "roundabout", "switchbacks", "twofronts", "spiral", "riverbend"])
+    components["maps/" + m] = null;
+  const p = assembleProfile(core, components);
+  assert.deepEqual(p.towerXP.tidecaller, { earned: 0, spent: 0 });
+  assert.equal(p.mapProgress.spiral.easy, 0);
+  assert(validateProfile(p));
+});
+test("a checkpoint written before the Tidecaller still validates and restores", () => {
+  const p = freshProfile();
+  const g = new Game(() => {}, { map: "emerald", difficulty: "hard", profile: p, hero: "dragon" });
+  assert(g.place("archer", 190, 80));
+  const b = battleCheckpoint(g, run(g));
+  delete b.participation.tidecaller;
+  delete b.run.granted.tidecaller;
+  assert(validateBattle(b));
+  assert.deepEqual(b.participation.tidecaller, { time: 0, damage: 0, armor: 0, control: 0, kills: 0 });
+  const h = new Game();
+  restoreBattle(h, b, p);
+  assert.equal(h.gold, g.gold);
 });
