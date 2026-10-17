@@ -109,7 +109,7 @@ service cloud.firestore {
     function slots() { return ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79']; }
     function checkpoint(c) {
       return c is map && (c.size()==15 || (c.size()==16 && c.skippedWaves is int && c.skippedWaves>=0 && c.skippedWaves<=1000)) && c.version==1 && c.version is int && c.map in mapIds() && c.difficulty in ['easy','medium','hard','freeplay']
-        && c.wave is int && c.wave>=0 && c.wave<(c.difficulty=='easy'?20:c.difficulty=='medium'?40:c.difficulty=='freeplay'?200:100) && c.lives is int && c.lives>=1 && c.lives<=22
+        && c.wave is int && c.wave>=0 && c.wave<(c.difficulty=='hard'?100:c.difficulty=='easy'?20:c.difficulty=='medium'?40:200) && c.lives is int && c.lives>=1 && c.lives<=22
         && number(c.gold) && number(c.kills) && number(c.earned) && number(c.id) && c.speed is int && c.speed in [1,2,3] && real(c.savedAt,0,1000000000000000)
         && unique(c.relics,relicIds(),2) && runState(c.run) && animal(c.hero) && unique(c.towerSlots,slots(),80);
     }
