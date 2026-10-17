@@ -667,7 +667,6 @@ export class UI {
       this.hideRoyalTip();
       clearTimeout(this.royalTipTimer);
     }
-    }
     this.toast(
       this.model.autoWave
         ? "Auto waves on — each wave starts by itself. Losing a life turns it off."
