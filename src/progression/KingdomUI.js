@@ -124,6 +124,10 @@ export class KingdomUI {
     $("modal")
       .querySelector(".modal-card")
       .classList.add("home-card", "v5-home");
+    // Warm a saved battle's map: resuming skips the prep screen, and
+    // its art should be ready before Continue is tapped. (Fresh
+    // adventures warm on their prep screens instead — boot stays lean.)
+    if (entry?.battle?.map) this.ui.scene?.warmMap?.(entry.battle.map);
     document.querySelectorAll("[data-profile]").forEach(
       (b) =>
         (b.onclick = () =>
@@ -166,6 +170,9 @@ export class KingdomUI {
   }
   prepare(map) {
     if (!this.store.current) return this.editProfile();
+    // Warm the map's full art while the player reads this screen, so
+    // Begin opens on the real battlefield instead of the placeholder.
+    this.ui.scene?.warmMap?.(map);
     this.ui.modal(
       `<div class="v5-banner"><h1 id="modal-title">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</h1></div><div class="v5-prep"><div class="v5-map-card" aria-hidden="true"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapThumbnail(map)}" alt=""><span class="v5-map-name">${escape(CAMPAIGNS[map].name.replace(" · Beginner", ""))}</span></div><div class="v5-prep-side"><div class="difficulty-picker">${Object.entries(
         DIFFICULTIES,

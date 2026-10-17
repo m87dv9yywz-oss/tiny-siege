@@ -16,7 +16,7 @@ import {
   goldenTexture,
   stageTint,
 } from "../enemyArtwork.js";
-import { mapArtwork, mapTexture } from "../mapArtwork.js";
+import { mapArtwork, mapTexture, mapThumbnail } from "../mapArtwork.js";
 import { heroArtwork, heroTexture, heroStage } from "../heroArtwork.js";
 import Phaser from "phaser";
 import { textures, battlefield } from "./art.js";
@@ -189,8 +189,26 @@ export class GameScene extends Phaser.Scene {
     else {
       this.mapImage?.setVisible(false);
       this.battlefieldObjects = battlefield(this, this.model.trail, this.model.campaign.biome);
-      if (key) requestTexture(this, key, import.meta.env.BASE_URL + mapArtwork(id)).then(ok => { if (ok) { apply(); this.trimMapTextures(); } });
+      if (key) {
+        // While the full art downloads, cover the placeholder with the
+        // map's own thumbnail (already cached from the menu cards) so
+        // the field reads as this map loading, never a flat stand-in.
+        const thumbKey = `${key}-thumb`;
+        requestTexture(this, thumbKey, import.meta.env.BASE_URL + mapThumbnail(id)).then(ok => {
+          if (!ok || this.currentMap !== id || this.textures.exists(key)) return;
+          if (!this.mapImage) this.mapImage = this.add.image(480, 320, thumbKey).setDepth(-10);
+          this.mapImage.setTexture(thumbKey).setDisplaySize(960, 640).setVisible(true);
+        });
+        requestTexture(this, key, import.meta.env.BASE_URL + mapArtwork(id)).then(ok => { if (ok) { apply(); this.trimMapTextures(); } });
+      }
     }
+  }
+  // Start a map's full art downloading early (its prep screen, the
+  // home screen) so pressing Begin rarely waits on it at all.
+  warmMap(id) {
+    const key = mapTexture(id);
+    if (key && !this.textures.exists(key))
+      requestTexture(this, key, import.meta.env.BASE_URL + mapArtwork(id));
   }
   heroArt(hero) {
     const stage = heroStage(hero.level), key = heroTexture(hero.type, stage);
