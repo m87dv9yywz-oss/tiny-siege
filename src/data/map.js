@@ -130,9 +130,66 @@ export const TRAILS = {
   amber: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 140) * 32])),
   moon: createTrail(knots.map(([x, y]) => [x, 640 - y])),
   garden: createTrail(knots.map(([x, y]) => [x, y + Math.sin(x / 185) * 48])),
+  // Expansion maps (2026-10): geometry shared with the painted
+  // backgrounds; see NEW_MAPS_GEOMETRY.json in the art set.
+  twinponds: createTrail([[-30, 110], [110, 110], [200, 116], [285, 123], [379, 158], [418, 235], [379, 312], [285, 347], [191, 312], [150, 360], [240, 430], [400, 428], [532, 415], [574, 327], [665, 303], [756, 327], [798, 415], [756, 503], [665, 527], [800, 545], [990, 552]]),
+  roundabout: createTrail([[-30, 330], [150, 330], [310, 330], [352, 208], [480, 160], [608, 208], [650, 330], [608, 458], [480, 498], [356, 456], [338, 352], [368, 268], [452, 204], [562, 224], [600, 318], [556, 424], [668, 492], [820, 540], [990, 556]]),
+  switchbacks: createTrail([[-30, 90], [820, 90], [850, 103], [866, 142], [850, 182], [820, 195], [140, 195], [110, 208], [94, 247], [110, 287], [140, 300], [820, 300], [850, 313], [866, 352], [850, 392], [820, 405], [140, 405], [110, 418], [94, 457], [110, 497], [140, 510], [700, 510], [820, 548], [990, 556]]),
+  twofronts: createTrail([[140, -30], [140, 92], [298, 160], [298, 332], [428, 424], [452, 520], [452, 670]]),
+  spiral: createTrail([[-30, 60], [900, 60], [900, 580], [60, 580], [60, 175], [785, 175], [785, 465], [175, 465], [175, 290], [560, 290], [560, 352], [472, 322]]),
+  riverbend: createTrail([[-30, 104], [168, 100], [272, 238], [392, 296], [470, 150], [566, 296], [688, 244], [762, 116], [990, 108]]),
 };
 export const { PATH, SEGMENTS, PATH_LENGTH, onPath, distanceToPath } =
   TRAILS.classic;
+
+// Every map's full trail list. Most maps have one trail; twofronts has two
+// independent entries that share the same exit.
+export const TRAIL_SETS = {
+  classic: [TRAILS.classic],
+  emerald: [TRAILS.emerald],
+  amber: [TRAILS.amber],
+  moon: [TRAILS.moon],
+  garden: [TRAILS.garden],
+  crystal: [TRAILS.crystal],
+  coast: [TRAILS.coast],
+  twinponds: [
+    createTrail([[-30, 110], [110, 110], [200, 116], [285, 123], [379, 158], [418, 235], [379, 312], [285, 347], [191, 312], [150, 360], [240, 430], [400, 428], [532, 415], [574, 327], [665, 303], [756, 327], [798, 415], [756, 503], [665, 527], [800, 545], [990, 552]]),
+  ],
+  roundabout: [
+    createTrail([[-30, 330], [150, 330], [310, 330], [352, 208], [480, 160], [608, 208], [650, 330], [608, 458], [480, 498], [356, 456], [338, 352], [368, 268], [452, 204], [562, 224], [600, 318], [556, 424], [668, 492], [820, 540], [990, 556]]),
+  ],
+  switchbacks: [
+    createTrail([[-30, 90], [820, 90], [850, 103], [866, 142], [850, 182], [820, 195], [140, 195], [110, 208], [94, 247], [110, 287], [140, 300], [820, 300], [850, 313], [866, 352], [850, 392], [820, 405], [140, 405], [110, 418], [94, 457], [110, 497], [140, 510], [700, 510], [820, 548], [990, 556]]),
+  ],
+  twofronts: [
+    createTrail([[140, -30], [140, 92], [298, 160], [298, 332], [428, 424], [452, 520], [452, 670]]),
+    createTrail([[820, -30], [820, 112], [662, 182], [662, 344], [532, 432], [508, 520], [508, 670]]),
+  ],
+  spiral: [
+    createTrail([[-30, 60], [900, 60], [900, 580], [60, 580], [60, 175], [785, 175], [785, 465], [175, 465], [175, 290], [560, 290], [560, 352], [472, 322]]),
+  ],
+  riverbend: [
+    createTrail([[-30, 104], [168, 100], [272, 238], [392, 296], [470, 150], [566, 296], [688, 244], [762, 116], [990, 108]]),
+  ],
+};
+
+// Water regions (ellipse ponds/lakes). Only the Tidecaller boat tower may
+// be placed on water; land towers are rejected inside these ellipses.
+export const PONDS = {
+  twinponds: [{"x": 285, "y": 235, "rx": 95, "ry": 78}, {"x": 665, "y": 415, "rx": 95, "ry": 78}],
+  roundabout: [{"x": 480, "y": 330, "rx": 80, "ry": 64}],
+  twofronts: [{"x": 480, "y": 290, "rx": 70, "ry": 52}],
+  riverbend: [{"x": 480, "y": 478, "rx": 300, "ry": 128}],
+};
+export function inPond(mapId, x, y, shrink = 0) {
+  return (PONDS[mapId] || []).some(
+    (p) =>
+      ((x - p.x) / Math.max(1, p.rx - shrink)) ** 2 +
+        ((y - p.y) / Math.max(1, p.ry - shrink)) ** 2 <=
+      1,
+  );
+}
+
 
 export const OBSTACLES = {
   crystal: [
@@ -144,5 +201,8 @@ export const OBSTACLES = {
     { x: 450, y: 100, r: 80 },
     { x: 470, y: 320, r: 35 },
     { x: 810, y: 475, r: 24 },
-  ],
+  ],  twinponds: [{"x": 480, "y": 120, "r": 26}],
+  roundabout: [{"x": 90, "y": 540, "r": 24}, {"x": 880, "y": 120, "r": 24}],
+  switchbacks: [{"x": 480, "y": 145, "r": 22}, {"x": 480, "y": 345, "r": 22}, {"x": 480, "y": 545, "r": 22}],
+  riverbend: [{"x": 120, "y": 300, "r": 24}, {"x": 850, "y": 300, "r": 24}],
 };

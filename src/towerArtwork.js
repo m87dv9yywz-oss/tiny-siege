@@ -10,6 +10,7 @@ export const TOWER_TYPES = [
   "grove",
   "wind",
   "rune",
+  "tidecaller",
 ];
 export const TOWER_STATES = [
   "0-0-0",

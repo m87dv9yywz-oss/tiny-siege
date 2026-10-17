@@ -59,6 +59,38 @@ export const ENEMY_GUIDE = {
       "Summons friends, grows thorn armor, then charges in three phases.",
     tip: "Mix armor breaking and strong damage. The King resists repeated freezing and roots.",
   },
+  dustdiver: {
+    name: "Dustdiver",
+    icon: "⛏",
+    ability: "Dives underground where no tower can hit it, then pops back up.",
+    tip: "It keeps moving while it dives. Catch it on the surface — damage over time keeps burning.",
+  },
+  umbraling: {
+    name: "Umbraling",
+    icon: "☾",
+    ability: "A shadow fawn, faster than anything else on the trail.",
+    tip: "Slow it quickly or catch it with splash damage before it slips past.",
+  },
+  shadowhart: {
+    name: "Shadowhart",
+    icon: "♞",
+    ability:
+      "A miniboss! Slips away from half of all direct hits, and bursts into five Umbralings when defeated.",
+    tip: "Its slip fails while it is slowed or burning. Frost and Fire are its worst enemies.",
+  },
+  broodmother: {
+    name: "The Broodmother",
+    icon: "✹",
+    ability:
+      "A miniboss! Lays egg sacs along the trail that hatch into Sproutlings.",
+    tip: "Shoot the eggs before they hatch, or defeat her to stop the laying. Leftover eggs vanish when the wave ends.",
+  },
+  eggsac: {
+    name: "Egg Sac",
+    icon: "◎",
+    ability: "Hatches into two Sproutlings if nobody pops it in time.",
+    tip: "A cheap target — pop it fast, or let splash damage do the job.",
+  },
 };
 export function introductionsFor(campaign, wave) {
   const earlier = new Set(

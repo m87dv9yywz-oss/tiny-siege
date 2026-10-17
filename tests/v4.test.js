@@ -90,7 +90,7 @@ test("v4 accepts full legacy schemas without losing any balances, stats, unlocks
     delete p.heroes;
     delete p.relics;
     delete p.mapProgress;
-    for (const k of ["wind", "rune", ...(version === 1 ? ["grove"] : [])]) {
+    for (const k of ["wind", "rune", "tidecaller", ...(version === 1 ? ["grove"] : [])]) {
       delete p.towerXP[k];
       delete p.unlockedUpgrades[k];
     }
@@ -475,7 +475,7 @@ test("bounded document codec preserves progress while local receipt storage prev
     core = docs.core;
   assert(!("ledger" in core.statistics));
   assert(JSON.stringify(core).length < 1000);
-  assert.equal(COMPONENTS.length, 18);
+  assert.equal(COMPONENTS.length, 25);
   const p = assembleProfile(core, docs);
   assert.equal(p.towerXP.archer.earned, 400);
   assert(validateProfile(p));

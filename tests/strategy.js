@@ -81,8 +81,13 @@ export function runCampaign(strategy = "mixed", options = {}) {
         if (model.canPlace(type, x, y)) continue;
         const r = TOWERS[type].base.range;
         const score =
-          model.trail.PATH.reduce(
-            (n, p) => n + (Math.hypot(p.x - x, p.y - y) < r ? 1 : 0),
+          model.trails.reduce(
+            (sum, t) =>
+              sum +
+              t.PATH.reduce(
+                (n, p) => n + (Math.hypot(p.x - x, p.y - y) < r ? 1 : 0),
+                0,
+              ),
             0,
           ) -
           model.towers.reduce(

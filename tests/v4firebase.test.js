@@ -229,7 +229,7 @@ test("actual adapter migrates schema-1/2 atomically, verifies before activation 
       p = freshProfile("Returning");
     p.schemaVersion = version;
     for (const k of ["heroes", "relics", "mapProgress"]) delete p[k];
-    for (const t of ["wind", "rune", ...(version === 1 ? ["grove"] : [])]) {
+    for (const t of ["wind", "rune", "tidecaller", ...(version === 1 ? ["grove"] : [])]) {
       delete p.towerXP[t];
       delete p.unlockedUpgrades[t];
     }

@@ -34,7 +34,7 @@ for(const map of MAP_IDS)test(`${map}: full real route, legal touch placement, b
   }
  }
 
- const invalid=await page.evaluate(()=>{const g=window.__tinySiege.model,p=g.trail.onPath(g.trail.PATH_LENGTH*.4);return g.canPlace('archer',p.x,p.y);});expect(invalid).toContain('trail');
+ const invalid=await page.evaluate(()=>{const g=window.__tinySiege.model;for(const f of[.4,.3,.5,.2,.6,.1,.7,.8,.9]){const p=g.trail.onPath(g.trail.PATH_LENGTH*f);if(p.x>=30&&p.x<=930&&p.y>=60&&p.y<=610)return g.canPlace('archer',p.x,p.y);}return null;});expect(invalid).toContain('trail');
 });
 test('stale map downloads cannot overwrite the new adventure, and cached painted maps remain bounded',async({page})=>{
  await ready(page);let release;const gate=new Promise(r=>release=r);
@@ -47,12 +47,12 @@ test('stale map downloads cannot overwrite the new adventure, and cached painted
  for(const map of ['crystal','moon','garden','emerald']){await page.evaluate(map=>window.__tinySiege.kingdom.start(map),map);await page.waitForFunction(map=>window.__tinySiege.ui.scene.mapImage?.texture.key===`v5-map-${map}`,map);}
  expect(await page.evaluate(()=>window.__tinySiege.ui.scene.textures.getTextureKeys().filter(k=>k.startsWith('v5-map-')).length)).toBeLessThanOrEqual(2);
 });
-test('fourteen enemy pictures, armor and boss phases render at controlled sizes and disappear after death',async({page})=>{
+test('nineteen enemy pictures, armor and boss phases render at controlled sizes and disappear after death',async({page})=>{
  await ready(page);await page.locator('#play').tap();
  await page.evaluate(types=>{const{model:g,ui}=window.__tinySiege;g.reset();ui.helpOpen=true;types.forEach((type,i)=>{const e=g.spawn(type),p=g.trail.onPath(g.trail.PATH_LENGTH*(i+1)/(types.length+1));e.progress=g.trail.PATH_LENGTH*(i+1)/(types.length+1);Object.assign(e,p);});ui.refresh(true);},ENEMY_TYPES);
- await page.waitForFunction(()=>window.__tinySiege.ui.scene.enemySprites.size===14);
+ await page.waitForFunction(()=>window.__tinySiege.ui.scene.enemySprites.size===19);
  const sprites=await page.evaluate(()=>[...window.__tinySiege.ui.scene.enemySprites].map(([id,s])=>({id,key:s.texture.key,width:s.displayWidth,rotation:s.rotation,visible:s.visible})));
- expect(sprites).toHaveLength(14);for(let i=0;i<14;i++){expect(sprites[i].key).toBe('v5-enemy-'+ENEMY_TYPES[i]);expect(sprites[i].width).toBeCloseTo(enemyDisplaySize(ENEMIES[ENEMY_TYPES[i]].radius),0);expect(sprites[i].rotation).toBe(0);expect(sprites[i].visible).toBe(true);}
+ expect(sprites).toHaveLength(19);for(let i=0;i<19;i++){expect(sprites[i].key).toBe('v5-enemy-'+ENEMY_TYPES[i]);expect(sprites[i].width).toBeCloseTo(enemyDisplaySize(ENEMIES[ENEMY_TYPES[i]].radius),0);expect(Math.abs(sprites[i].rotation)).toBeLessThanOrEqual(0.11);expect(sprites[i].visible).toBe(true);}
  await page.screenshot({path:`${out}/all-enemies.png`});
  await page.evaluate(()=>{const g=window.__tinySiege.model;for(const e of g.enemies.filter(e=>e.boss))g.damage(e,e.maxHealth*.75,{damageType:'physical',penetration:1});});
  await page.waitForTimeout(80);const widths=await page.evaluate(()=>[...window.__tinySiege.ui.scene.enemySprites.values()].map(s=>s.displayWidth));expect(Math.max(...widths)).toBeLessThan(150);

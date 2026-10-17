@@ -120,7 +120,7 @@ test("enemy introductions occur only before the first wave containing a class on
 test("v3 local and wire saves migrate losslessly; Grove progress and fourth-map rewards survive merges and repeat imports", () => {
   const old = freshProfile("Old hero");
   old.schemaVersion = 1;
-  for(const t of ["grove","wind","rune"]) {delete old.towerXP[t];delete old.unlockedUpgrades[t];}
+  for(const t of ["grove","wind","rune","tidecaller"]) {delete old.towerXP[t];delete old.unlockedUpgrades[t];}
   for(const k of ["heroes","relics","mapProgress"])delete old[k];
   delete old.towerXP.grove;
   delete old.unlockedUpgrades.grove;

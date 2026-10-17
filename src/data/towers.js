@@ -616,6 +616,7 @@ export function attackVisual(t) {
     grove: [0xee718e, 0xffd66d, 0x83f3b4],
     wind: [0x94eeff, 0x74f5b0, 0xffd788],
     rune: [0xd5a4ff, 0xff9a6c, 0x83caff],
+    tidecaller: [0x7fe3d0, 0xffd98a, 0x6ac8ff],
   };
   const secondary = t.paths.reduce((n, v) => n + v, 0) - tier;
   return {

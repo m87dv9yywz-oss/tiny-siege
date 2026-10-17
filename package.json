@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node --test tests/game.test.js tests/progression.test.js tests/polish.test.js tests/v4.test.js tests/tower-artwork.test.js tests/viewport.test.js tests/v5-illustrated.test.js",
+    "test": "node --test tests/game.test.js tests/progression.test.js tests/polish.test.js tests/v4.test.js tests/tower-artwork.test.js tests/viewport.test.js tests/v5-illustrated.test.js tests/expansion.test.js",
     "test:browser": "playwright test",
     "test:rules": "firebase emulators:exec --only firestore,auth --project demo-tiny-siege \"node --test tests/firebase.test.js\"",
     "test:cloud": "firebase emulators:exec --only firestore,auth --project demo-tiny-siege \"node --test tests/firebase.test.js tests/v4firebase.test.js tests/auth-emulator.test.js && playwright test tests/browser/cloud.spec.js --output=test-results/cloud\""

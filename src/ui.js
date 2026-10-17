@@ -364,6 +364,12 @@ export class UI {
       );
     if (event.type === "goldenPop")
       this.toast("Golden Sproutling popped! +250 gold");
+    if (event.type === "spawn" && event.enemy?.miniboss)
+      this.toast(
+        event.enemy.type === "shadowhart"
+          ? "⚠ A Shadowhart approaches — slow it or burn it to stop its slip!"
+          : "⚠ The Broodmother approaches — pop her eggs before they hatch!",
+      );
     if (event.type === "autoOff") {
       this.autoOffAt = Date.now();
       this.toast("Auto waves off — an enemy got through. Your move!");
@@ -1001,7 +1007,7 @@ export class UI {
       panel.scrollTop = scroll;
     } else if (this.placing) {
       const def = TOWERS[this.placing];
-      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>Tap grass or drag an icon onto the trail’s green surroundings.<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
+      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>${def.waterOnly ? "Tap a pond or lake — the Tidecaller sails on water, never on grass." : "Tap grass or drag an icon onto the trail’s green surroundings."}<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
       $("cancel").onclick = () => this.cancel();
     } else
       panel.innerHTML =

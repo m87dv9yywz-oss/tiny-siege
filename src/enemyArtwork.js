@@ -15,6 +15,11 @@ export const ENEMY_SPRITES = {
   crystalBoss: "enemy_crystalcolossus.png",
   drake: "enemy_emberdrake.png",
   boss: "enemy_thornking.png",
+  shadowhart: "enemy_shadowhart.png",
+  broodmother: "enemy_broodmother.png",
+  dustdiver: "enemy_dustdiver.png",
+  umbraling: "enemy_umbraling.png",
+  eggsac: "enemy_eggsac.png",
 };
 export const ENEMY_TYPES = Object.keys(ENEMY_SPRITES);
 // Creature occupies ~72% of the 256px canvas; scale so the creature's

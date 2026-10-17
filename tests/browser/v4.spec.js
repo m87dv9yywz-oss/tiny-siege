@@ -83,7 +83,7 @@ for (const [width, height] of [
     await page.setViewportSize({ width, height });
     await ready(page);
     await hero(page);
-    await expect(page.locator("[data-map]")).toHaveCount(6);
+    await expect(page.locator("[data-map]")).toHaveCount(12);
     await page.locator("#heroes").tap();
     await expect(page.locator("[data-hero]")).toHaveCount(3);
     await page.locator('[data-hero="tiger"]').tap();

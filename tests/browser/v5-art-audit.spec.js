@@ -6,9 +6,11 @@ async function ready(page,w=844,h=390){await page.setViewportSize({width:w,heigh
 async function world(page,x,y){const b=await page.locator('canvas').boundingBox();await page.touchscreen.tap(b.x+b.width*x/960,b.y+b.height*y/640);}
 for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, portraits, stats and touch hitboxes`,async({page})=>{
  test.setTimeout(180000);await ready(page);await page.locator('#play').tap();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const water=!!TOWERS[type].waterOnly,px=water?285:145,py=water?235:105;
  for(const state of TOWER_STATES){
   // Deliberate UI fixture, not a funded campaign: enough gold to inspect each state.
-  await page.evaluate(type=>{const{model:g,ui}=window.__tinySiege;g.reset();g.gold=10000;ui.selectTower(g.place(type,145,105));},type);
+  // Water-only towers are audited on Twin Ponds, placed in its north pond.
+  await page.evaluate(({type,water,px,py})=>{const{model:g,ui}=window.__tinySiege;if(water)g.configure({map:'twinponds',difficulty:'medium'});g.reset();g.gold=10000;ui.selectTower(g.place(type,px,py));},{type,water,px,py});
   const tiers=state.split('-').map(Number);
   for(let p=0;p<3;p++)for(let n=0;n<tiers[p];n++)await page.locator(`[data-upgrade="${p}"]`).tap();
   const spent=TOWERS[type].cost+tiers.reduce((sum,tier)=>sum+TOWERS[type].prices.slice(0,tier).reduce((a,b)=>a+b,0),0);
@@ -23,9 +25,9 @@ for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, po
   await page.locator('#targeting').selectOption('STRONG');
   expect(await page.evaluate(()=>window.__tinySiege.model.towers[0].targeting)).toBe('STRONG');
   const b=await page.locator('canvas').boundingBox();
-  await page.screenshot({path:`${out}/towers/${type}-${state}.png`,clip:{x:b.x+b.width*100/960,y:b.y+b.height*15/640,width:b.width*90/960,height:b.height*110/640}});
+  await page.screenshot({path:`${out}/towers/${type}-${state}.png`,clip:{x:b.x+b.width*(px-45)/960,y:b.y+b.height*(py-90)/640,width:b.width*90/960,height:b.height*110/640}});
   if(state==='3-1-0')await page.screenshot({path:`${out}/tower-${type}-ultimate.png`});
-  await page.locator('#close-panel').tap();await world(page,145,90);await expect(page.locator('#selection-panel')).toBeVisible();
+  await page.locator('#close-panel').tap();await world(page,px,py-15);await expect(page.locator('#selection-panel')).toBeVisible();
   await page.locator('#sell').tap();await page.locator('#confirm-sell').tap();await expect(page.locator('#gold')).toHaveText(String(10000-spent+Math.floor(spent*.7)));
  }
  expect(errors).toEqual([]);
@@ -33,7 +35,7 @@ for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, po
 
 test('cold start requests only base tower textures and menu thumbnails; scene input waits for real assets',async({page})=>{
  const requests=[];page.on('request',r=>requests.push(r.url()));await ready(page);
- expect(new Set(requests.filter(u=>u.includes('/battlefield_256/')&&u.includes('/towers/'))).size).toBe(8);
+ expect(new Set(requests.filter(u=>u.includes('/battlefield_256/')&&u.includes('/towers/'))).size).toBe(9);
  expect(requests.filter(u=>u.includes('/towers/')&&u.includes('/card_512/'))).toHaveLength(0);
  expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Cold Knight');await page.locator('#profile-form button').tap();
