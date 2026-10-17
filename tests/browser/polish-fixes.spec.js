@@ -22,6 +22,35 @@ test("boot splash covers the shell and is removed once the game is up", async ({
   expect(visibility).toBe("visible");
 });
 
+// The loading screen itself must look like the game — illustrated map
+// art, the menu panel and a loading bar — never a bare page. Hold the
+// bundle back and inspect the splash while it is up.
+test("boot splash shows game art and a loading bar while the bundle loads", async ({
+  page,
+}) => {
+  await page.route("**/src/main.js*", async (route) => {
+    await new Promise((r) => setTimeout(r, 2500));
+    await route.continue();
+  });
+  await page.goto("./", { waitUntil: "commit" });
+  await expect(page.locator("#boot-splash")).toBeVisible();
+  await expect(page.locator("#boot-splash .boot-panel")).toBeVisible();
+  await expect(page.locator("#boot-splash .boot-fill")).toHaveCount(1);
+  await expect
+    .poll(() =>
+      page
+        .locator("#boot-splash .boot-bg")
+        .evaluate((img) => img.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  const appVisibility = await page.evaluate(
+    () => getComputedStyle(document.getElementById("app")).visibility,
+  );
+  expect(appVisibility).toBe("hidden");
+  await page.waitForFunction(() => window.__tinySiege?.ui);
+  await expect(page.locator("#boot-splash")).toHaveCount(0);
+});
+
 test("new-enemy introduction card shows the illustrated battle art", async ({
   page,
 }) => {
