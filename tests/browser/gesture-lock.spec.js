@@ -27,7 +27,11 @@ test("battle drags are locked from browser gestures; menus are not", async ({
   await ready(page);
   // Menu screens keep their native touch behavior.
   expect(await touchMovePrevented(page, ".home-card, body")).toBe(false);
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Gesture Knight");
+  await page.locator("#profile-form button").tap();
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.waitForFunction(() => window.__tinySiege.ui.inMenu === false);
   // In battle, a drag starting on the shop rail or the battlefield is
   // swallowed before the browser can turn it into a pull gesture.

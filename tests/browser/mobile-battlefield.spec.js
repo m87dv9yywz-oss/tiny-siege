@@ -3,7 +3,11 @@ async function ready(page, width=844, height=390) {
   await page.setViewportSize({width,height});
   await page.goto('./');
   await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);
+  await page.locator('#new-profile').tap();
+  await page.locator('#nickname').fill('Mobile Knight');
+  await page.locator('#profile-form button').tap();
   await page.locator('#play').tap();
+  await page.locator('[data-freeplay="classic"]').tap();
 }
 async function tap(page,x,y) {
   const r=await page.locator('canvas').boundingBox();

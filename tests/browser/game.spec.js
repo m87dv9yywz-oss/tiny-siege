@@ -3,6 +3,15 @@ async function ready(page) {
   await page.goto("./");
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
 }
+async function createProfile(page) {
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Test Knight");
+  await page.locator("#profile-form button").click();
+}
+async function enterFreePlay(page) {
+  await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
+}
 async function place(page, type, x, y) {
   await page.getByRole("button", { name: new RegExp(`Buy ${type},`) }).click();
   const box = await page.locator("canvas").boundingBox();
@@ -17,13 +26,15 @@ test("menu, placement, combat, upgrades, selling, pause, speed, and restart", as
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await ready(page);
+  await createProfile(page);
   await expect(
-    page.getByRole("button", { name: "PLAY CAMPAIGN" }),
+    page.getByRole("button", { name: "Free Play" }),
   ).toBeVisible();
   await page.locator("#menu-help").click();
   await expect(page.getByText("Small towers.")).toBeVisible();
   await page.getByRole("button", { name: "GOT IT" }).click();
-  await page.getByRole("button", { name: "PLAY CAMPAIGN" }).click();
+  await page.getByRole("button", { name: "Free Play" }).click();
+  await page.locator('[data-freeplay="classic"]').click();
   await place(page, "Archer", 150, 170);
   await expect(page.locator("#gold")).toHaveText("300");
   await expect(page.locator("#toast")).toContainText("trail clear");
@@ -108,7 +119,8 @@ test("all tower artwork, final boss, victory and defeat render without errors", 
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await ready(page);
-  await page.locator("#play").click();
+  await createProfile(page);
+  await enterFreePlay(page);
   await page.evaluate(() => {
     const g = window.__tinySiege.model;
     g.gold = 10000;
@@ -125,7 +137,7 @@ test("all tower artwork, final boss, victory and defeat render without errors", 
       g.upgrade(t.id, 0);
       g.upgrade(t.id, 0);
     });
-    g.wave = 19;
+    g.wave = 199;
     g.startWave();
   });
   await page.evaluate(() => {
@@ -162,7 +174,9 @@ test("responsive canvas and touch controls fit a narrow screen", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await ready(page);
+  await createProfile(page);
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.getByRole("button", { name: "Buy Archer, 75 gold" }).tap();
   const box = await page.locator("canvas").boundingBox();
   await page.touchscreen.tap(

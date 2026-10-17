@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('Gentle effects caps real cosmetic bursts and preserves kill rewards; Full can be restored',async({page})=>{
- await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.locator('#play').tap();
+ await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Performance Knight');await page.locator('#profile-form button').tap();await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();
  await page.locator('#battle-settings summary').tap();await page.locator('#effects').tap();
  await page.waitForFunction(()=>Object.values(window.__tinySiege.ui.scene.particles).every(e=>e.maxAliveParticles===30));
  // Deliberate render fixture, not an earned campaign or forced-win balance test.

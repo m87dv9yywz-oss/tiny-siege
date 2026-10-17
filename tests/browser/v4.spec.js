@@ -35,7 +35,9 @@ test("one tap opens upgrades and actual portrait-landscape-portrait resize prese
   page.on("pageerror", (e) => errors.push(e.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await ready(page);
+  await hero(page);
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.locator('[data-tower="archer"]').tap();
   await world(page, 145, 105);
   await page.locator("#close-panel").tap();

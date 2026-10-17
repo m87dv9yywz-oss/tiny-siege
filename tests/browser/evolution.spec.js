@@ -11,7 +11,11 @@ const viewports = [
 async function open(page) {
   await page.goto("./");
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Evolution Knight");
+  await page.locator("#profile-form button").click();
   await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
 }
 async function point(page, x, y) {
   const b = await page.locator("canvas").boundingBox();

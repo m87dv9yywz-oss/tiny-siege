@@ -30,6 +30,7 @@ for (const [width, height] of sizes)
     ).toBeLessThanOrEqual(2);
     await page.screenshot({ path: `test-results/polish-home-${width}.png` });
     await page.locator("#play").tap();
+    await page.locator('[data-freeplay="classic"]').tap();
     await page.evaluate(() => {
       const { model, ui } = window.__tinySiege;
       const t = model.place("archer", 145, 105);
@@ -126,7 +127,11 @@ test("enemy card previews armor before spawning; preparation, ready and next-wav
   page,
 }) => {
   await ready(page);
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Polish Knight");
+  await page.locator("#profile-form button").tap();
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.evaluate(() => {
     const { model, ui } = window.__tinySiege;
     const t = model.place("archer", 145, 105);
@@ -173,7 +178,11 @@ for (const [width, height] of [
   }) => {
     await page.setViewportSize({ width, height });
     await ready(page);
+    await page.locator("#new-profile").click();
+    await page.locator("#nickname").fill("Polish Knight");
+    await page.locator("#profile-form button").click();
     await page.locator("#play").click();
+    await page.locator('[data-freeplay="classic"]').click();
     for (const type of [
       "archer",
       "cannon",

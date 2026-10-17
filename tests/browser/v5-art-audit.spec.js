@@ -5,7 +5,7 @@ const out='docs/qa/v5/rendered';
 async function ready(page,w=844,h=390){await page.setViewportSize({width:w,height:h});await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.evaluate(()=>document.fonts.ready);}
 async function world(page,x,y){const b=await page.locator('canvas').boundingBox();await page.touchscreen.tap(b.x+b.width*x/960,b.y+b.height*y/640);}
 for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, portraits, stats and touch hitboxes`,async({page})=>{
- test.setTimeout(180000);await ready(page);await page.locator('#play').tap();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ test.setTimeout(180000);await ready(page);await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Art Knight');await page.locator('#profile-form button').tap();await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const water=!!TOWERS[type].waterOnly,px=water?285:145,py=water?235:105;
  for(const state of TOWER_STATES){
   // Deliberate UI fixture, not a funded campaign: enough gold to inspect each state.
@@ -40,16 +40,14 @@ test('cold start requests only base tower textures and menu thumbnails; scene in
  expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Cold Knight');await page.locator('#profile-form button').tap();
  await expect(page.locator('#play-adventure')).toBeVisible();await page.locator('#play-adventure').tap();await expect(page.locator('#begin-adventure')).toBeVisible();
- // The prep screen warms exactly its own map's art (the battle-start
- // pop-in fix) — still never the whole map collection.
- expect(new Set(requests.filter(u=>/\/maps\/map_.*\.png/.test(u)).map(u=>u.split('/').pop()))).toEqual(new Set(['map_classic.png','map_emerald.png']));
+ expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#begin-adventure').tap();await page.locator('[data-tower="archer"]').tap();await world(page,145,105);await expect(page.locator('#gold')).toHaveText('225');
 });
 
 // The model upgrades immediately; touch must still hit the currently drawn art
 // while the replacement PNG is in flight.
 test('selecting a tower while its upgrade picture downloads uses its visible texture',async({page})=>{
- await ready(page);await page.locator('#play').tap();const messages=[];
+ await ready(page);await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Art Knight');await page.locator('#profile-form button').tap();await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();const messages=[];
  page.on('console',m=>{if(/texture.*(not found|missing)|no texture/i.test(m.text()))messages.push(m.text());});
  let release;const gate=new Promise(r=>release=r);
  await page.route('**/archer/battlefield_256/archer_1-0-0.png',async route=>{await gate;await route.continue();});

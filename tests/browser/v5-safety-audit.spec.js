@@ -47,7 +47,7 @@ test('wave skips keep the adventure real: skipped waves earn nothing and an hone
  expect(after.crowns).toBeGreaterThan(crownsBefore);
 });
 test('holding Play toggles auto waves; a lost life switches auto off',async({page})=>{
- await ready(page);await page.locator('#play').tap();
+ await ready(page);await profile(page);await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();
  const box=await page.locator('#start-wave').boundingBox();
  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.waitForTimeout(750);await page.mouse.up();
  await expect(page.locator('#start-wave')).toContainText('AUTO');
@@ -58,7 +58,7 @@ test('holding Play toggles auto waves; a lost life switches auto off',async({pag
  await expect(page.locator('#toast')).toContainText('Auto waves off');
 });
 test('isolated taps outside the secret gesture window cannot open fun codes',async({page})=>{
- await ready(page);await page.locator('#play').tap();
+ await ready(page);await profile(page);await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();
  for(let i=0;i<4;i++)await page.locator('#gold').tap();
  await page.waitForTimeout(3100);await page.locator('#gold').tap();
  await expect(page.locator('#cheat-close')).toHaveCount(0);

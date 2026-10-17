@@ -16,7 +16,11 @@ test("slow artwork loading keeps battle entry disabled until real Phaser input i
   release();
   await expect(page.locator("#play")).toBeEnabled();
   await expect(page.locator("#game")).toHaveAttribute("aria-busy", "false");
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Loading Knight");
+  await page.locator("#profile-form button").tap();
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.locator('[data-tower="archer"]').tap();
   const b = await page.locator("canvas").boundingBox();
   await page.touchscreen.tap(b.x + b.width * 145 / 960, b.y + b.height * 105 / 640);
@@ -30,7 +34,8 @@ test("failed startup artwork keeps battle entry safe and Retry pictures recovers
  await expect(page.locator('#play')).toBeDisabled();await expect(page.locator('#retry-artwork')).toBeVisible();
  await expect(page.locator('#modal')).toContainText("Some pictures couldn't load");
  fail=false;await page.locator('#retry-artwork').tap();await expect(page.locator('#play')).toBeEnabled();
- await page.locator('#play').tap();await page.locator('[data-tower="archer"]').tap();
+ await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Loading Knight');await page.locator('#profile-form button').tap();
+ await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();await page.locator('[data-tower="archer"]').tap();
  const b=await page.locator('canvas').boundingBox();await page.touchscreen.tap(b.x+b.width*145/960,b.y+b.height*105/640);
  await expect(page.locator('#gold')).toHaveText('225');
 });

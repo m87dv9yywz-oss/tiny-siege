@@ -48,7 +48,7 @@ test('stale map downloads cannot overwrite the new adventure, and cached painted
  expect(await page.evaluate(()=>window.__tinySiege.ui.scene.textures.getTextureKeys().filter(k=>k.startsWith('v5-map-')).length)).toBeLessThanOrEqual(2);
 });
 test('nineteen enemy pictures, armor and boss phases render at controlled sizes and disappear after death',async({page})=>{
- await ready(page);await page.locator('#play').tap();
+ await ready(page);await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();
  await page.evaluate(types=>{const{model:g,ui}=window.__tinySiege;g.reset();ui.helpOpen=true;types.forEach((type,i)=>{const e=g.spawn(type),p=g.trail.onPath(g.trail.PATH_LENGTH*(i+1)/(types.length+1));e.progress=g.trail.PATH_LENGTH*(i+1)/(types.length+1);Object.assign(e,p);});ui.refresh(true);},ENEMY_TYPES);
  await page.waitForFunction(()=>window.__tinySiege.ui.scene.enemySprites.size===19);
  const sprites=await page.evaluate(()=>[...window.__tinySiege.ui.scene.enemySprites].map(([id,s])=>({id,key:s.texture.key,width:s.displayWidth,rotation:s.rotation,visible:s.visible})));
