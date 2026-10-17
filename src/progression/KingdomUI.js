@@ -120,7 +120,7 @@ export class KingdomUI {
         .join("")}</div>${p ? `<span class="v5-crown-chip"><img class="v5-icon" src="${V5UI("ui_icon_crown.png")}" alt="">${p.crowns}</span>` : ""}</div>
       <div class="home-heading"><img class="menu-icon" src="${import.meta.env.BASE_URL}icons/icon-192.png" alt="Tiny Siege dragon castle"><div><div class="eyebrow">YOUR LITTLE KINGDOM</div><h1 id="modal-title">Tiny <span>Siege</span></h1></div></div>
       ${p ? `<div class="home-section"><b>Choose an adventure</b><small>New = not yet completed</small></div><div class="map-picker">${maps.map((m) => `<button data-map="${m.id}" class="map-choice v5-map-card biome-${m.biome} ${m.id === recommended.id ? "recommended" : ""}" aria-label="${escape(m.name.replace(" · Beginner", ""))} adventure"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapThumbnail(m.id)}" alt=""><span class="v5-map-waves">20 / 40 / 100</span><span class="level-state ${p.completedMaps.includes(m.id) ? "cleared" : "new"}">${p.completedMaps.includes(m.id) ? "★".repeat(p.mapStars[m.id] || 1) : "NEW"}</span><span class="v5-map-stars">${[1, 2, 3].map((n) => `<img src="${V5UI(n <= (p.mapStars[m.id] || 0) ? "ui_icon_star.png" : "ui_icon_star_empty.png")}" alt="">`).join("")}</span><span class="v5-map-name">${escape(m.name.replace(" · Beginner", ""))}</span></button>`).join("")}</div><div class="v5-play-row">${entry?.battle ? `<button id="continue-battle" class="v5-btn v5-btn-start">Continue ${escape(CAMPAIGNS[entry.battle.map]?.name || "battle")} · Wave ${entry.battle.wave + 1}</button>` : `<button id="play-adventure" class="v5-btn v5-btn-start">Play adventure</button>`}</div><div class="kingdom-actions"><button id="collection" class="v5-btn v5-btn-primary v5-btn-sm">Towers & upgrades</button><button id="heroes" class="v5-btn v5-btn-primary v5-btn-sm">Animal heroes</button><button id="relics" class="v5-btn v5-btn-primary v5-btn-sm">Relics · ${p.relics.equipped.length}/2</button></div>` : `<p class="welcome-copy">Build tiny towers. Protect a cheerful kingdom.<br>Create a hero to start your first adventure.</p>`}
-      <div class="home-actions"><button id="new-profile" class="v5-btn v5-btn-secondary v5-btn-sm">＋ New hero</button>${p ? `<button id="manage-profile" class="v5-btn v5-btn-secondary v5-btn-sm">Profiles</button><button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN" title="Classic: all towers and upgrades unlocked; no permanent rewards">Classic</button>` : `<button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="PLAY CAMPAIGN" title="Classic: all towers and upgrades unlocked; no permanent rewards">Classic</button>`}<button id="parent-cloud" aria-label="Parent cloud saves" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_cloud.png")}" alt="">Cloud</button><button id="menu-help" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_help.png")}" alt="">Help</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
+      <div class="home-actions"><button id="new-profile" class="v5-btn v5-btn-secondary v5-btn-sm">＋ New hero</button>${p ? `<button id="manage-profile" class="v5-btn v5-btn-secondary v5-btn-sm">Profiles</button><button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="Free Play" title="Free Play: any map, all towers and upgrades unlocked, endless waves to 200; no permanent rewards">Free Play</button>` : `<button id="play" class="v5-btn v5-btn-secondary v5-btn-sm" aria-label="Free Play" title="Free Play: any map, all towers and upgrades unlocked, endless waves to 200; no permanent rewards">Free Play</button>`}<button id="parent-cloud" aria-label="Parent cloud saves" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_cloud.png")}" alt="">Cloud</button><button id="menu-help" class="v5-btn v5-btn-secondary v5-btn-sm"><img class="v5-icon" src="${V5UI("ui_icon_help.png")}" alt="">Help</button></div><p id="save-message" role="status">${escape(this.store.warning || this.cloud?.status || "Guest · saved on this device")}</p>`);
     $("modal")
       .querySelector(".modal-card")
       .classList.add("home-card", "v5-home");
@@ -149,7 +149,7 @@ export class KingdomUI {
     document
       .querySelectorAll("[data-map]")
       .forEach((b) => (b.onclick = () => this.prepare(b.dataset.map)));
-    $("play").onclick = () => this.start("classic");
+    $("play").onclick = () => this.freePlayPicker();
     if ($("play-adventure")) $("play-adventure").onclick = () => this.prepare(recommended.id);
     $("menu-help").onclick = () => this.ui.help();
     $("parent-cloud").onclick = () => this.parent();
@@ -320,6 +320,60 @@ export class KingdomUI {
     }
     this.ui.restart();
   }
+  freePlay() {
+    return this.model.campaign?.mode === "freeplay";
+  }
+  // Free Play replaces the old Classic button: any map (the classic
+  // trail included), everything unlocked, hero and relics ride along,
+  // no Crowns or XP — the only prize is the furthest wave, recorded
+  // per map on the picker.
+  freePlayPicker() {
+    if (!this.store.current) return this.editProfile();
+    const p = this.store.current;
+    const cards = Object.values(CAMPAIGNS)
+      .map(
+        (m) =>
+          `<button data-freeplay="${m.id}" class="map-choice v5-map-card biome-${m.biome}" aria-label="Free Play on ${escape(m.name.replace(" · Beginner", ""))}"><img class="v5-map-thumb" src="${import.meta.env.BASE_URL}${mapThumbnail(m.id)}" alt=""><span class="v5-map-waves">200 WAVES</span><span class="level-state ${p.freePlayBest[m.id] ? "cleared" : "new"}">${p.freePlayBest[m.id] ? `BEST · WAVE ${p.freePlayBest[m.id]}` : "NOT TRIED"}</span><span class="v5-map-name">${escape(m.name.replace(" · Beginner", ""))}</span></button>`,
+      )
+      .join("");
+    this.ui.modal(
+      `<div class="v5-banner"><h1 id="modal-title">Free Play</h1></div><p class="v5-prep-note">Every tower and upgrade unlocked · your hero and relics come along · no Crowns or XP. Survive as far as you can — wave 200 is the end, and almost nobody gets there. Progress saves between waves.</p><div class="map-picker">${cards}</div><div class="v5-prep-actions"><button id="back" class="v5-btn v5-btn-secondary">Back</button></div>`,
+    );
+    document
+      .querySelectorAll("[data-freeplay]")
+      .forEach(
+        (b) => (b.onclick = () => this.startFreePlay(b.dataset.freeplay)),
+      );
+    $("back").onclick = () => this.menu();
+    this.ui.overlayClose = $("back").onclick;
+  }
+  startFreePlay(map) {
+    if (!this.store.current) {
+      this.editProfile();
+      return;
+    }
+    this.map = map;
+    this.model.configure({
+      map,
+      profile: this.store.current,
+      difficulty: "freeplay",
+      hero: this.store.current.heroes.equipped,
+      relics: this.store.current.relics.equipped,
+    });
+    const settings = this.store.current?.settings;
+    if (settings) {
+      this.ui.sound = settings.sound;
+      this.ui.reducedEffects = settings.reducedEffects;
+    }
+    this.ui.restart();
+  }
+  recordFreePlayBest() {
+    const wave = Math.min(this.model.wave, this.model.totalWaves || 200);
+    if (wave < 1) return this.store.current?.freePlayBest?.[this.model.campaign.id] || 0;
+    if (this.store.recordFreePlayBest(this.model.campaign.id, wave))
+      this.cloud?.sync();
+    return this.store.current?.freePlayBest?.[this.model.campaign.id] || wave;
+  }
   beginRun() {
     this.practice = false;
     this.run = {
@@ -333,6 +387,19 @@ export class KingdomUI {
   }
   checkpoint(win = false) {
     const run = this.run;
+    if (this.freePlay()) {
+      // Free Play grants nothing — its only record is the best wave,
+      // kept current at every between-wave checkpoint.
+      if (!run || run.finished) return null;
+      if (run.profileId !== this.store.data.selected)
+        throw Error("Switch profiles between battles.");
+      this.recordFreePlayBest();
+      return {
+        crowns: 0,
+        xp: Object.fromEntries(TYPES.map((t) => [t, 0])),
+        hero: null,
+      };
+    }
     if (this.practice || !run || run.finished || this.model.campaign.id === "classic")
       return null;
     // A run is bound to its original profile, never the profile selected later.
@@ -385,6 +452,16 @@ export class KingdomUI {
   }
   finishRun() {
     if (this.practice) return "Just for fun · no permanent rewards. Your normal checkpoint is safe.";
+    if (this.freePlay()) {
+      if (!this.run || this.run.finished) return null;
+      const best = this.recordFreePlayBest();
+      this.run.finished = true;
+      this.clearBattle();
+      const name = this.model.campaign.name.replace(" · Free Play", "");
+      return this.model.ended === "victory"
+        ? `👑 KINGDOM LEGEND! You cleared all 200 waves on ${name} — a perfect Free Play run.<small>Free Play pays no Crowns or XP. Glory is the prize — best wave on this map: 200.</small>`
+        : `Free Play · you fell on wave ${this.model.wave} on ${name}.<br>Best on this map: wave ${best}.<small>No Crowns or XP — just the chase. Your best is saved.</small>`;
+    }
     if (!this.run || this.run.finished || this.model.campaign.id === "classic")
       return null;
     let result;
@@ -419,7 +496,7 @@ export class KingdomUI {
     if (
       this.practice ||
       this.ui.inMenu ||
-      this.model.campaign.id === "classic" ||
+      (this.model.campaign.id === "classic" && !this.freePlay()) ||
       !this.run ||
       this.run.finished
     )

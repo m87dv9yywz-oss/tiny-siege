@@ -31,8 +31,21 @@ const g = (type, count, interval = 0.65, traits = {}) => ({
   interval,
   traits,
 });
+// Free Play (owner design, 2026-10-16/17): any map, every tower and
+// upgrade available, no difficulty choice, waves run to a hard end at
+// 200. The last ten waves compound hard — tuned so a perfect board
+// barely clears them and strong play falls somewhere in 120-170.
+export const FREEPLAY = {
+  name: "Free Play",
+  waves: 200,
+  health: 1.1,
+  reward: 0,
+  first: 0,
+  repeat: 0,
+};
 export function campaignFor(map, mode) {
   const base = CAMPAIGNS[map] || CAMPAIGNS.classic;
+  if (mode === "freeplay") return freePlayCampaign(base);
   if (!mode || map === "classic") return base;
   const difficulty = DIFFICULTIES[mode];
   if (!difficulty) throw Error("Choose Easy, Medium or Hard.");
@@ -113,5 +126,82 @@ export function campaignFor(map, mode) {
     name: `${base.name.replace(" · Beginner", "")} · ${difficulty.name}`,
     first: difficulty.first,
     repeat: difficulty.repeat,
+  };
+}
+
+// Free Play's 200 waves mirror the adventure composition rules (same
+// curriculum, themes, miniboss cadence) with an endless endgame:
+// stages keep rising to 9, minibosses come in threes late, and boss
+// health steps up hard after stage 4. Enemy health compounding past
+// wave 100 lives in Game.spawn's freeplay scale.
+function freePlayCampaign(base) {
+  const map = base.id;
+  const theme =
+    map === "crystal" || map === "twinponds"
+      ? "crystal"
+      : map === "coast" || map === "riverbend"
+        ? "ember"
+        : map === "roundabout"
+          ? "runner"
+          : map === "switchbacks"
+            ? "armored"
+            : map === "twofronts"
+              ? "wraith"
+              : map === "spiral"
+                ? "shard"
+                : null;
+  const boss =
+    map === "crystal" || map === "spiral"
+      ? "crystalBoss"
+      : map === "coast" || map === "riverbend"
+        ? "drake"
+        : "boss";
+  const waves = Array.from({ length: FREEPLAY.waves }, (_, i) => {
+    const wave = i + 1;
+    if (wave <= 3) return structuredClone(WAVES[i]);
+    const stage = Math.floor(i / 20);
+    if (wave % 20 === 0)
+      return [
+        g(boss, 1, 1, {
+          bossHealth:
+            stage <= 4
+              ? 11000 + stage * 40000
+              : 171000 + (stage - 4) * 130000,
+        }),
+        g(theme || "armored", 10 + stage * 4, 0.7),
+        g("runner", 12 + stage * 3, 0.4),
+        g("warden", 3 + stage, 0.9),
+        g("healer", 2 + stage, 1),
+      ];
+    const groups = structuredClone(WAVES[Math.min(i % 20, 18)]);
+    if (theme && wave >= 5)
+      groups.push(g(theme, Math.min(24, 4 + Math.floor(wave / 5)), 0.8));
+    if (stage)
+      groups.push(
+        g(stage % 2 ? "wraith" : "armored", Math.min(30, stage * 6), 0.65),
+      );
+    if (wave >= 18)
+      groups.push(
+        g("dustdiver", Math.min(10, 3 + Math.floor((wave - 18) / 8)), 0.9),
+      );
+    if (wave >= 25 && wave % 10 === 5)
+      groups.push(
+        g(
+          (wave - 25) / 10 % 2 === 0 ? "shadowhart" : "broodmother",
+          wave >= 150 ? 3 : wave >= 90 ? 2 : 1,
+          2.5,
+        ),
+      );
+    return groups;
+  });
+  return {
+    ...base,
+    mode: "freeplay",
+    difficulty: FREEPLAY,
+    waves,
+    hints: null,
+    name: `${base.name.replace(" · Beginner", "")} · Free Play`,
+    first: 0,
+    repeat: 0,
   };
 }

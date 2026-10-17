@@ -38,6 +38,7 @@ export class Game {
   available(type) {
     return (
       this.campaign.id === "classic" ||
+      this.campaign.mode === "freeplay" ||
       !this.profile ||
       this.profile.unlockedTowers.includes(type)
     );
@@ -45,6 +46,7 @@ export class Game {
   pathAvailable(type, path, tier) {
     return (
       this.campaign.id === "classic" ||
+      this.campaign.mode === "freeplay" ||
       !this.profile ||
       this.profile.unlockedUpgrades[type][path] >= tier
     );
@@ -334,12 +336,22 @@ export class Game {
               : this.campaign.difficulty.health *
                 (1 +
                   (this.wave - 1) *
-                    (this.campaign.mode === "hard" ? 0.04 : 0.028) +
-                  (this.campaign.mode === "hard"
+                    (this.campaign.mode === "hard" ||
+                    this.campaign.mode === "freeplay"
+                      ? 0.04
+                      : 0.028) +
+                  (this.campaign.mode === "hard" ||
+                  this.campaign.mode === "freeplay"
                     ? Math.max(0, this.wave - 20) * 0.14
                     : 0))
             : 1 + Math.max(0, this.wave - 1) * 0.055) *
-        (this.campaign.mode && !config.boss ? 1 + stage * 0.15 : 1);
+        (this.campaign.mode && !config.boss ? 1 + stage * 0.15 : 1) *
+        // Free Play's endgame: past wave 100 health compounds ~2.8%
+        // per wave, so the board-efficiency ceiling decides the run
+        // long before wave 200 (see FREEPLAY in data/difficulties).
+        (this.campaign.mode === "freeplay" && this.wave > 100
+          ? Math.pow(1.028, this.wave - 100)
+          : 1);
     // Each enemy walks one trail. Queue spawns are dealt round-robin across
     // the map's trails by step(); children/summons inherit their parent's.
     const trail = traits.trail || this.trails[0];
