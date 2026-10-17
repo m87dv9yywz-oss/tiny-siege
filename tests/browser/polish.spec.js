@@ -40,7 +40,12 @@ for (const [width, height] of sizes)
     if (width < height) {
       const board = await page.locator("canvas").boundingBox(),
         sheet = await page.locator("#selection-panel").boundingBox();
-      expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.8);
+      // The sheet is bottom-anchored over the board. Hero modes
+      // (adventures, Free Play) add a hero row above the board that
+      // hero-less Classic never had, pushing the board down ~40px —
+      // the sheet therefore starts lower over the board (measured
+      // 0.64–0.75 across portrait sizes) than Classic's 0.8 did.
+      expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.6);
     }
     const fit = await page.evaluate(() => {
       const board = document.querySelector("canvas").getBoundingClientRect(),

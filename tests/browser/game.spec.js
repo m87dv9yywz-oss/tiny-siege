@@ -147,12 +147,23 @@ test("all tower artwork, final boss, victory and defeat render without errors", 
   await page.waitForTimeout(300);
   await expect(page.locator("#boss-bar")).toBeVisible();
   await page.screenshot({ path: "test-results/combat.png", fullPage: true });
-  await page.evaluate(() => {
-    const g = window.__tinySiege.model;
-    g.queue = [];
-    for (const e of g.enemies) g.damage(e, 100000, true);
-    g.update(0.1);
-  });
+  // Wave 200's boss fights in phases and calls fresh guards while it
+  // lives, so one damage pass cannot end it: keep hitting everything
+  // (new spawns included) until the model itself reports victory.
+  await page.waitForFunction(
+    () => {
+      const g = window.__tinySiege.model;
+      if (g.ended === "victory") return true;
+      g.queue = [];
+      for (const e of [...g.enemies])
+        if (e.alive)
+          g.damage(e, 1e9, { damageType: "magic", bypass: 1, area: true });
+      g.update(0.1);
+      return g.ended === "victory";
+    },
+    null,
+    { timeout: 30000 },
+  );
   await expect(page.getByText("triumph.")).toBeVisible();
   await page.getByRole("button", { name: "PLAY AGAIN" }).click();
   await expect(page.locator("#gold")).toHaveText("300");
