@@ -535,7 +535,39 @@ export class GameScene extends Phaser.Scene {
         .forEach((e) => e.text?.destroy());
     }
   }
+  // Bake a pure-white silhouette of a texture (cached per key) for the
+  // aura coverage wash; drawn over a covered tower it reads as the
+  // tower highlighted almost white.
+  whiteSilhouette(key) {
+    const whiteKey = `${key}__white`;
+    if (this.textures.exists(whiteKey)) return whiteKey;
+    const frame = this.textures.get(key)?.get();
+    if (!frame) return key;
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, frame.cutWidth);
+    canvas.height = Math.max(1, frame.cutHeight);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(
+      frame.source.image,
+      frame.cutX,
+      frame.cutY,
+      frame.cutWidth,
+      frame.cutHeight,
+      0,
+      0,
+      frame.cutWidth,
+      frame.cutHeight,
+    );
+    ctx.globalCompositeOperation = "source-in";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    this.textures.addCanvas(whiteKey, canvas);
+    return whiteKey;
+  }
   update(time, delta) {
+    this.auraPreview = null;
+    this.heroAuraPreview = null;
+    this.selectionRings = [];
     if (this.gentleEffects !== this.ui.reducedEffects) {
       this.gentleEffects = this.ui.reducedEffects;
       for (const emitter of Object.values(this.particles))
@@ -666,6 +698,111 @@ export class GameScene extends Phaser.Scene {
         g.strokeCircle(t.x, t.y, towerStats(t).range);
         g.fillStyle(TOWERS[t.type].color, 0.07);
         g.fillCircle(t.x, t.y, towerStats(t).range);
+        // Aura visibility: when the selected tower empowers nearby towers
+        // (the Runesmith's halo), draw the aura ring in pale selection
+        // white; the covered towers themselves are washed white by the
+        // overlay pass below, the way range previews in Bloons read.
+        const stats = towerStats(t);
+        if (stats.buffRange) {
+          const covered = this.model.towers.filter(
+            (o) =>
+              o.id !== t.id &&
+              Math.hypot(o.x - t.x, o.y - t.y) <= stats.buffRange,
+          );
+          this.auraPreview = {
+            source: t.id,
+            range: stats.buffRange,
+            covered: covered.map((o) => o.id),
+          };
+          g.lineStyle(stroke + 2, 0x274c3e, 0.5);
+          g.strokeCircle(t.x, t.y, stats.buffRange);
+          g.lineStyle(stroke, 0xfff6da, 0.95);
+          g.strokeCircle(t.x, t.y, stats.buffRange);
+          g.fillStyle(0xffffff, 0.045);
+          g.fillCircle(t.x, t.y, stats.buffRange);
+          this.selectionRings.push({ kind: "buff", range: stats.buffRange });
+        }
+        // Enemy-affecting auras (the Frost tower's chill field) get the
+        // same selection ring; their targets are enemies, so there are
+        // no allied towers to wash.
+        if (stats.aura) {
+          g.lineStyle(stroke + 2, 0x274c3e, 0.5);
+          g.strokeCircle(t.x, t.y, stats.aura);
+          g.lineStyle(stroke, 0xfff6da, 0.9);
+          g.strokeCircle(t.x, t.y, stats.aura);
+          g.fillStyle(0xffffff, 0.04);
+          g.fillCircle(t.x, t.y, stats.aura);
+          this.selectionRings.push({ kind: "chill", range: stats.aura });
+        }
+      }
+    }
+    // Hero aura preview: while the player is moving the hero, show its
+    // family aura ring and cover the towers it would empower, exactly
+    // like a selected buffing tower. (Banner relic widens the aura,
+    // mirroring Game.effectiveStats.)
+    if (this.ui.heroMoving && this.model.hero) {
+      const hero = this.model.hero,
+        family = { dragon: "fire", dinosaur: "cannon", tiger: "archer" }[
+          hero.type
+        ],
+        range =
+          HEROES[hero.type].buffRange *
+          (this.model.relics.includes("banner") ? 1.2 : 1),
+        covered = this.model.towers
+          .filter(
+            (o) =>
+              o.type === family &&
+              Math.hypot(o.x - hero.x, o.y - hero.y) <= range,
+          )
+          .map((o) => o.id);
+      this.heroAuraPreview = { range, covered };
+      const stroke = Math.max(2, 1920 / this.scale.displaySize.width);
+      g.lineStyle(stroke + 2, 0x274c3e, 0.5);
+      g.strokeCircle(hero.x, hero.y, range);
+      g.lineStyle(stroke, 0xfff6da, 0.95);
+      g.strokeCircle(hero.x, hero.y, range);
+      g.fillStyle(0xffffff, 0.045);
+      g.fillCircle(hero.x, hero.y, range);
+    }
+    // Aura overlays: while a buffing tower is selected, every tower its
+    // aura covers gets a white silhouette wash over its own sprite, so
+    // coverage reads at a glance; deselecting restores the normal look.
+    // CONVENTION (owner, 2026-10-16): every local effect in the game —
+    // tower buffs, hero auras, future towers with any area effect —
+    // surfaces through this same selection preview: pale ring for the
+    // radius, white wash for affected allied towers. Add producers to
+    // auraPreview/heroAuraPreview; do not invent a second style.
+    {
+      this.auraOverlays ||= new Map();
+      const covered = new Set([
+        ...(this.auraPreview?.covered || []),
+        ...(this.heroAuraPreview?.covered || []),
+      ]);
+      for (const [id, overlay] of this.auraOverlays)
+        if (!covered.has(id) || !this.towerSprites.has(id)) {
+          overlay.destroy();
+          this.auraOverlays.delete(id);
+        }
+      const wash = 0.7 + Math.sin(time * 0.006) * 0.08;
+      for (const id of covered) {
+        const sprite = this.towerSprites.get(id);
+        if (!sprite) continue;
+        // The wash is a pre-rendered pure-white silhouette of the
+        // tower's own texture: the Canvas renderer does not apply
+        // tintFill, so the silhouette is baked into a texture instead.
+        const whiteKey = this.whiteSilhouette(sprite.texture.key);
+        let overlay = this.auraOverlays.get(id);
+        if (!overlay) {
+          overlay = this.add.image(sprite.x, sprite.y, whiteKey);
+          this.auraOverlays.set(id, overlay);
+        }
+        if (overlay.texture.key !== whiteKey) overlay.setTexture(whiteKey);
+        overlay
+          .setPosition(sprite.x, sprite.y)
+          .setOrigin(sprite.originX, sprite.originY)
+          .setDisplaySize(sprite.displayWidth, sprite.displayHeight)
+          .setDepth(sprite.depth + 1)
+          .setAlpha(wash);
       }
     }
     for (const [id, v] of this.slips) {

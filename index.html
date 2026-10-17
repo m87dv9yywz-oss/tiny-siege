@@ -23,8 +23,73 @@
     <meta name="apple-mobile-web-app-title" content="Tiny Siege" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <style>
+      /* Boot splash: the static page shell must never flash on screen
+         before the game bundle loads, so #app stays hidden until the
+         real UI is constructed and this splash is removed. These rules
+         are inline because the main stylesheet arrives with the bundle. */
+      #app {
+        visibility: hidden;
+      }
+      #boot-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(180deg, #dff3e4, #c6e9d4 55%, #a8d8b9);
+        color: #274c3e;
+        font-family: "Baloo 2", "Nunito", system-ui, sans-serif;
+        text-align: center;
+      }
+      #boot-splash .boot-mark {
+        font-size: 64px;
+        line-height: 1;
+        color: #c9962e;
+        text-shadow: 0 2px 0 #fff8;
+        animation: boot-pulse 1.2s ease-in-out infinite;
+      }
+      #boot-splash .boot-name {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+      }
+      #boot-splash .boot-sub {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.28em;
+        opacity: 0.75;
+      }
+      @keyframes boot-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot-splash" role="status" aria-label="Loading Tiny Siege">
+      <div class="boot-mark">♜</div>
+      <div class="boot-name">TINY SIEGE</div>
+      <div class="boot-sub">RAISING THE KINGDOM…</div>
+    </div>
+    <script>
+      // If the game bundle ever fails to load, do not trap the player on
+      // the splash: reveal the page shell after a grace period.
+      setTimeout(function () {
+        var s = document.getElementById("boot-splash");
+        if (s) s.remove();
+        var a = document.getElementById("app");
+        if (a) a.style.visibility = "visible";
+      }, 9000);
+    </script>
     <div id="app">
       <header class="topbar">
         <a class="brand" href="#" aria-label="Tiny Siege main menu"
