@@ -27,7 +27,14 @@ try {
     await page.evaluate(() => typeof window.__tinySiege),
     "undefined",
   );
+  // Free Play (which replaced guest Classic) records best waves per
+  // hero, so a profile comes first; its classic-trail card is the old
+  // Classic battle: same map, 300 gold, 20 lives, everything unlocked.
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Smoke Knight");
+  await page.locator("#profile-form button").tap();
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   assert.equal(await page.locator("#gold").textContent(), "300");
   assert.equal(await page.locator("#lives").textContent(), "20");
   await page.locator('[data-tower="archer"]').tap();
@@ -156,7 +163,11 @@ try {
     live.on("pageerror", e => errors.push(e.message));
     await live.goto(target.href);
     await live.waitForFunction(() => document.querySelector("#game")?.getAttribute("aria-busy") === "false");
+    await live.locator("#new-profile").tap();
+    await live.locator("#nickname").fill("V5 Knight");
+    await live.locator("#profile-form button").tap();
     await live.locator("#play").tap();
+    await live.locator('[data-freeplay="classic"]').tap();
     const world = async (x, y) => {
       const board = await live.locator("canvas").boundingBox();
       await live.touchscreen.tap(board.x + board.width * x / 960, board.y + board.height * y / 640);
