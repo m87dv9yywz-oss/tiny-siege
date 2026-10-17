@@ -88,7 +88,7 @@ service cloud.firestore {
     function mapIds() { return ['emerald','amber','moon','garden','crystal','coast','twinponds','roundabout','switchbacks','twofronts','spiral','riverbend']; }
     function v4Stats(s) { return s is map && s.size()==6 && number(s.revision) && number(s.wins) && number(s.waves) && number(s.damage) && number(s.armor) && number(s.kills); }
     function v4Core(d) {
-      return (d.size()==9 || (d.size()==10 && d.freePlayBest is map && d.freePlayBest.size()<=13 && d.freePlayBest.keys().hasOnly(['classic','emerald','amber','moon','garden','crystal','coast','twinponds','roundabout','switchbacks','twofronts','spiral','riverbend']))) && d.schemaVersion==3 && d.schemaVersion is int && nickname(d.nickname)
+      return (d.size()==9 || (d.size()==10 && d.freePlayBest is map && d.freePlayBest.size()<=13)) && d.schemaVersion==3 && d.schemaVersion is int && nickname(d.nickname)
         && d.avatar in ['dragon','castle','fox','owl','wizard','unicorn'] && number(d.crowns)
         && v4Stats(d.statistics) && d.settings is map && d.settings.size()==2 && d.settings.sound is bool && d.settings.reducedEffects is bool
         && unique(d.achievements,['first-clear','three-kingdoms','evolution'],3)
