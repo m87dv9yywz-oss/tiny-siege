@@ -193,6 +193,20 @@ main {
 .gold {
   color: #94621e;
 }
+/* Secret-gesture feedback: each counted tap pulses the target a
+   little harder (--cheat-n is the running count), so a player who
+   knows the gesture can see it registering. */
+.cheat-pulse {
+  animation: cheat-pulse 0.28s ease-out;
+}
+@keyframes cheat-pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% {
+    transform: scale(calc(1 + var(--cheat-n, 1) * 0.03));
+    filter: brightness(calc(1 + var(--cheat-n, 1) * 0.12));
+  }
+  100% { transform: scale(1); filter: brightness(1); }
+}
 .lives > span {
   color: #ed9594;
 }
