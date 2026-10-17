@@ -34,6 +34,10 @@ export function profileDocuments(p, stamp, status = "active") {
       statistics,
       settings: p.settings,
       achievements: p.achievements,
+      // Free Play bests live in the core doc: the maps documents only
+      // exist for adventure maps, and Free Play includes the classic
+      // trail. Value bounds are enforced by validateProfile.
+      freePlayBest: { ...p.freePlayBest },
       status,
       updatedAt: stamp,
     },
@@ -74,6 +78,10 @@ export function assembleProfile(core, components) {
     statistics: { ...core.statistics, ledger: "" },
     settings: core.settings,
     achievements: core.achievements,
+    // Cloud saves written before Free Play have no core field; they
+    // simply have no recorded bests yet. validateProfile below is
+    // the backstop for malformed values.
+    freePlayBest: { ...(core.freePlayBest || {}) },
     updatedAt: core.updatedAt?.toMillis?.() || 0,
   });
   p.unlockedTowers = [];

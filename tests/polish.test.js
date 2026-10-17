@@ -121,7 +121,7 @@ test("v3 local and wire saves migrate losslessly; Grove progress and fourth-map 
   const old = freshProfile("Old hero");
   old.schemaVersion = 1;
   for(const t of ["grove","wind","rune","tidecaller"]) {delete old.towerXP[t];delete old.unlockedUpgrades[t];}
-  for(const k of ["heroes","relics","mapProgress"])delete old[k];
+  for(const k of ["heroes","relics","mapProgress","freePlayBest"])delete old[k];
   delete old.towerXP.grove;
   delete old.unlockedUpgrades.grove;
   old.crowns = 90;
