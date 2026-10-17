@@ -66,6 +66,7 @@ export const freshProfile = (
   unlockedUpgrades: Object.fromEntries(TYPES.map((t) => [t, [1, 1, 1]])),
   completedMaps: [],
   mapStars: {},
+  freePlayBest: {},
   achievements: [],
   statistics: {
     revision: 0,
@@ -95,7 +96,8 @@ export function validateProfile(p) {
       ? PROFILE_FIELDS
       : new Set(
           [...PROFILE_FIELDS].filter(
-            (k) => !["heroes", "relics", "mapProgress"].includes(k),
+            (k) =>
+              !["heroes", "relics", "mapProgress", "freePlayBest"].includes(k),
           ),
         );
   if (
@@ -151,6 +153,19 @@ export function validateProfile(p) {
     Object.keys(p.mapStars).some(
       (m) => !p.completedMaps.includes(m) || !integer(p.mapStars[m], 3),
     )
+  )
+    return false;
+  // Only schema 3 carries Free Play records; older schemas predate
+  // the field entirely (their key set already excludes it above).
+  // Any campaign is a valid Free Play map, the classic trail included
+  // (the adventure `maps` list above excludes it).
+  if (
+    p.schemaVersion === 3 &&
+    (!p.freePlayBest ||
+      Array.isArray(p.freePlayBest) ||
+      Object.keys(p.freePlayBest).some(
+        (m) => !Object.hasOwn(CAMPAIGNS, m) || !integer(p.freePlayBest[m], 200),
+      ))
   )
     return false;
   if (
@@ -255,6 +270,9 @@ export function migrateProfile(data) {
       data.towerXP[t] ||= { earned: 0, spent: 0 };
       data.unlockedUpgrades[t] ||= [1, 1, 1];
     }
+    // Same for Free Play records: saves from before the mode existed
+    // start with no best waves instead of failing validation.
+    data.freePlayBest ||= {};
   }
   // The infrastructure prototype used schema 1 with empty nested maps.
   const p = freshProfile(data?.nickname, data?.avatar);
@@ -271,6 +289,7 @@ export function migrateProfile(data) {
       copy.heroes = structuredClone(p.heroes);
       copy.relics = structuredClone(p.relics);
       copy.mapProgress = {};
+      copy.freePlayBest = {};
       for (const map of copy.completedMaps)
         copy.mapProgress[map] = {
           easy: copy.mapStars[map] || 1,
@@ -296,6 +315,7 @@ export function migrateProfile(data) {
     delete legacy.heroes;
     delete legacy.relics;
     delete legacy.mapProgress;
+    delete legacy.freePlayBest;
     legacy.towerXP = Object.fromEntries(
       LEGACY_TYPES.map((t) => [t, { earned: 0, spent: 0 }]),
     );
@@ -558,6 +578,17 @@ export class ProfileStore {
     entry.profile = next;
     this.persist();
     return next;
+  }
+  // Free Play's only permanent record: the furthest wave reached on a
+  // map. Idempotent (keeps the max), so it needs no reward receipt.
+  recordFreePlayBest(map, wave) {
+    const entry = this.data.profiles[this.data.selected];
+    if (!entry) return false;
+    const best = entry.profile.freePlayBest || (entry.profile.freePlayBest = {});
+    if (!Number.isInteger(wave) || wave <= (best[map] || 0)) return false;
+    best[map] = wave;
+    this.persist();
+    return true;
   }
   saveBattle(battle) {
     const entry = this.data.profiles[this.data.selected];

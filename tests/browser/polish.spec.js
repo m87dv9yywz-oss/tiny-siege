@@ -30,6 +30,7 @@ for (const [width, height] of sizes)
     ).toBeLessThanOrEqual(2);
     await page.screenshot({ path: `test-results/polish-home-${width}.png` });
     await page.locator("#play").tap();
+    await page.locator('[data-freeplay="classic"]').tap();
     await page.evaluate(() => {
       const { model, ui } = window.__tinySiege;
       const t = model.place("archer", 145, 105);
@@ -39,7 +40,12 @@ for (const [width, height] of sizes)
     if (width < height) {
       const board = await page.locator("canvas").boundingBox(),
         sheet = await page.locator("#selection-panel").boundingBox();
-      expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.8);
+      // The sheet is bottom-anchored over the board. Hero modes
+      // (adventures, Free Play) add a hero row above the board that
+      // hero-less Classic never had, pushing the board down ~40px —
+      // the sheet therefore starts lower over the board (measured
+      // 0.64–0.75 across portrait sizes) than Classic's 0.8 did.
+      expect((sheet.y - board.y) / board.height).toBeGreaterThanOrEqual(0.6);
     }
     const fit = await page.evaluate(() => {
       const board = document.querySelector("canvas").getBoundingClientRect(),
@@ -126,7 +132,11 @@ test("enemy card previews armor before spawning; preparation, ready and next-wav
   page,
 }) => {
   await ready(page);
+  await page.locator("#new-profile").tap();
+  await page.locator("#nickname").fill("Polish Knight");
+  await page.locator("#profile-form button").tap();
   await page.locator("#play").tap();
+  await page.locator('[data-freeplay="classic"]').tap();
   await page.evaluate(() => {
     const { model, ui } = window.__tinySiege;
     const t = model.place("archer", 145, 105);
@@ -173,7 +183,11 @@ for (const [width, height] of [
   }) => {
     await page.setViewportSize({ width, height });
     await ready(page);
+    await page.locator("#new-profile").click();
+    await page.locator("#nickname").fill("Polish Knight");
+    await page.locator("#profile-form button").click();
     await page.locator("#play").click();
+    await page.locator('[data-freeplay="classic"]').click();
     for (const type of [
       "archer",
       "cannon",

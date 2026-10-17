@@ -11,7 +11,11 @@ async function ready(page) {
 
 async function enterBattle(page) {
   await ready(page);
-  await page.getByRole("button", { name: "PLAY CAMPAIGN" }).click();
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Tip Knight");
+  await page.locator("#profile-form button").click();
+  await page.getByRole("button", { name: "Free Play" }).click();
+  await page.locator('[data-freeplay="classic"]').click();
   await page
     .getByRole("button", { name: new RegExp("Buy Archer,") })
     .click();

@@ -2,7 +2,7 @@ import { TOWERS, towerStats } from "../data/towers.js";
 import { CAMPAIGNS } from "../data/waves.js";
 import { HEROES } from "../data/heroes.js";
 import { RELICS } from "../data/relics.js";
-import { DIFFICULTIES } from "../data/difficulties.js";
+import { DIFFICULTIES, FREEPLAY } from "../data/difficulties.js";
 import { TRAILS, OBSTACLES } from "../data/map.js";
 const finite = (n, max = 1e9) => Number.isFinite(n) && n >= 0 && n <= max;
 export function battleCheckpoint(model, run) {
@@ -47,11 +47,16 @@ export function validateBattle(b) {
         b.skippedWaves > 1000)) ||
     b.version !== 1 ||
     !Object.hasOwn(CAMPAIGNS, b.map) ||
-    b.map === "classic" ||
-    !Object.hasOwn(DIFFICULTIES, b.difficulty) ||
+    // The classic map never checkpoints as an adventure — but Free
+    // Play may be played on any map, classic included.
+    (b.map === "classic" && b.difficulty !== "freeplay") ||
+    (b.difficulty !== "freeplay" && !Object.hasOwn(DIFFICULTIES, b.difficulty)) ||
     !Number.isInteger(b.wave) ||
     b.wave < 0 ||
-    b.wave >= DIFFICULTIES[b.difficulty].waves ||
+    b.wave >=
+      (b.difficulty === "freeplay"
+        ? FREEPLAY.waves
+        : DIFFICULTIES[b.difficulty].waves) ||
     ![1, 2, 3].includes(b.speed) ||
     !Number.isInteger(b.lives) ||
     b.lives < 1 ||
@@ -191,14 +196,17 @@ export function restoreBattle(model, b, profile) {
     throw Error(
       "This checkpoint cannot be restored safely. Export it before starting a new battle.",
     );
+  // Free Play boards may use anything, so unlock checks don't apply;
+  // adventure checkpoints still need their original progress.
   if (
-    b.towers.some(
+    b.difficulty !== "freeplay" &&
+    (b.towers.some(
       (t) =>
         !profile.unlockedTowers.includes(t.type) ||
         t.paths.some((n, p) => n > profile.unlockedUpgrades[t.type][p]),
     ) ||
-    (b.hero && !profile.heroes.unlocked.includes(b.hero.type)) ||
-    !b.relics.every((k) => profile.relics.unlocked.includes(k))
+      (b.hero && !profile.heroes.unlocked.includes(b.hero.type)) ||
+      !b.relics.every((k) => profile.relics.unlocked.includes(k)))
   )
     throw Error("This battle needs its original unlocked progress.");
   model.configure({

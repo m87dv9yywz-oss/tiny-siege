@@ -14,7 +14,11 @@ test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appe
   });
   await page.goto("./");
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Archer Knight");
+  await page.locator("#profile-form button").click();
   await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
   for (const state of ARCHER_STATES) {
     await page.evaluate(() => {
       const { model: g, ui } = window.__tinySiege;

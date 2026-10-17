@@ -9,7 +9,11 @@ test("selecting a buffing Runesmith reports the towers its aura covers", async (
 }) => {
   await page.goto("./");
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Aura Knight");
+  await page.locator("#profile-form button").click();
   await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
   await page.waitForFunction(() => window.__tinySiege?.ui.inMenu === false);
   const placed = await page.evaluate(() => {
     const { model, ui } = window.__tinySiege;
@@ -105,7 +109,11 @@ test("selecting a Frost tower with a chill aura shows its aura ring", async ({
 }) => {
   await page.goto("./");
   await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
+  await page.locator("#new-profile").click();
+  await page.locator("#nickname").fill("Aura Knight");
+  await page.locator("#profile-form button").click();
   await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
   await page.waitForFunction(() => window.__tinySiege?.ui.inMenu === false);
   const auraPath = TOWERS.frost.paths.findIndex((p) =>
     p.tiers.some((t) => t.stats.aura),

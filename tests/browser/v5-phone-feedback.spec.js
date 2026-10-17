@@ -36,7 +36,7 @@ for(const[width,height]of[[375,680],[390,730],[844,330],[844,390],[932,360],[667
  await page.screenshot({path:`test-results/phone-feedback/battle-${width}x${height}.png`});
 });
 test('death fades and tower attacks never enlarge illustrated PNGs to their source size',async({page})=>{
- await ready(page);await page.locator('#play').tap();
+ await ready(page);await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Phone Knight');await page.locator('#profile-form button').tap();await page.locator('#play').tap();await page.locator('[data-freeplay="classic"]').tap();
  const types=Object.keys(ENEMIES);
  const result=await page.evaluate(async types=>{
   const {ui,model:g}=window.__tinySiege,s=ui.scene;ui.helpOpen=false;

@@ -50,6 +50,7 @@ test("prototype migration retains valid non-XP progress and repeated hero import
   delete old.heroes;
   delete old.relics;
   delete old.mapProgress;
+  delete old.freePlayBest;
   old.towerXP = {};
   old.unlockedUpgrades = {};
   old.crowns = 65;
@@ -91,6 +92,7 @@ test("v4 accepts full legacy schemas without losing any balances, stats, unlocks
     delete p.heroes;
     delete p.relics;
     delete p.mapProgress;
+    delete p.freePlayBest;
     for (const k of ["wind", "rune", "tidecaller", ...(version === 1 ? ["grove"] : [])]) {
       delete p.towerXP[k];
       delete p.unlockedUpgrades[k];

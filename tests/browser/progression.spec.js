@@ -72,7 +72,7 @@ test("independent heroes, beginner map, locked purchases and durable guest saves
   await expect(page.locator("#modal-title")).toContainText("25 Crowns");
   await page.screenshot({ path: "test-results/v3-kingdom-portrait.png" });
 });
-test("profile rename, deletion confirmation and classic escape hatch", async ({
+test("profile rename, deletion confirmation and free play escape hatch", async ({
   page,
 }) => {
   await ready(page);
@@ -90,9 +90,17 @@ test("profile rename, deletion confirmation and classic escape hatch", async ({
   await page.locator("#delete-profile").click();
   await page.locator("#confirm-delete").click();
   await expect(page.locator("[data-profile]")).toHaveCount(0);
+  // Free Play replaced Classic: it needs a hero profile (best waves are
+  // recorded per hero), then every tower is usable without buying it —
+  // the old Classic escape hatch, preserved.
   await page.locator("#play").click();
+  await expect(page.locator("#profile-form")).toBeVisible();
+  await page.locator("#nickname").fill("Hatch Knight");
+  await page.locator("#profile-form button").click();
+  await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
   await expect(page.locator('[data-tower="fire"]')).toBeEnabled();
-  await expect(page.locator(".wave-counter em")).toHaveText(" / 20");
+  await expect(page.locator(".wave-counter em")).toHaveText(" / 200");
 });
 test("all map artwork changes while battle coordinates remain correct; evolved portraits differ", async ({
   page,
@@ -117,6 +125,7 @@ test("all map artwork changes while battle coordinates remain correct; evolved p
     await page.locator("#abandon-battle").click();
   }
   await page.locator("#play").click();
+  await page.locator('[data-freeplay="classic"]').click();
   await page.evaluate(() => {
     const { model, ui } = window.__tinySiege;
     model.gold = 5000;
