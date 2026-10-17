@@ -40,7 +40,9 @@ test('cold start requests only base tower textures and menu thumbnails; scene in
  expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Cold Knight');await page.locator('#profile-form button').tap();
  await expect(page.locator('#play-adventure')).toBeVisible();await page.locator('#play-adventure').tap();await expect(page.locator('#begin-adventure')).toBeVisible();
- expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
+ // The prep screen warms exactly its own map's art (the battle-start
+ // pop-in fix) — still never the whole map collection.
+ expect(new Set(requests.filter(u=>/\/maps\/map_.*\.png/.test(u)).map(u=>u.split('/').pop()))).toEqual(new Set(['map_classic.png','map_emerald.png']));
  await page.locator('#begin-adventure').tap();await page.locator('[data-tower="archer"]').tap();await world(page,145,105);await expect(page.locator('#gold')).toHaveText('225');
 });
 
