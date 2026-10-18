@@ -33,8 +33,12 @@ const g = (type, count, interval = 0.65, traits = {}) => ({
 });
 // Free Play (owner design, 2026-10-16/17): any map, every tower and
 // upgrade available, no difficulty choice, waves run to a hard end at
-// 200. The last ten waves compound hard — tuned so a perfect board
-// barely clears them and strong play falls somewhere in 120-170.
+// 200. Balance pass (2026-10-18, after the owner's own wave-149 run
+// with 231k gold banked): kill-gold decays past wave 50 toward a 25%
+// floor, the clear bonus caps at wave 100, post-100 health compounds
+// at 3.4%/wave, and Ascensions (three sacrificed evolutions per kind)
+// are the late-game gold sink and power ceiling — strong unascended
+// play should fall ~150-175, ascended boards chase 200.
 export const FREEPLAY = {
   name: "Free Play",
   waves: 200,

@@ -5,6 +5,7 @@ import {
   TOWER_STATES,
   TOWER_TYPES,
   artworkTexture,
+  isAscendedTower,
   towerArtwork,
 } from "../towerArtwork.js";
 import {
@@ -346,6 +347,42 @@ export class GameScene extends Phaser.Scene {
         tower.y - 20,
       );
     }
+    if (type === "ascend") {
+      // The ascension moment: a great golden ring, a burst of sparks and
+      // a small shake — three towers just became a legend.
+      this.effects.push({
+        type: "ring",
+        x: tower.x,
+        y: tower.y,
+        color: 0xffd76a,
+        age: 0,
+        life: 1.1,
+        radius: 190,
+      });
+      this.particles[tower.type].explode(
+        this.ui.reducedEffects ? 6 : 42,
+        tower.x,
+        tower.y - 24,
+      );
+      if (!this.ui.reducedEffects) this.cameras.main.shake(140, 0.0022);
+    }
+    if (type === "nova") {
+      this.effects.push({
+        type: "ring",
+        x: tower.x,
+        y: tower.y,
+        color: 0xffd76a,
+        age: 0,
+        life: 0.7,
+        radius:
+          tower.type === "frost" || tower.type === "wind" ? 320 : 165,
+      });
+      this.particles[tower.type].explode(
+        this.ui.reducedEffects ? 3 : 18,
+        tower.x,
+        tower.y - 20,
+      );
+    }
     if (
       [
         "armorBreak",
@@ -654,6 +691,12 @@ export class GameScene extends Phaser.Scene {
       const wanted = towerTexture(t);
       this.towerArt(t);
       if (this.textures.exists(wanted)) sprite.setTexture(wanted);
+      // Ascended towers stand larger than their mortal forms.
+      if (artworkTexture(t) !== null) {
+        const display = isAscendedTower(t) ? 108 : 80;
+        if (sprite.displayWidth !== display)
+          sprite.setDisplaySize(display, display);
+      }
       sprite.setDepth(t.y + 40);
       if (t.id === this.ui.selected) {
         for (let p = 0; p < 3; p++) {

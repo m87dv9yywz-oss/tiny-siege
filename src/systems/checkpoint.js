@@ -93,8 +93,13 @@ export function validateBattle(b) {
       !Array.isArray(t.paths) ||
       t.paths.length !== 3 ||
       !t.paths.every((n) => Number.isInteger(n) && n >= 0 && n <= 3) ||
-      t.paths.filter((n) => n > 0).length > 2 ||
-      t.paths.filter((n) => n > 1).length > 1 ||
+      // An Ascended tower (paths [3,3,3] — three sacrificed evolutions)
+      // is legal only in Free Play; everywhere else the ordinary
+      // two-path shape rules apply unchanged.
+      (b.difficulty === "freeplay" && t.paths.every((n) => n === 3)
+        ? false
+        : t.paths.filter((n) => n > 0).length > 2 ||
+          t.paths.filter((n) => n > 1).length > 1) ||
       !["FIRST", "LAST", "STRONG", "WEAK", "SUPPORT"].includes(t.targeting) ||
       !finite(t.cooldown, 10) ||
       !finite(t.shots) ||

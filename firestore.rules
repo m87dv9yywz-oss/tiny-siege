@@ -114,7 +114,7 @@ service cloud.firestore {
         && unique(c.relics,relicIds(),2) && runState(c.run) && animal(c.hero) && unique(c.towerSlots,slots(),80);
     }
     function v4Battle(d) { return d.present is bool && number(d.revision) && v4Stamp(d) && (d.present ? d.size()==4 && checkpoint(d.checkpoint) : d.size()==3); }
-    function battlePaths(p) { return p is list && p.size()==3 && p[0] is int && p[1] is int && p[2] is int && p.hasOnly([0,1,2,3]) && (p[0]==0 || p[1]==0 || p[2]==0) && p[0]+p[1]+p[2]<=4 && ((p[0]<=1 && p[1]<=1) || (p[0]<=1 && p[2]<=1) || (p[1]<=1 && p[2]<=1)); }
+    function battlePaths(p) { return p is list && p.size()==3 && p[0] is int && p[1] is int && p[2] is int && p.hasOnly([0,1,2,3]) && (p[0]==0 || p[1]==0 || p[2]==0 || (p[0]==3 && p[1]==3 && p[2]==3)) && (p[0]+p[1]+p[2]<=4 || (p[0]==3 && p[1]==3 && p[2]==3)) && (((p[0]<=1 && p[1]<=1) || (p[0]<=1 && p[2]<=1) || (p[1]<=1 && p[2]<=1)) || (p[0]==3 && p[1]==3 && p[2]==3)); }
     function tierCost(n,c) { return (n>=1?c[1]:0)+(n>=2?c[2]:0)+(n>=3?c[3]:0); }
     function investment(t,p) {
       let c={'archer':[75,100,260,650],'cannon':[160,210,480,1150],'frost':[130,160,360,880],'fire':[150,190,420,950],'lightning':[200,260,575,1350],'grove':[115,140,330,820],'wind':[145,180,390,980],'rune':[175,220,470,1100],'tidecaller':[240,300,750,2100]}[t];

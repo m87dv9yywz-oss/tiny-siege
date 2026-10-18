@@ -258,8 +258,10 @@ main {
   left: 9px;
   font-size: 8px;
   letter-spacing: 1px;
-  background: #315f47d9;
-  color: #fff6ce;
+  /* Faded to a watermark (owner request, 2026-10-18) — it already let
+     taps pass through; now it barely covers the art either. */
+  background: rgba(49, 95, 71, 0.38);
+  color: rgba(255, 246, 206, 0.85);
   padding: 5px 10px;
   border-radius: 16px;
   pointer-events: none;
@@ -494,7 +496,14 @@ main aside,
   width: 280px;
   z-index: 5;
   min-height: 0;
-  background: linear-gradient(#fff4d3, #f2ddac);
+  /* Translucent with a backdrop blur (owner request, 2026-10-18): the
+     battlefield ghosts through the panel instead of hiding behind it. */
+  background: linear-gradient(
+    rgba(255, 244, 211, 0.86),
+    rgba(242, 221, 172, 0.86)
+  );
+  backdrop-filter: blur(9px) saturate(1.3);
+  -webkit-backdrop-filter: blur(9px) saturate(1.3);
   border: 3px solid #b68d48;
   border-radius: 17px;
   padding: 10px;
@@ -698,6 +707,35 @@ main:has(#selection-panel.open:not(.placing)) aside {
   color: #80592c;
   padding: 8px;
 }
+.ascend-button {
+  background: linear-gradient(#ffe9a8, #f7c948);
+  border: 2px solid #b8860b;
+  border-radius: 10px;
+  min-height: 42px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #6b4e00;
+  padding: 8px;
+  box-shadow: 0 0 10px #f7c94888;
+}
+.ascend-button:disabled {
+  background: #e8ddba;
+  border-color: #c9b586;
+  color: #97865e;
+  box-shadow: none;
+  font-weight: 400;
+}
+.ascended-banner {
+  background: linear-gradient(rgba(255, 233, 168, 0.75), rgba(247, 201, 72, 0.75));
+  border: 2px solid #b8860b;
+  border-radius: 10px;
+  padding: 7px 9px;
+  font-size: 11.5px;
+  color: #6b4e00;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .empty-selection {
   font-size: 11px;
   line-height: 1.5;
@@ -711,13 +749,21 @@ main:has(#selection-panel.open:not(.placing)) aside {
   margin-bottom: 5px;
 }
 #selection-panel.placing {
+  /* A compact translucent chip in the bottom-left corner, never a wall
+     over the field (owner request, 2026-10-18). Taps pass through the
+     chip itself; only the Cancel button takes taps. */
   position: fixed;
   top: auto;
-  bottom: max(135px, env(safe-area-inset-bottom));
-  width: 230px;
-  max-height: 150px;
-  left: max(12px, env(safe-area-inset-left));
-  gap: 5px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  width: 218px;
+  max-height: 132px;
+  left: max(10px, env(safe-area-inset-left));
+  gap: 4px;
+  padding: 8px;
+  pointer-events: none;
+}
+#selection-panel.placing .cancel-button {
+  pointer-events: auto;
 }
 #tower-inspector {
   position: absolute;
@@ -2763,6 +2809,15 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel .path-heading i { width: 9px; height: 4px; font-size: 0; }
   #selection-panel .upgrade-button { min-height: 44px; height: 100%; font-size: 11px; padding: 4px; border-bottom-width: 2px; }
   #selection-panel .sell-button { grid-column: 1/-1; grid-row: 4; min-height: 44px; font-size: 12px; }
+  /* Ascension (Free Play): the ascend button / ascended banner takes the
+     sell row and sell drops to a fifth row; upgrade paths give up 4px per
+     row so nothing overlaps on short landscape screens. */
+  #selection-panel .ascend-button, #selection-panel .ascended-banner { grid-column: 1/-1; grid-row: 4; }
+  #selection-panel .ascend-button ~ .sell-button, #selection-panel .ascended-banner ~ .sell-button { grid-row: 5; }
+  #selection-panel.open:not(.placing):has(> .ascend-button) { grid-template-rows: 90px 44px minmax(0,1fr) 44px 44px; }
+  #selection-panel.open:not(.placing):has(> .ascended-banner) { grid-template-rows: 90px 44px minmax(0,1fr) auto 44px; }
+  #selection-panel:has(> .ascend-button) .upgrade-paths, #selection-panel:has(> .ascended-banner) .upgrade-paths { grid-template-rows: repeat(3,minmax(40px,1fr)); }
+  #selection-panel:has(> .ascend-button) .upgrade-button, #selection-panel:has(> .ascended-banner) .upgrade-button { min-height: 40px; }
   #selection-panel.placing { left: auto; right: 134px; bottom: 8px; top: auto; width: 190px; }
 }
 @media (orientation: landscape) and (max-height: 360px) {
@@ -2771,6 +2826,8 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel { left: 114px; width: 235px; }
   #selection-panel[data-side="right"] { right: 114px; }
   #selection-panel.open:not(.placing) { grid-template-rows: 66px 44px minmax(0,1fr) 44px; }
+  #selection-panel.open:not(.placing):has(> .ascend-button) { grid-template-rows: 66px 44px minmax(0,1fr) 44px 44px; }
+  #selection-panel.open:not(.placing):has(> .ascended-banner) { grid-template-rows: 66px 44px minmax(0,1fr) auto 44px; }
   #selection-panel .tower-summary, #selection-panel .tower-portrait { height: 66px; }
   .map-footer { display: none; }
 }
@@ -2796,6 +2853,7 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel .tower-portrait { height: 95px; }
   #selection-panel .target-label select, #selection-panel .tree-link, #selection-panel .sell-button, #close-panel { min-height: 44px; }
   #selection-panel .upgrade-paths { grid-template-rows: repeat(3,minmax(44px,1fr)); }
+  #selection-panel .ascend-button, #selection-panel .ascended-banner { grid-column: 1/-1; }
   #selection-panel .path { padding: 2px; gap: 0; }
   #selection-panel .path-info { min-height: 30px; }
   #selection-panel .upgrade-button { min-height: 44px; font-size: 10px; }
@@ -2872,6 +2930,8 @@ aside, main:has(#selection-panel.open:not(.placing)) aside { grid-column: 2; }
   #selection-panel .path-heading i { width: 10px; height: 5px; font-size: 0; }
   #selection-panel .upgrade-button { min-height: 44px; width: 100%; font-size: 11px; }
   #selection-panel .sell-button { grid-column: 1/-1; grid-row: 5; min-height: 44px; }
+  #selection-panel .ascend-button, #selection-panel .ascended-banner { grid-column: 1/-1; grid-row: 5; }
+  #selection-panel .ascend-button ~ .sell-button, #selection-panel .ascended-banner ~ .sell-button { grid-row: 6; }
   .tower-icon, .tower-icon img { height: clamp(24px,calc((var(--app-height,100dvh) - 180px)/8 - 40px),50px); }
 }
 /* Move the existing overlay between edges without reflowing the map. */

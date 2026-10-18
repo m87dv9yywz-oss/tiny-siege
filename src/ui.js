@@ -2,7 +2,14 @@ import { heroArtwork, heroStage } from "./heroArtwork.js";
 import { enemyTexture } from "./enemyArtwork.js";
 import { HEROES } from "./data/heroes.js";
 import { towerArtwork } from "./towerArtwork.js";
-import { TOWERS, towerStats, towerName, upgradeState } from "./data/towers.js";
+import {
+  TOWERS,
+  towerStats,
+  towerName,
+  upgradeState,
+  isAscended,
+  ASCENSIONS,
+} from "./data/towers.js";
 import { introductionsFor, ENEMY_GUIDE } from "./data/introductions.js";
 import { guideHTML } from "./upgradeGuide.js";
 import { UNLOCK_COSTS } from "./progression/profiles.js";
@@ -968,7 +975,19 @@ export class UI {
           })
           .join(
             "",
-          )}</div><button id="sell" class="sell-button" ${m.ended || m.paused ? "disabled" : ""}>Sell tower · ${Math.floor(t.invested * 0.7)} gold</button>`;
+          )}</div>${(() => {
+            if (isAscended(t))
+              return `<div class="ascended-banner"><b>✦ ASCENDED ✦</b><span>${ASCENSIONS[t.type].blurb}</span></div>`;
+            if (
+              m.campaign.mode === "freeplay" &&
+              t.paths.some((n) => n === 3) &&
+              !m.towers.some((o) => o.type === t.type && isAscended(o))
+            )
+              return m.canAscend(t)
+                ? `<button id="ascend" class="ascend-button" ${m.ended || m.paused ? "disabled" : ""}>✦ ASCEND — fuse the three ${def.name} evolutions</button>`
+                : `<button class="ascend-button" disabled>✦ Ascend — needs a Tier 3 ${def.name} on every path</button>`;
+            return "";
+          })()}<button id="sell" class="sell-button" ${m.ended || m.paused ? "disabled" : ""}>Sell tower · ${Math.floor(t.invested * 0.7)} gold</button>`;
       $("full-tree").onclick = () => this.showTree(t);
       panel
         .querySelectorAll("[data-tree]")
@@ -987,6 +1006,34 @@ export class UI {
             this.refresh(true);
           }),
       );
+      const ascendButton = $("ascend");
+      if (ascendButton)
+        ascendButton.onclick = () => {
+          // Ascension consumes the other two evolutions forever —
+          // confirm first, Cancel as the safe default, like selling.
+          const wasPaused = m.paused;
+          m.paused = true;
+          this.modal(
+            `<div class="eyebrow">ASCENSION</div><h1 id="modal-title">Ascend this ${def.name}?</h1><p>Your three Tier 3 ${def.name} towers — one on every path — will fuse into <b>${ASCENSIONS[t.type].name}</b>, with all of their powers in one mighty tower. The other two towers are consumed.</p><button id="cancel-ascend" class="v5-btn v5-btn-primary">Cancel</button><button id="confirm-ascend" class="v5-btn v5-btn-danger">✦ Ascend</button>`,
+          );
+          const close = () => {
+            this.overlayClose = null;
+            $("modal").hidden = true;
+            $("app").inert = false;
+            m.paused = wasPaused;
+            this.refresh(true);
+          };
+          this.overlayClose = close;
+          $("cancel-ascend").onclick = close;
+          $("confirm-ascend").onclick = () => {
+            close();
+            if (m.ascend(t.id)) {
+              this.selected = t.id;
+              this.toast(`✦ ${ASCENSIONS[t.type].name} ASCENDS!`);
+            }
+            this.refresh(true);
+          };
+        };
       $("sell").onclick = () => {
         // Selling is permanent and refunds only 70% — confirm first, with
         // Cancel as the safe default, like the restart confirmation.
@@ -1015,7 +1062,7 @@ export class UI {
       panel.scrollTop = scroll;
     } else if (this.placing) {
       const def = TOWERS[this.placing];
-      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>${def.waterOnly ? "Tap a pond or lake — the Tidecaller sails on water, never on grass." : "Tap grass or drag an icon onto the trail’s green surroundings."}<br>Green is good. Red means try elsewhere.</div><button id="cancel" class="cancel-button">Cancel placement · Esc</button>`;
+      panel.innerHTML = `<div class="empty-selection"><img class="placing-art" src="${import.meta.env.BASE_URL}${towerArtwork({ type: this.placing, paths: [0, 0, 0] }, "battlefield_256")}" alt=""><b>Place your ${def.name}</b>${def.waterOnly ? "Tap a pond or lake." : "Tap grass to place."}</div><button id="cancel" class="cancel-button">Cancel · Esc</button>`;
       $("cancel").onclick = () => this.cancel();
     } else
       panel.innerHTML =
