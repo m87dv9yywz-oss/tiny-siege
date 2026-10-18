@@ -51,7 +51,7 @@ test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appe
         oy: s.originY,
       };
     });
-    expect(size).toEqual({ w: 80, h: 80, ox: 0.5, oy: 0.96 });
+    expect(size).toEqual({ w: 96, h: 96, ox: 0.5, oy: 0.96 });
     await page.locator("#close-panel").click();
     const r = await page.locator("canvas").boundingBox();
     await page.touchscreen.tap(
@@ -100,8 +100,8 @@ test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appe
     }
     return { maximum: Math.max(...widths), end: sprite.displayWidth };
   });
-  expect(recoil.maximum).toBeLessThanOrEqual(88.1);
-  expect(recoil.end).toBeCloseTo(80, 1);
+  expect(recoil.maximum).toBeLessThanOrEqual(105.7);
+  expect(recoil.end).toBeCloseTo(96, 1);
   expect(errors).toEqual([]);
   expect(failed).toEqual([]);
 });

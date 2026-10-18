@@ -51,5 +51,5 @@ test('death fades and tower attacks never enlarge illustrated PNGs to their sour
  },types);
  expect(result.towerCount).toBe(9);
  expect(result.frames.some(f=>f.death.length===19)).toBe(true);
- for(const frame of result.frames){for(const e of frame.death){expect(e.width).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);expect(e.height).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);}for(const w of frame.towers)expect(w).toBeLessThanOrEqual(89);}
+ for(const frame of result.frames){for(const e of frame.death){expect(e.width).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);expect(e.height).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);}for(const w of frame.towers)expect(w).toBeLessThanOrEqual(107);}
 });

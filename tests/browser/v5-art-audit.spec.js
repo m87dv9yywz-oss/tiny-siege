@@ -21,7 +21,7 @@ for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, po
   const actual=await page.evaluate(()=>{const{model,ui}=window.__tinySiege,t=model.towers[0],s=ui.scene.towerSprites.get(t.id);return {paths:t.paths,width:s.displayWidth,height:s.displayHeight,origin:[s.originX,s.originY],stats:model.stats?model.stats(t):null};});
   const expected=towerStats({type,paths:tiers});
   await expect(page.locator('#selection-panel .stats b')).toHaveText([String(expected.damage),String(expected.range),(1/expected.cooldown).toFixed(1)]);
-  expect(actual.paths).toEqual(tiers);expect(actual.width).toBe(80);expect(actual.height).toBe(80);expect(actual.origin).toEqual([.5,.96]);
+  expect(actual.paths).toEqual(tiers);expect(actual.width).toBe(96);expect(actual.height).toBe(96);expect(actual.origin).toEqual([.5,.96]);
   await page.locator('#targeting').selectOption('STRONG');
   expect(await page.evaluate(()=>window.__tinySiege.model.towers[0].targeting)).toBe('STRONG');
   const b=await page.locator('canvas').boundingBox();
