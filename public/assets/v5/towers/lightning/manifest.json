@@ -98,15 +98,15 @@
    }
   },
   "0-1-3": {
-   "masterSha256": "9bc85cb9ec2743c2c4bd857e6b0689d5b3aed1a8a902d177a12506977c655776",
+   "masterSha256": "fe81eb4722acc778d3ecb11dd0d2464ed95094483928c5fd98d2beaf80e49184",
    "exports": {
     "card_512": {
-     "bytes": 267386,
-     "sha256": "16fb3c2cfde314e0679753fceca2c3f4810e12518343ac2e4de2ebdbfb22ed14"
+     "bytes": 257716,
+     "sha256": "caa7e08c543f38d024f725897c2f84ef24499f4689ec963cb664db363190f599"
     },
     "battlefield_256": {
-     "bytes": 79812,
-     "sha256": "c568d169554f91728cfb6cefb934983dc567d6d2446bff2785a08ae122a2f8c0"
+     "bytes": 76743,
+     "sha256": "d2ca0aea90b5a7e7a6425144a4d29a59904c655176edcce2a3b26dea0f092f71"
     }
    }
   },
