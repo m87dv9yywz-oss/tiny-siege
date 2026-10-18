@@ -5,22 +5,23 @@ import { test, expect } from "@playwright/test";
 // Ascended tower. Also covers the same day's battle-UI polish: the
 // translucent blurred tower panel, the faded map label, and the
 // pass-through placing chip.
-async function createProfile(page) {
+async function enterFreePlay(page) {
   await page.goto("./");
+  await page.waitForFunction(() => window.__tinySiege?.ui.scene?.dynamic);
   await page.locator("#new-profile").tap();
   await page.locator("#nickname").fill("Ascender");
   await page.locator("#profile-form button").tap();
-  await expect(page.locator("#play")).toBeVisible();
+  await expect(page.locator("#play")).toHaveText("Free Play");
+  await page.locator("#play").tap();
+  await page.locator('[data-freeplay="emerald"]').tap();
+  await page.waitForFunction(() => window.__tinySiege?.ui.inMenu === false);
+  await expect(page.locator(".map-label")).toContainText("Free Play");
 }
 
 test("three evolutions fuse into an ascended tower in free play", async ({
   page,
 }) => {
-  await createProfile(page);
-  await page.locator("#play").tap();
-  await page.locator('[data-freeplay="emerald"]').tap();
-  await page.getByRole("button", { name: "Start Free Play" }).tap();
-  await expect(page.locator(".map-label")).toContainText("Free Play");
+  await enterFreePlay(page);
   const fused = await page.evaluate(() => {
     const { model } = window.__tinySiege;
     model.gold = 100000;
@@ -74,10 +75,7 @@ test("three evolutions fuse into an ascended tower in free play", async ({
 });
 
 test("battle chrome stays out of the player's way", async ({ page }) => {
-  await createProfile(page);
-  await page.locator("#play").tap();
-  await page.locator('[data-freeplay="emerald"]').tap();
-  await page.getByRole("button", { name: "Start Free Play" }).tap();
+  await enterFreePlay(page);
   // The map label is a watermark now: translucent green, taps pass through.
   const labelBg = await page
     .locator(".map-label")
@@ -97,13 +95,16 @@ test("battle chrome stays out of the player's way", async ({ page }) => {
     .locator("#selection-panel")
     .evaluate((el) => {
       const cs = getComputedStyle(el);
-      return { bg: cs.backgroundColor + cs.backgroundImage, bf: cs.backdropFilter };
+      return { bf: cs.backdropFilter };
     });
   expect(panelStyle.bf).toContain("blur");
   // The placing chip lets taps pass through except on its button.
   await page.evaluate(() => {
-    window.__tinySiege.ui.placing = "cannon";
-    window.__tinySiege.ui.refresh(true);
+    const ui = window.__tinySiege.ui;
+    ui.selected = null;
+    ui.upgradeOpen = false;
+    ui.placing = "cannon";
+    ui.refresh(true);
   });
   const chip = await page.locator("#selection-panel.placing").evaluate((el) => {
     const cs = getComputedStyle(el);
@@ -111,7 +112,6 @@ test("battle chrome stays out of the player's way", async ({ page }) => {
     return {
       pointerEvents: cs.pointerEvents,
       cancelPointerEvents: getComputedStyle(cancel).pointerEvents,
-      bottom: el.getBoundingClientRect().bottom,
     };
   });
   expect(chip.pointerEvents).toBe("none");
