@@ -57,7 +57,7 @@ export function validateBattle(b) {
       (b.difficulty === "freeplay"
         ? FREEPLAY.waves
         : DIFFICULTIES[b.difficulty].waves) ||
-    ![1, 2, 3].includes(b.speed) ||
+    ![1, 2, 3, 4].includes(b.speed) ||
     !Number.isInteger(b.lives) ||
     b.lives < 1 ||
     b.lives > 22 ||

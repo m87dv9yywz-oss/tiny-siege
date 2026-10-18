@@ -25,6 +25,7 @@ import {
   TOWERS,
   towerStats,
   towerTexture,
+  towerMuzzle,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -502,7 +503,7 @@ export class GameScene extends Phaser.Scene {
       this.effects.push({
         type: "jet",
         points: [
-          { x: tower.x, y: tower.y - 35 },
+          towerMuzzle(tower),
           { x: event.target.x, y: event.target.y },
         ],
         heat: event.heat,
@@ -529,7 +530,7 @@ export class GameScene extends Phaser.Scene {
     if (type === "bolt")
       this.effects.push({
         type: "bolt",
-        points: [{ x: tower.x, y: tower.y - 20 }, ...event.points],
+        points: [towerMuzzle(tower), ...event.points],
         age: 0,
         life: 0.18,
         color: attackVisual(tower).color,
@@ -1085,13 +1086,15 @@ export class GameScene extends Phaser.Scene {
           trail: 16,
         },
         c = v.color,
-        a = Math.atan2(p.target.y - p.y, p.target.x - p.x),
+        px = p.draw?.x ?? p.x,
+        py = p.draw?.y ?? p.y,
+        a = Math.atan2(p.target.y - py, p.target.x - px),
         dx = Math.cos(a),
         dy = Math.sin(a);
       g.lineStyle((p.type === "archer" ? 2 : 4) * v.size, c, 0.35);
-      g.lineBetween(p.x, p.y, p.x - dx * v.trail, p.y - dy * v.trail);
+      g.lineBetween(px, py, px - dx * v.trail, py - dy * v.trail);
       g.fillStyle(c, 0.15);
-      g.fillCircle(p.x, p.y, 7 * v.size);
+      g.fillCircle(px, py, 7 * v.size);
       if (
         p.type === "archer" ||
         (p.type === "grove" && !p.stats.splash && !p.stats.slow)
@@ -1099,88 +1102,88 @@ export class GameScene extends Phaser.Scene {
         const length = (p.stats.pierce ? 17 : 10) * v.size,
           tip = 5 * v.size;
         g.lineStyle(p.stats.pierce ? 4 : 2, 0xffedbf);
-        g.lineBetween(p.x - dx * length, p.y - dy * length, p.x, p.y);
+        g.lineBetween(px - dx * length, py - dy * length, px, py);
         g.fillStyle(c);
         g.fillTriangle(
-          p.x + dx * tip,
-          p.y + dy * tip,
-          p.x - dy * tip,
-          p.y + dx * tip,
-          p.x + dy * tip,
-          p.y - dx * tip,
+          px + dx * tip,
+          py + dy * tip,
+          px - dy * tip,
+          py + dx * tip,
+          px + dy * tip,
+          py - dx * tip,
         );
         g.lineStyle(2, c);
         g.lineBetween(
-          p.x - dx * length,
-          p.y - dy * length,
-          p.x - dx * (length - 4) + dy * 4,
-          p.y - dy * (length - 4) - dx * 4,
+          px - dx * length,
+          py - dy * length,
+          px - dx * (length - 4) + dy * 4,
+          py - dy * (length - 4) - dx * 4,
         );
       } else if (p.type === "wind") {
         g.lineStyle(3 * v.size, c, 0.95);
         g.beginPath();
-        g.arc(p.x, p.y, 7 * v.size, time * 0.008, time * 0.008 + 4.8);
+        g.arc(px, py, 7 * v.size, time * 0.008, time * 0.008 + 4.8);
         g.strokePath();
         g.lineStyle(2, 0xf4ffff, 0.8);
-        g.lineBetween(p.x - 8 * v.size, p.y + 3, p.x + 8 * v.size, p.y - 3);
+        g.lineBetween(px - 8 * v.size, py + 3, px + 8 * v.size, py - 3);
       } else if (p.type === "rune") {
         g.fillStyle(c, 0.7);
         g.fillTriangle(
-          p.x,
-          p.y - 8 * v.size,
-          p.x - 7 * v.size,
-          p.y + 6 * v.size,
-          p.x + 7 * v.size,
-          p.y + 6 * v.size,
+          px,
+          py - 8 * v.size,
+          px - 7 * v.size,
+          py + 6 * v.size,
+          px + 7 * v.size,
+          py + 6 * v.size,
         );
         g.lineStyle(2, 0xfff1bb, 0.9);
-        g.strokeCircle(p.x, p.y, 9 * v.size);
+        g.strokeCircle(px, py, 9 * v.size);
       } else if (p.type === "frost") {
         g.lineStyle(2, c);
         for (let n = 0; n < 3 + v.tier; n++) {
           const angle = a + (n * Math.PI) / (3 + v.tier),
             r = 5 * v.size;
           g.lineBetween(
-            p.x - Math.cos(angle) * r,
-            p.y - Math.sin(angle) * r,
-            p.x + Math.cos(angle) * r,
-            p.y + Math.sin(angle) * r,
+            px - Math.cos(angle) * r,
+            py - Math.sin(angle) * r,
+            px + Math.cos(angle) * r,
+            py + Math.sin(angle) * r,
           );
         }
         g.fillStyle(0xf0ffff);
-        g.fillCircle(p.x, p.y, 2 + v.tier);
+        g.fillCircle(px, py, 2 + v.tier);
       } else if (p.type === "fire") {
         g.fillStyle(c, 0.8);
         g.fillTriangle(
-          p.x - dx * v.trail,
-          p.y - dy * v.trail,
-          p.x - dy * 7 * v.size,
-          p.y + dx * 7 * v.size,
-          p.x + dy * 7 * v.size,
-          p.y - dx * 7 * v.size,
+          px - dx * v.trail,
+          py - dy * v.trail,
+          px - dy * 7 * v.size,
+          py + dx * 7 * v.size,
+          px + dy * 7 * v.size,
+          py - dx * 7 * v.size,
         );
         g.fillStyle(0xffc96f);
-        g.fillCircle(p.x, p.y, 5 * v.size);
+        g.fillCircle(px, py, 5 * v.size);
         g.fillStyle(0xfff0c5);
-        g.fillCircle(p.x + dx * 2, p.y + dy * 2, 3 * v.size);
+        g.fillCircle(px + dx * 2, py + dy * 2, 3 * v.size);
       } else if (p.type === "grove") {
         g.fillStyle(c);
-        g.fillEllipse(p.x, p.y, 10 * v.size, 7 * v.size);
+        g.fillEllipse(px, py, 10 * v.size, 7 * v.size);
         g.lineStyle(2, 0xfff4bd);
-        g.lineBetween(p.x - 4 * v.size, p.y, p.x + 4 * v.size, p.y);
+        g.lineBetween(px - 4 * v.size, py, px + 4 * v.size, py);
       } else {
         g.fillStyle(0x465c64);
-        g.fillCircle(p.x, p.y, 5 * v.size);
+        g.fillCircle(px, py, 5 * v.size);
         g.lineStyle(2, c);
-        g.strokeCircle(p.x, p.y, 5 * v.size);
+        g.strokeCircle(px, py, 5 * v.size);
         for (let n = 0; n < v.tier; n++) {
           g.fillStyle(c);
-          g.fillCircle(p.x - dx * (n + 1) * 8, p.y - dy * (n + 1) * 8, 2);
+          g.fillCircle(px - dx * (n + 1) * 8, py - dy * (n + 1) * 8, 2);
         }
       }
       if (p.stats.arc) {
         g.lineStyle(2, 0xffeac0, 0.5);
-        g.lineBetween(p.x, p.y, p.x - 10, p.y - 15);
+        g.lineBetween(px, py, px - 10, py - 15);
       }
     }
 

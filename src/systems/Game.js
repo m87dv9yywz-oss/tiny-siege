@@ -7,6 +7,7 @@ import {
   upgradeState,
   attackVisual,
   isAscended,
+  towerMuzzle,
   ASCENSIONS,
 } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
@@ -901,6 +902,7 @@ export class Game {
   attack(t, targets, stats) {
     t.shots++;
     const hitStats = { ...stats, source: t.type };
+    const muzzle = towerMuzzle(t);
     if (stats.critical && t.shots % stats.critEvery === 0)
       hitStats.damage *= stats.critical;
     if (stats.beam) {
@@ -946,8 +948,14 @@ export class Game {
           id: ++this.id,
           towerId: t.id,
           type: t.type,
+          // The logical flight still starts at the classic point: the
+          // homing chase is balance-tuned around it (moving the start
+          // flipped a whole progression route in the balance report).
+          // `draw` carries the muzzle for the renderer only and races
+          // to join the logical position within the first frames.
           x: t.x,
           y: t.y - 15,
+          draw: { x: muzzle.x, y: muzzle.y },
           origin: { x: t.x, y: t.y },
           target,
           stats: hitStats,
@@ -1246,6 +1254,19 @@ export class Game {
       }
       p.x += ((p.target.x - p.x) * move) / d;
       p.y += ((p.target.y - p.y) * move) / d;
+      // The rendered shot starts at the tower's muzzle and catches up
+      // to the logical position almost immediately (see spawn comment).
+      if (p.draw) {
+        const dd = distance(p.draw, p),
+          dm = Math.max(p.speed * 3.2, 900) * dt;
+        if (dd <= dm) {
+          p.draw.x = p.x;
+          p.draw.y = p.y;
+        } else {
+          p.draw.x += ((p.x - p.draw.x) * dm) / dd;
+          p.draw.y += ((p.y - p.draw.y) * dm) / dd;
+        }
+      }
       return true;
     });
     // Leftover egg sacs are cleared unhatched once nothing else remains:

@@ -59,6 +59,10 @@
         "rune": {
           "earned": 0,
           "spent": 0
+        },
+        "tidecaller": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -106,10 +110,16 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [],
       "mapStars": {},
+      "freePlayBest": {},
       "achievements": [],
       "statistics": {
         "revision": 0,
@@ -143,7 +153,8 @@
         "lightning": 0,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 14,
@@ -1152,6 +1163,10 @@
         "rune": {
           "earned": 0,
           "spent": 0
+        },
+        "tidecaller": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -1200,6 +1215,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -1208,6 +1228,7 @@
       "mapStars": {
         "emerald": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear"
       ],
@@ -1224,7 +1245,7 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973945038
+      "updatedAt": 1792329462177
     },
     "reward": {
       "id": "run1",
@@ -1243,7 +1264,8 @@
         "lightning": 0,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 20,
@@ -2831,6 +2853,10 @@
         "rune": {
           "earned": 0,
           "spent": 0
+        },
+        "tidecaller": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -2880,6 +2906,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -2890,6 +2921,7 @@
         "emerald": 3,
         "amber": 2
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution"
@@ -2907,7 +2939,7 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973946293
+      "updatedAt": 1792329463461
     },
     "reward": {
       "id": "run2",
@@ -2926,7 +2958,8 @@
         "lightning": 0,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 20,
@@ -4462,6 +4495,10 @@
         "rune": {
           "earned": 0,
           "spent": 0
+        },
+        "tidecaller": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -4511,6 +4548,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -4523,6 +4565,7 @@
         "amber": 2,
         "moon": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -4541,7 +4584,7 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973946963
+      "updatedAt": 1792329464151
     },
     "reward": {
       "id": "run3",
@@ -4560,7 +4603,8 @@
         "lightning": 350,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 20,
@@ -6053,7 +6097,7 @@
     "map": "moon",
     "result": "victory",
     "lives": 20,
-    "totalGold": 20476,
+    "totalGold": 20726,
     "permanentBefore": {
       "schemaVersion": 3,
       "heroes": {
@@ -6112,6 +6156,10 @@
         "rune": {
           "earned": 0,
           "spent": 0
+        },
+        "tidecaller": {
+          "earned": 0,
+          "spent": 0
         }
       },
       "unlockedTowers": [
@@ -6161,6 +6209,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -6173,6 +6226,7 @@
         "amber": 2,
         "moon": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -6191,7 +6245,7 @@
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973947736
+      "updatedAt": 1792329464909
     },
     "reward": {
       "id": "run4",
@@ -6206,17 +6260,18 @@
         "archer": 350,
         "cannon": 350,
         "frost": 350,
-        "fire": 108,
+        "fire": 119,
         "lightning": 0,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 20,
-        "damage": 223535,
-        "armor": 27101,
-        "kills": 958
+        "damage": 223554,
+        "armor": 27102,
+        "kills": 959
       }
     },
     "waves": [
@@ -6939,10 +6994,10 @@
       {
         "wave": 13,
         "lives": 20,
-        "gold": 1048,
-        "earned": 1025,
+        "gold": 1298,
+        "earned": 1275,
         "spent": 620,
-        "totalEarned": 5083,
+        "totalEarned": 5333,
         "towers": [
           {
             "type": "archer",
@@ -7018,16 +7073,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 23.7,
+        "seconds": 21.6,
         "result": null
       },
       {
         "wave": 14,
         "lives": 20,
-        "gold": 1460,
+        "gold": 1560,
         "earned": 1412,
-        "spent": 1000,
-        "totalEarned": 6495,
+        "spent": 1150,
+        "totalEarned": 6745,
         "towers": [
           {
             "type": "archer",
@@ -7048,7 +7103,7 @@
           {
             "type": "cannon",
             "paths": [
-              2,
+              3,
               0,
               0
             ]
@@ -7073,14 +7128,14 @@
             "type": "cannon",
             "paths": [
               0,
-              2,
+              1,
               0
             ]
           },
           {
             "type": "archer",
             "paths": [
-              2,
+              1,
               0,
               0
             ]
@@ -7097,22 +7152,22 @@
             "type": "archer",
             "paths": [
               0,
-              2,
+              1,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 22.7,
+        "seconds": 23.6,
         "result": null
       },
       {
         "wave": 15,
         "lives": 20,
-        "gold": 1368,
+        "gold": 1288,
         "earned": 1268,
-        "spent": 1360,
-        "totalEarned": 7763,
+        "spent": 1540,
+        "totalEarned": 8013,
         "towers": [
           {
             "type": "archer",
@@ -7165,7 +7220,7 @@
           {
             "type": "archer",
             "paths": [
-              2,
+              3,
               0,
               0
             ]
@@ -7175,29 +7230,37 @@
             "paths": [
               0,
               0,
-              1
+              0
             ]
           },
           {
             "type": "archer",
             "paths": [
               0,
-              2,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 23.3,
+        "seconds": 22.9,
         "result": null
       },
       {
         "wave": 16,
         "lives": 20,
-        "gold": 2011,
+        "gold": 2071,
         "earned": 1923,
-        "spent": 1280,
-        "totalEarned": 9686,
+        "spent": 1140,
+        "totalEarned": 9936,
         "towers": [
           {
             "type": "archer",
@@ -7274,7 +7337,7 @@
           {
             "type": "fire",
             "paths": [
-              0,
+              1,
               0,
               0
             ]
@@ -7287,10 +7350,10 @@
       {
         "wave": 17,
         "lives": 20,
-        "gold": 3358,
+        "gold": 3608,
         "earned": 1957,
-        "spent": 610,
-        "totalEarned": 11643,
+        "spent": 420,
+        "totalEarned": 11893,
         "towers": [
           {
             "type": "archer",
@@ -7374,16 +7437,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 30.2,
+        "seconds": 31.3,
         "result": null
       },
       {
         "wave": 18,
         "lives": 20,
-        "gold": 5904,
+        "gold": 6154,
         "earned": 2546,
         "spent": 0,
-        "totalEarned": 14189,
+        "totalEarned": 14439,
         "towers": [
           {
             "type": "archer",
@@ -7467,16 +7530,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 26.6,
+        "seconds": 27.5,
         "result": null
       },
       {
         "wave": 19,
         "lives": 20,
-        "gold": 8941,
+        "gold": 9191,
         "earned": 3037,
         "spent": 0,
-        "totalEarned": 17226,
+        "totalEarned": 17476,
         "towers": [
           {
             "type": "archer",
@@ -7560,16 +7623,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 31.4,
+        "seconds": 30.7,
         "result": null
       },
       {
         "wave": 20,
         "lives": 20,
-        "gold": 11891,
+        "gold": 12141,
         "earned": 2950,
         "spent": 0,
-        "totalEarned": 20176,
+        "totalEarned": 20426,
         "towers": [
           {
             "type": "archer",
@@ -7704,7 +7767,7 @@
           "spent": 1540
         },
         "fire": {
-          "earned": 458,
+          "earned": 469,
           "spent": 360
         },
         "lightning": {
@@ -7720,6 +7783,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -7771,6 +7838,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -7783,6 +7855,7 @@
         "amber": 2,
         "moon": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -7793,15 +7866,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|",
         "wins": 5,
         "waves": 94,
-        "damage": 920730,
-        "armor": 111830,
-        "kills": 4255
+        "damage": 920749,
+        "armor": 111831,
+        "kills": 4256
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973948276
+      "updatedAt": 1792329465550
     },
     "reward": {
       "id": "run5",
@@ -7820,7 +7893,8 @@
         "lightning": 350,
         "grove": 0,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 20,
@@ -9322,7 +9396,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -9338,6 +9412,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -9390,6 +9468,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -9402,6 +9485,7 @@
         "amber": 2,
         "moon": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -9412,15 +9496,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|",
         "wins": 6,
         "waves": 114,
-        "damage": 1141674,
-        "armor": 138315,
-        "kills": 5201
+        "damage": 1141693,
+        "armor": 138316,
+        "kills": 5202
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973948787
+      "updatedAt": 1792329466203
     },
     "reward": {
       "id": "run6",
@@ -9439,7 +9523,8 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
@@ -10715,7 +10800,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -10731,6 +10816,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -10783,6 +10872,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -10797,6 +10891,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -10807,15 +10902,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|",
         "wins": 7,
         "waves": 132,
-        "damage": 1270232,
-        "armor": 152620,
-        "kills": 5955
+        "damage": 1270251,
+        "armor": 152621,
+        "kills": 5956
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973949273
+      "updatedAt": 1792329466850
     },
     "reward": {
       "id": "run7",
@@ -10834,7 +10929,8 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
@@ -12061,7 +12157,7 @@
     "map": "garden",
     "result": "victory",
     "lives": 20,
-    "totalGold": 13679,
+    "totalGold": 13929,
     "permanentBefore": {
       "schemaVersion": 3,
       "heroes": {
@@ -12102,7 +12198,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -12118,6 +12214,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -12170,6 +12270,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -12184,6 +12289,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -12194,15 +12300,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|",
         "wins": 8,
         "waves": 150,
-        "damage": 1404543,
-        "armor": 166872,
-        "kills": 6709
+        "damage": 1404562,
+        "armor": 166873,
+        "kills": 6710
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973949813
+      "updatedAt": 1792329467480
     },
     "reward": {
       "id": "run8",
@@ -12221,13 +12327,14 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
-        "damage": 128866,
-        "armor": 14707,
-        "kills": 754
+        "damage": 127899,
+        "armor": 14722,
+        "kills": 755
       }
     },
     "waves": [
@@ -12764,10 +12871,10 @@
       {
         "wave": 11,
         "lives": 20,
-        "gold": 619,
-        "earned": 569,
+        "gold": 869,
+        "earned": 819,
         "spent": 765,
-        "totalEarned": 3564,
+        "totalEarned": 3814,
         "towers": [
           {
             "type": "grove",
@@ -12841,15 +12948,15 @@
       {
         "wave": 12,
         "lives": 20,
-        "gold": 633,
+        "gold": 543,
         "earned": 494,
-        "spent": 480,
-        "totalEarned": 4058,
+        "spent": 820,
+        "totalEarned": 4308,
         "towers": [
           {
             "type": "grove",
             "paths": [
-              2,
+              3,
               0,
               0
             ]
@@ -12865,7 +12972,7 @@
           {
             "type": "cannon",
             "paths": [
-              2,
+              1,
               0,
               0
             ]
@@ -12912,21 +13019,21 @@
           }
         ],
         "escaped": [],
-        "seconds": 24.1,
+        "seconds": 19.4,
         "result": null
       },
       {
         "wave": 13,
         "lives": 20,
-        "gold": 1038,
+        "gold": 1088,
         "earned": 1025,
-        "spent": 620,
-        "totalEarned": 5083,
+        "spent": 480,
+        "totalEarned": 5333,
         "towers": [
           {
             "type": "grove",
             "paths": [
-              2,
+              3,
               0,
               0
             ]
@@ -12950,7 +13057,7 @@
           {
             "type": "frost",
             "paths": [
-              2,
+              1,
               0,
               0
             ]
@@ -12975,7 +13082,7 @@
             "type": "archer",
             "paths": [
               0,
-              2,
+              1,
               0
             ]
           },
@@ -12989,16 +13096,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 19.8,
+        "seconds": 16.4,
         "result": null
       },
       {
         "wave": 14,
         "lives": 20,
-        "gold": 1490,
+        "gold": 1550,
         "earned": 1412,
-        "spent": 960,
-        "totalEarned": 6495,
+        "spent": 950,
+        "totalEarned": 6745,
         "towers": [
           {
             "type": "grove",
@@ -13035,7 +13142,7 @@
           {
             "type": "grove",
             "paths": [
-              1,
+              2,
               0,
               0
             ]
@@ -13059,7 +13166,7 @@
           {
             "type": "grove",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
@@ -13072,10 +13179,10 @@
       {
         "wave": 15,
         "lives": 20,
-        "gold": 1278,
+        "gold": 1378,
         "earned": 1268,
-        "spent": 1480,
-        "totalEarned": 7763,
+        "spent": 1440,
+        "totalEarned": 8013,
         "towers": [
           {
             "type": "grove",
@@ -13137,6 +13244,14 @@
             "type": "grove",
             "paths": [
               1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
               0,
               0
             ]
@@ -13149,10 +13264,10 @@
       {
         "wave": 16,
         "lives": 20,
-        "gold": 1981,
+        "gold": 1941,
         "earned": 1923,
-        "spent": 1220,
-        "totalEarned": 9686,
+        "spent": 1360,
+        "totalEarned": 9936,
         "towers": [
           {
             "type": "grove",
@@ -13198,7 +13313,7 @@
             "type": "cannon",
             "paths": [
               0,
-              1,
+              2,
               0
             ]
           },
@@ -13221,23 +13336,23 @@
           {
             "type": "fire",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 18.5,
+        "seconds": 17.6,
         "result": null
       },
       {
         "wave": 17,
         "lives": 20,
-        "gold": 1988,
+        "gold": 2098,
         "earned": 1957,
-        "spent": 1950,
-        "totalEarned": 11643,
+        "spent": 1800,
+        "totalEarned": 11893,
         "towers": [
           {
             "type": "grove",
@@ -13298,7 +13413,7 @@
           {
             "type": "grove",
             "paths": [
-              1,
+              2,
               0,
               0
             ]
@@ -13306,23 +13421,23 @@
           {
             "type": "fire",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 26,
+        "seconds": 27.9,
         "result": null
       },
       {
         "wave": 18,
         "lives": 20,
-        "gold": 1799,
+        "gold": 1739,
         "earned": 1736,
-        "spent": 1925,
-        "totalEarned": 13379,
+        "spent": 2095,
+        "totalEarned": 13629,
         "towers": [
           {
             "type": "grove",
@@ -13391,7 +13506,7 @@
           {
             "type": "fire",
             "paths": [
-              1,
+              2,
               0,
               0
             ]
@@ -13399,7 +13514,7 @@
           {
             "type": "cannon",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
@@ -13407,14 +13522,14 @@
           {
             "type": "archer",
             "paths": [
-              0,
+              1,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 24.4,
+        "seconds": 26.9,
         "result": "victory"
       }
     ]
@@ -13465,7 +13580,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -13481,6 +13596,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -13533,6 +13652,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -13547,6 +13671,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -13557,15 +13682,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|",
         "wins": 9,
         "waves": 168,
-        "damage": 1533409,
-        "armor": 181579,
-        "kills": 7463
+        "damage": 1532461,
+        "armor": 181595,
+        "kills": 7465
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973950161
+      "updatedAt": 1792329467953
     },
     "reward": {
       "id": "run9",
@@ -13584,7 +13709,8 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
@@ -14819,7 +14945,7 @@
     "map": "garden",
     "result": "victory",
     "lives": 20,
-    "totalGold": 13679,
+    "totalGold": 13929,
     "permanentBefore": {
       "schemaVersion": 3,
       "heroes": {
@@ -14860,7 +14986,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -14876,6 +15002,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -14928,6 +15058,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -14942,6 +15077,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -14952,15 +15088,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|run9|unlockgrove12|",
         "wins": 10,
         "waves": 186,
-        "damage": 1664723,
-        "armor": 195923,
-        "kills": 8217
+        "damage": 1663775,
+        "armor": 195939,
+        "kills": 8219
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973950616
+      "updatedAt": 1792329468504
     },
     "reward": {
       "id": "run10",
@@ -14979,13 +15115,14 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
-        "damage": 141876,
-        "armor": 14169,
-        "kills": 754
+        "damage": 139407,
+        "armor": 14181,
+        "kills": 755
       }
     },
     "waves": [
@@ -15915,10 +16052,10 @@
       {
         "wave": 16,
         "lives": 20,
-        "gold": 2011,
-        "earned": 1923,
+        "gold": 2261,
+        "earned": 2173,
         "spent": 1310,
-        "totalEarned": 9686,
+        "totalEarned": 9936,
         "towers": [
           {
             "type": "grove",
@@ -16000,10 +16137,10 @@
       {
         "wave": 17,
         "lives": 20,
-        "gold": 1988,
+        "gold": 1978,
         "earned": 1957,
-        "spent": 1980,
-        "totalEarned": 11643,
+        "spent": 2240,
+        "totalEarned": 11893,
         "towers": [
           {
             "type": "grove",
@@ -16072,31 +16209,23 @@
           {
             "type": "fire",
             "paths": [
-              1,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              0,
+              2,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 28.7,
+        "seconds": 26.9,
         "result": null
       },
       {
         "wave": 18,
         "lives": 20,
-        "gold": 1889,
+        "gold": 1779,
         "earned": 1736,
-        "spent": 1835,
-        "totalEarned": 13379,
+        "spent": 1935,
+        "totalEarned": 13629,
         "towers": [
           {
             "type": "grove",
@@ -16181,22 +16310,14 @@
           {
             "type": "archer",
             "paths": [
-              2,
+              3,
               0,
-              0
-            ]
-          },
-          {
-            "type": "frost",
-            "paths": [
-              0,
-              1,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 30.1,
+        "seconds": 28.2,
         "result": "victory"
       }
     ]
@@ -16206,7 +16327,7 @@
     "map": "garden",
     "result": "victory",
     "lives": 20,
-    "totalGold": 13679,
+    "totalGold": 13929,
     "permanentBefore": {
       "schemaVersion": 3,
       "heroes": {
@@ -16247,7 +16368,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -16263,6 +16384,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -16315,6 +16440,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -16329,6 +16459,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -16339,15 +16470,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|run9|unlockgrove12|run10|unlockgrove13|",
         "wins": 11,
         "waves": 204,
-        "damage": 1806599,
-        "armor": 210092,
-        "kills": 8971
+        "damage": 1803182,
+        "armor": 210120,
+        "kills": 8974
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973951133
+      "updatedAt": 1792329469069
     },
     "reward": {
       "id": "run11",
@@ -16366,13 +16497,14 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
-        "damage": 135964,
-        "armor": 14514,
-        "kills": 754
+        "damage": 136853,
+        "armor": 14509,
+        "kills": 755
       }
     },
     "waves": [
@@ -17294,10 +17426,10 @@
       {
         "wave": 16,
         "lives": 20,
-        "gold": 1981,
-        "earned": 1923,
+        "gold": 2231,
+        "earned": 2173,
         "spent": 1220,
-        "totalEarned": 9686,
+        "totalEarned": 9936,
         "towers": [
           {
             "type": "grove",
@@ -17373,16 +17505,16 @@
           }
         ],
         "escaped": [],
-        "seconds": 26.8,
+        "seconds": 26.6,
         "result": null
       },
       {
         "wave": 17,
         "lives": 20,
-        "gold": 1988,
+        "gold": 2003,
         "earned": 1957,
-        "spent": 1950,
-        "totalEarned": 11643,
+        "spent": 2185,
+        "totalEarned": 11893,
         "towers": [
           {
             "type": "grove",
@@ -17455,19 +17587,35 @@
               0,
               0
             ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              0,
+              0
+            ]
           }
         ],
         "escaped": [],
-        "seconds": 30.6,
+        "seconds": 29.2,
         "result": null
       },
       {
         "wave": 18,
         "lives": 20,
-        "gold": 1799,
+        "gold": 1739,
         "earned": 1736,
-        "spent": 1925,
-        "totalEarned": 13379,
+        "spent": 2000,
+        "totalEarned": 13629,
         "towers": [
           {
             "type": "grove",
@@ -17536,7 +17684,7 @@
           {
             "type": "fire",
             "paths": [
-              1,
+              2,
               0,
               0
             ]
@@ -17544,7 +17692,7 @@
           {
             "type": "cannon",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
@@ -17552,14 +17700,14 @@
           {
             "type": "archer",
             "paths": [
-              0,
+              1,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 26.3,
+        "seconds": 27.5,
         "result": "victory"
       }
     ]
@@ -17610,7 +17758,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -17626,6 +17774,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -17678,6 +17830,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -17692,6 +17849,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -17702,15 +17860,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|run9|unlockgrove12|run10|unlockgrove13|run11|",
         "wins": 12,
         "waves": 222,
-        "damage": 1942563,
-        "armor": 224606,
-        "kills": 9725
+        "damage": 1940035,
+        "armor": 224629,
+        "kills": 9729
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973951633
+      "updatedAt": 1792329469540
     },
     "reward": {
       "id": "run12",
@@ -17729,7 +17887,8 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
@@ -19005,7 +19164,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -19021,6 +19180,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -19073,6 +19236,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -19087,6 +19255,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -19097,15 +19266,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|run9|unlockgrove12|run10|unlockgrove13|run11|run12|unlockgrove22|",
         "wins": 13,
         "waves": 240,
-        "damage": 2071861,
-        "armor": 238938,
-        "kills": 10479
+        "damage": 2069333,
+        "armor": 238961,
+        "kills": 10483
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973952214
+      "updatedAt": 1792329470110
     },
     "reward": {
       "id": "run13",
@@ -19124,7 +19293,8 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
@@ -20351,7 +20521,7 @@
     "map": "garden",
     "result": "victory",
     "lives": 20,
-    "totalGold": 13679,
+    "totalGold": 13929,
     "permanentBefore": {
       "schemaVersion": 3,
       "heroes": {
@@ -20392,7 +20562,7 @@
           "spent": 2040
         },
         "fire": {
-          "earned": 808,
+          "earned": 819,
           "spent": 540
         },
         "lightning": {
@@ -20408,6 +20578,10 @@
           "spent": 0
         },
         "rune": {
+          "earned": 0,
+          "spent": 0
+        },
+        "tidecaller": {
           "earned": 0,
           "spent": 0
         }
@@ -20460,6 +20634,11 @@
           1,
           1,
           1
+        ],
+        "tidecaller": [
+          1,
+          1,
+          1
         ]
       },
       "completedMaps": [
@@ -20474,6 +20653,7 @@
         "moon": 3,
         "garden": 3
       },
+      "freePlayBest": {},
       "achievements": [
         "first-clear",
         "evolution",
@@ -20484,15 +20664,15 @@
         "ledger": "|run0|unlockarcher02|unlockcannon02|unlockfrost02|unlockfire|run1|unlocklightning|unlockarcher03|unlockcannon03|unlockfrost03|run2|run3|unlockarcher12|unlockarcher22|unlockcannon12|unlockcannon22|unlockfrost12|unlockfrost22|unlockfire02|unlocklightning02|run4|unlockarcher13|unlockcannon13|unlockfrost13|unlockfire12|run5|unlockarcher23|unlockcannon23|unlockfrost23|unlockfire22|unlocklightning03|unlockgrove|run6|unlockgrove02|run7|unlockgrove03|run8|run9|unlockgrove12|run10|unlockgrove13|run11|run12|unlockgrove22|run13|unlockgrove23|",
         "wins": 14,
         "waves": 258,
-        "damage": 2220585,
-        "armor": 252482,
-        "kills": 11233
+        "damage": 2218057,
+        "armor": 252505,
+        "kills": 11237
       },
       "settings": {
         "sound": false,
         "reducedEffects": false
       },
-      "updatedAt": 1791973954107
+      "updatedAt": 1792329471003
     },
     "reward": {
       "id": "run14",
@@ -20511,13 +20691,14 @@
         "lightning": 0,
         "grove": 350,
         "wind": 0,
-        "rune": 0
+        "rune": 0,
+        "tidecaller": 0
       },
       "stats": {
         "waves": 18,
-        "damage": 129778,
-        "armor": 7073,
-        "kills": 754
+        "damage": 129584,
+        "armor": 5243,
+        "kills": 755
       }
     },
     "waves": [
@@ -21054,10 +21235,10 @@
       {
         "wave": 11,
         "lives": 20,
-        "gold": 619,
-        "earned": 569,
+        "gold": 869,
+        "earned": 819,
         "spent": 765,
-        "totalEarned": 3564,
+        "totalEarned": 3814,
         "towers": [
           {
             "type": "grove",
@@ -21125,23 +21306,100 @@
           }
         ],
         "escaped": [],
-        "seconds": 22.6,
+        "seconds": 21.7,
         "result": null
       },
       {
         "wave": 12,
         "lives": 20,
-        "gold": 633,
+        "gold": 543,
         "earned": 494,
-        "spent": 480,
-        "totalEarned": 4058,
+        "spent": 820,
+        "totalEarned": 4308,
         "towers": [
           {
             "type": "grove",
             "paths": [
               0,
               0,
-              2
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 19.2,
+        "result": null
+      },
+      {
+        "wave": 13,
+        "lives": 20,
+        "gold": 1088,
+        "earned": 1025,
+        "spent": 480,
+        "totalEarned": 5333,
+        "towers": [
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              3
             ]
           },
           {
@@ -21202,23 +21460,23 @@
           }
         ],
         "escaped": [],
-        "seconds": 25,
+        "seconds": 15.2,
         "result": null
       },
       {
-        "wave": 13,
+        "wave": 14,
         "lives": 20,
-        "gold": 1038,
-        "earned": 1025,
-        "spent": 620,
-        "totalEarned": 5083,
+        "gold": 1550,
+        "earned": 1412,
+        "spent": 950,
+        "totalEarned": 6745,
         "towers": [
           {
             "type": "grove",
             "paths": [
               0,
               0,
-              2
+              3
             ]
           },
           {
@@ -21250,7 +21508,7 @@
             "paths": [
               0,
               0,
-              1
+              2
             ]
           },
           {
@@ -21271,6 +21529,176 @@
           },
           {
             "type": "grove",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.2,
+        "result": null
+      },
+      {
+        "wave": 15,
+        "lives": 20,
+        "gold": 1378,
+        "earned": 1268,
+        "spent": 1440,
+        "totalEarned": 8013,
+        "towers": [
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
+            "paths": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "escaped": [],
+        "seconds": 18.1,
+        "result": null
+      },
+      {
+        "wave": 16,
+        "lives": 20,
+        "gold": 1941,
+        "earned": 1923,
+        "spent": 1360,
+        "totalEarned": 9936,
+        "towers": [
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "frost",
+            "paths": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              2
+            ]
+          },
+          {
+            "type": "cannon",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "archer",
+            "paths": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "type": "grove",
+            "paths": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "type": "fire",
             "paths": [
               0,
               0,
@@ -21283,251 +21711,12 @@
         "result": null
       },
       {
-        "wave": 14,
-        "lives": 20,
-        "gold": 1490,
-        "earned": 1412,
-        "spent": 960,
-        "totalEarned": 6495,
-        "towers": [
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              3
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              2,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "frost",
-            "paths": [
-              2,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              1
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              0,
-              1,
-              0
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              0,
-              2,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              1
-            ]
-          }
-        ],
-        "escaped": [],
-        "seconds": 18.2,
-        "result": null
-      },
-      {
-        "wave": 15,
-        "lives": 20,
-        "gold": 1278,
-        "earned": 1268,
-        "spent": 1480,
-        "totalEarned": 7763,
-        "towers": [
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              3
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "frost",
-            "paths": [
-              2,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              2
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              0,
-              1,
-              0
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              0,
-              2,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              1
-            ]
-          }
-        ],
-        "escaped": [],
-        "seconds": 19,
-        "result": null
-      },
-      {
-        "wave": 16,
-        "lives": 20,
-        "gold": 1981,
-        "earned": 1923,
-        "spent": 1220,
-        "totalEarned": 9686,
-        "towers": [
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              3
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "frost",
-            "paths": [
-              3,
-              0,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              2
-            ]
-          },
-          {
-            "type": "cannon",
-            "paths": [
-              0,
-              1,
-              0
-            ]
-          },
-          {
-            "type": "archer",
-            "paths": [
-              0,
-              2,
-              0
-            ]
-          },
-          {
-            "type": "grove",
-            "paths": [
-              0,
-              0,
-              1
-            ]
-          },
-          {
-            "type": "fire",
-            "paths": [
-              1,
-              0,
-              0
-            ]
-          }
-        ],
-        "escaped": [],
-        "seconds": 18.5,
-        "result": null
-      },
-      {
         "wave": 17,
         "lives": 20,
-        "gold": 1988,
+        "gold": 2098,
         "earned": 1957,
-        "spent": 1950,
-        "totalEarned": 11643,
+        "spent": 1800,
+        "totalEarned": 11893,
         "towers": [
           {
             "type": "grove",
@@ -21590,29 +21779,29 @@
             "paths": [
               0,
               0,
-              1
+              2
             ]
           },
           {
             "type": "fire",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 24.1,
+        "seconds": 20.3,
         "result": null
       },
       {
         "wave": 18,
         "lives": 20,
-        "gold": 1799,
+        "gold": 1739,
         "earned": 1736,
-        "spent": 1925,
-        "totalEarned": 13379,
+        "spent": 2095,
+        "totalEarned": 13629,
         "towers": [
           {
             "type": "grove",
@@ -21681,7 +21870,7 @@
           {
             "type": "fire",
             "paths": [
-              1,
+              2,
               0,
               0
             ]
@@ -21689,7 +21878,7 @@
           {
             "type": "cannon",
             "paths": [
-              1,
+              0,
               0,
               0
             ]
@@ -21697,14 +21886,14 @@
           {
             "type": "archer",
             "paths": [
-              0,
+              1,
               0,
               0
             ]
           }
         ],
         "escaped": [],
-        "seconds": 22.3,
+        "seconds": 23.1,
         "result": "victory"
       }
     ]

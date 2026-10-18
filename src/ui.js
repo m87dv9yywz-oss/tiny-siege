@@ -131,7 +131,7 @@ export class UI {
     };
     $("pause").onclick = () => this.togglePause();
     $("speed").onclick = () => {
-      this.model.speed = this.model.speed === 1 ? 2 : this.model.speed === 2 ? 3 : 1;
+      this.model.speed = this.model.speed >= 4 ? 1 : this.model.speed + 1;
       this.refresh(true);
     };
     $("auto-wave").onclick = () => this.toggleAutoWave();

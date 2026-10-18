@@ -335,7 +335,8 @@ test("checkpoints carry 3x speed and skipped waves; legacy snapshots still valid
   assert(validateBattle(b));
   assert.equal(b.speed, 3);
   assert.equal(b.skippedWaves, 9);
-  assert(!validateBattle({ ...b, speed: 4 }));
+  assert(validateBattle({ ...b, speed: 4 }));
+  assert(!validateBattle({ ...b, speed: 5 }));
   const legacy = { ...b };
   delete legacy.skippedWaves;
   assert(validateBattle(legacy));

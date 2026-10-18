@@ -7,6 +7,7 @@ export const EXPANSION_TOWERS = {
     icon: "✺",
     color: 0x70d7df,
     hex: "#70d7df",
+    muzzle: [0, -54],
     cost: 145,
     prices: [180, 390, 980],
     base: {
@@ -108,6 +109,7 @@ export const EXPANSION_TOWERS = {
     icon: "✧",
     color: 0xc095ee,
     hex: "#c095ee",
+    muzzle: [0, -56],
     cost: 175,
     prices: [220, 470, 1100],
     base: {
@@ -203,6 +205,7 @@ export const EXPANSION_TOWERS = {
     icon: "⚓",
     color: 0x4db8c8,
     hex: "#4db8c8",
+    muzzle: [-26, -30],
     cost: 240,
     prices: [300, 750, 2100],
     waterOnly: true,

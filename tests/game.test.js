@@ -4,6 +4,7 @@ import { Game } from "../src/systems/Game.js";
 import {
   TOWERS,
   towerStats,
+  towerMuzzle,
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
@@ -505,4 +506,42 @@ test("Inferno evolves into instant flame jets with capped focus heat that resets
   g.attack(t, [brute], stats);
   assert.equal(t.heat, 1);
   assert.equal(brute.burn, stats.burn);
+});
+test("shots leave from each tower's muzzle, not its base", () => {
+  // Every type declares an emitter point measured from its artwork, well
+  // above the ground anchor projectiles used to spawn from (y - 15).
+  for (const [type, def] of Object.entries(TOWERS)) {
+    assert.ok(Array.isArray(def.muzzle), `${type} declares a muzzle`);
+    const m = towerMuzzle({ type, x: 200, y: 300, paths: [0, 0, 0] });
+    assert.equal(m.x, 200 + def.muzzle[0]);
+    assert.equal(m.y, 300 + def.muzzle[1]);
+    assert.ok(def.muzzle[1] <= -28, `${type} muzzle is up at the emitter`);
+  }
+  // Integration: the rendered shot starts at the muzzle while the
+  // logical flight keeps its classic start (the homing chase is
+  // balance-tuned around it — see the spawn comment in Game.js). The
+  // draw point then catches up to the logical position as it flies.
+  const g = new Game();
+  g.gold = 10000;
+  const t = g.place("cannon", 145, 105);
+  const e = g.spawn("basic");
+  e.x = t.x + 60;
+  e.y = t.y;
+  g.attack(t, [e], towerStats(t));
+  assert.equal(g.projectiles.length, 1);
+  const m = towerMuzzle(t);
+  assert.equal(g.projectiles[0].draw.x, m.x);
+  assert.equal(g.projectiles[0].draw.y, m.y);
+  assert.ok(g.projectiles[0].draw.y < t.y - 30);
+  assert.equal(g.projectiles[0].x, t.x);
+  assert.equal(g.projectiles[0].y, t.y - 15);
+  g.active = true; // the sim only steps while a wave is running
+  for (let i = 0; i < 12 && g.projectiles.length; i++) g.update(0.025);
+  if (g.projectiles.length) {
+    assert.equal(g.projectiles[0].draw.x, g.projectiles[0].x);
+    assert.equal(g.projectiles[0].draw.y, g.projectiles[0].y);
+  }
+  // Ascended towers render larger; the muzzle scales with the sprite.
+  const big = towerMuzzle({ type: "frost", x: 0, y: 0, paths: [3, 3, 3] });
+  assert.equal(big.y, TOWERS.frost.muzzle[1] * (108 / 80));
 });
