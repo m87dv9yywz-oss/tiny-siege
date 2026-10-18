@@ -26,6 +26,8 @@ import {
   towerStats,
   towerTexture,
   towerMuzzle,
+  TOWER_DISPLAY_SIZE,
+  ASCENDED_DISPLAY_SIZE,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -238,8 +240,11 @@ export class GameScene extends Phaser.Scene {
         const illustrated = artworkTexture(t) !== null;
         const x = sprite?.x ?? t.x,
           y = sprite?.y ?? t.y - (illustrated ? 0 : 13);
-        const width = sprite?.displayWidth || (illustrated ? 80 : frame.width),
-          height = sprite?.displayHeight || (illustrated ? 80 : frame.height);
+        const width =
+            sprite?.displayWidth || (illustrated ? TOWER_DISPLAY_SIZE : frame.width),
+          height =
+            sprite?.displayHeight ||
+            (illustrated ? TOWER_DISPLAY_SIZE : frame.height);
         const originX = sprite?.originX ?? 0.5,
           originY = sprite?.originY ?? (illustrated ? 0.96 : 0.5);
         const localX = ((point.x - x) / width + originX) * frame.width;
@@ -686,7 +691,10 @@ export class GameScene extends Phaser.Scene {
       if (!sprite) {
         sprite = this.add.image(t.x, t.y - 13, this.towerArt(t));
         if (artworkTexture(t) !== null)
-          sprite.setDisplaySize(80, 80).setOrigin(0.5, 0.96).setY(t.y);
+          sprite
+            .setDisplaySize(TOWER_DISPLAY_SIZE, TOWER_DISPLAY_SIZE)
+            .setOrigin(0.5, 0.96)
+            .setY(t.y);
         this.towerSprites.set(t.id, sprite);
       }
       const wanted = towerTexture(t);
@@ -694,7 +702,9 @@ export class GameScene extends Phaser.Scene {
       if (this.textures.exists(wanted)) sprite.setTexture(wanted);
       // Ascended towers stand larger than their mortal forms.
       if (artworkTexture(t) !== null) {
-        const display = isAscendedTower(t) ? 108 : 80;
+        const display = isAscendedTower(t)
+          ? ASCENDED_DISPLAY_SIZE
+          : TOWER_DISPLAY_SIZE;
         if (sprite.displayWidth !== display)
           sprite.setDisplaySize(display, display);
       }

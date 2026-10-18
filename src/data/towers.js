@@ -639,10 +639,17 @@ export function isAscended(t) {
 // measured from its artwork — the Archer's bow, the Cannon's barrel, the
 // Frost crystal's tip, the Tidecaller's bow harpoon — so projectiles and
 // lightning bolts start at the emitter instead of the tower's base.
-// Ascended towers render at 108px instead of 80px, so theirs scale up.
+// Battlefield render sizes. Raised 80 -> 96 (ascended 108 -> 128) on
+// 2026-10-18: reframing the tower art to fit complete auras inside the
+// frame had shrunk placed towers ~15-20% on screen. The muzzle offsets
+// were measured against an 80px reference render, so they scale with
+// the tower's actual display size.
+export const TOWER_DISPLAY_SIZE = 96;
+export const ASCENDED_DISPLAY_SIZE = 128;
 export function towerMuzzle(t) {
   const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
-  const scale = isAscended(t) ? 108 / 80 : 1;
+  const scale =
+    (isAscended(t) ? ASCENDED_DISPLAY_SIZE : TOWER_DISPLAY_SIZE) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };
 }
 // The merged might of the three evolved forms: best value per stat,
