@@ -517,7 +517,10 @@ test("shots leave from each tower's muzzle, not its base", () => {
     assert.equal(m.y, 300 + def.muzzle[1]);
     assert.ok(def.muzzle[1] <= -28, `${type} muzzle is up at the emitter`);
   }
-  // Integration: a real projectile spawns exactly at the muzzle.
+  // Integration: the rendered shot starts at the muzzle while the
+  // logical flight keeps its classic start (the homing chase is
+  // balance-tuned around it — see the spawn comment in Game.js). The
+  // draw point then catches up to the logical position as it flies.
   const g = new Game();
   g.gold = 10000;
   const t = g.place("cannon", 145, 105);
@@ -527,9 +530,17 @@ test("shots leave from each tower's muzzle, not its base", () => {
   g.attack(t, [e], towerStats(t));
   assert.equal(g.projectiles.length, 1);
   const m = towerMuzzle(t);
-  assert.equal(g.projectiles[0].x, m.x);
-  assert.equal(g.projectiles[0].y, m.y);
-  assert.ok(g.projectiles[0].y < t.y - 30);
+  assert.equal(g.projectiles[0].draw.x, m.x);
+  assert.equal(g.projectiles[0].draw.y, m.y);
+  assert.ok(g.projectiles[0].draw.y < t.y - 30);
+  assert.equal(g.projectiles[0].x, t.x);
+  assert.equal(g.projectiles[0].y, t.y - 15);
+  g.active = true; // the sim only steps while a wave is running
+  for (let i = 0; i < 12 && g.projectiles.length; i++) g.update(0.025);
+  if (g.projectiles.length) {
+    assert.equal(g.projectiles[0].draw.x, g.projectiles[0].x);
+    assert.equal(g.projectiles[0].draw.y, g.projectiles[0].y);
+  }
   // Ascended towers render larger; the muzzle scales with the sprite.
   const big = towerMuzzle({ type: "frost", x: 0, y: 0, paths: [3, 3, 3] });
   assert.equal(big.y, TOWERS.frost.muzzle[1] * (108 / 80));
