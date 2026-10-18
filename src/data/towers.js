@@ -559,6 +559,7 @@ export function primaryPath(tower) {
   return tower.paths.findIndex((t) => t >= 2);
 }
 export function towerStats(tower) {
+  if (isAscended(tower)) return ascendedStats(tower);
   const def = TOWERS[tower.type],
     stats = { ...def.base };
   const primary = primaryPath(tower);
@@ -577,7 +578,85 @@ export function towerStats(tower) {
     }
   return stats;
 }
+// Ascension (Free Play only, owner design 2026-10-18): three Tier-3
+// towers of one kind — one evolved on each path — are sacrificed into a
+// single Ascended tower holding all three forms' powers plus a signature
+// nova. Represented as paths [3,3,3] so the state survives every save
+// layer (invested = the ordinary [3,3,3] formula value).
+export const ASCENSIONS = {
+  archer: {
+    name: "Stormpiercer",
+    blurb: "Every bolt pierces the line; a volley hunts the strongest.",
+  },
+  cannon: {
+    name: "Worldhammer",
+    blurb: "Shells like falling mountains, crowned by the great mortar.",
+  },
+  frost: {
+    name: "Eternal Winter",
+    blurb: "The cold that ends seasons; its nova freezes the whole field.",
+  },
+  fire: {
+    name: "Sunforge",
+    blurb: "A phoenix-forge with a sun for a heart and wings of wildfire.",
+  },
+  lightning: {
+    name: "Tempest Crown",
+    blurb: "A living thunderhead dealing judgment in chains of lightning.",
+  },
+  grove: {
+    name: "Worldroot Elder",
+    blurb: "The first tree, whose roots hold the world — and shake it.",
+  },
+  wind: {
+    name: "Eye of the Hurricane",
+    blurb: "The calm crown inside a storm that throws armies backward.",
+  },
+  rune: {
+    name: "The Archrunesmith",
+    blurb: "Its blessing covers the whole kingdom; its traps never miss.",
+  },
+  tidecaller: {
+    name: "Leviathan Sovereign",
+    blurb: "The sea itself, crowned — its maelstrom drags fleets down.",
+  },
+};
+export function isAscended(t) {
+  return (
+    Array.isArray(t?.paths) &&
+    t.paths.length === 3 &&
+    t.paths.every((n) => n === 3)
+  );
+}
+// The merged might of the three evolved forms: best value per stat,
+// fastest cooldown, every effect payload kept, then the ascension
+// damage blessing. Forms are the real sacrificed shapes ([3,1,0] and
+// its rotations), so secondaries ride along exactly as built.
+export function ascendedStats(t) {
+  const forms = [0, 1, 2].map((p) => {
+    const paths = [0, 0, 0];
+    paths[p] = 3;
+    paths[(p + 1) % 3] = 1;
+    return towerStats({ type: t.type, paths });
+  });
+  const merged = {};
+  for (const stats of forms)
+    for (const [key, value] of Object.entries(stats)) {
+      if (merged[key] === undefined) merged[key] = value;
+      else if (typeof value === "number" && typeof merged[key] === "number")
+        merged[key] =
+          key === "cooldown"
+            ? Math.min(merged[key], value)
+            : Math.max(merged[key], value);
+      else if (merged[key] === false || merged[key] === 0 || merged[key] == null)
+        merged[key] = value;
+    }
+  merged.damage = (merged.damage || 0) * 1.75;
+  merged.armorDamage = (merged.armorDamage || 0) * 1.75;
+  return merged;
+}
 export function upgradeState(tower, p) {
+  if (isAscended(tower)) return { locked: "Ascended ✦" };
   const n = tower.paths[p],
     main = primaryPath(tower);
   if (n === 3) return { locked: "Evolution complete" };
@@ -589,6 +668,7 @@ export function upgradeState(tower, p) {
   return { cost: def.prices[n], tier: def.paths[p].tiers[n], next: n + 1 };
 }
 export function towerName(t) {
+  if (isAscended(t)) return ASCENSIONS[t.type].name;
   const p = t.paths.findIndex((n) => n === 3);
   return p < 0 ? TOWERS[t.type].name : TOWERS[t.type].paths[p].tiers[2].name;
 }

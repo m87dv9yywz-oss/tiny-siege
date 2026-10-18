@@ -6,6 +6,8 @@ import {
   towerStats,
   upgradeState,
   attackVisual,
+  isAscended,
+  ASCENSIONS,
 } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
 import { waveQueue, CAMPAIGNS } from "../data/waves.js";
@@ -180,6 +182,153 @@ export class Game {
     this.emit("upgrade", { tower: t });
     return true;
   }
+  // Ascension partners for a Tier-3 tower: one same-type Tier-3 evolved
+  // on each OTHER path, and no Ascended tower of this type yet.
+  ascensionPartners(t) {
+    if (
+      this.campaign.mode !== "freeplay" ||
+      !t ||
+      isAscended(t) ||
+      !t.paths.some((n) => n === 3) ||
+      this.towers.some((o) => o.type === t.type && isAscended(o))
+    )
+      return null;
+    const partners = [];
+    for (let q = 0; q < 3; q++) {
+      if (t.paths[q] === 3) continue;
+      const partner = this.towers.find(
+        (o) => o.id !== t.id && o.type === t.type && o.paths[q] === 3,
+      );
+      if (!partner) return null;
+      partners.push(partner);
+    }
+    return partners;
+  }
+  canAscend(t) {
+    return !!this.ascensionPartners(t);
+  }
+  ascend(id) {
+    const t = this.towers.find((t) => t.id === id);
+    const partners = t && this.ascensionPartners(t);
+    if (!t || !partners || this.ended || this.paused) return false;
+    // The three evolutions are consumed; the Ascended tower's book value
+    // is the ordinary [3,3,3] investment so every save validator agrees.
+    const def = TOWERS[t.type];
+    const consumed = partners.map((p) => ({ ...p }));
+    this.towers = this.towers.filter((o) => !partners.includes(o));
+    this.projectiles = this.projectiles.filter(
+      (p) => !partners.some((o) => o.id === p.towerId),
+    );
+    this.zones = this.zones.filter(
+      (z) => !partners.some((o) => o.id === z.towerId),
+    );
+    t.paths = [3, 3, 3];
+    t.level = 3;
+    t.invested =
+      def.cost +
+      def.prices.reduce((a, c) => a + c, 0) * 3;
+    t.cooldown = Math.min(t.cooldown, 0.2);
+    t.novaLeft = 2;
+    this.emit("ascend", { tower: t, consumed });
+    return true;
+  }
+  // Ascension novas: each Ascended tower periodically unleashes its
+  // signature effect. Damage scales from its merged damage stat so the
+  // novas stay relevant as Free Play health compounds.
+  nova(t, stats) {
+    const foes = this.enemies.filter((e) => e.alive && !e.burrowed);
+    if (!foes.length) return;
+    const leaders = [...foes].sort((a, b) => b.progress - a.progress);
+    const hit = (e, mult, opts = {}) =>
+      this.damage(e, stats.damage * mult, {
+        damageType: stats.damageType || "magic",
+        armorDamage: (stats.armorDamage || 0) * mult,
+        bypass: 0.5,
+        area: true,
+        source: t.type,
+        ...opts,
+      });
+    const push = (e, amount) => {
+      if (e.pushCooldown > 0 || e.stationary) return;
+      e.progress = Math.max(
+        0,
+        e.progress - amount * (1 - (e.controlResistance || 0)),
+      );
+      e.pushCooldown = e.boss ? 3 : 1.2;
+    };
+    switch (t.type) {
+      case "archer":
+        for (const e of leaders.slice(0, 10)) hit(e, 7);
+        break;
+      case "cannon": {
+        const target = leaders[0];
+        this.area(target, 130, stats.damage * 8, { ...stats, area: true }, t.type);
+        break;
+      }
+      case "frost":
+        for (const e of foes) this.chill(e, 0.35, 1.6, 1.4);
+        break;
+      case "fire":
+        for (const e of leaders.slice(0, 12)) {
+          hit(e, 4);
+          e.burn = Math.max(e.burn, stats.damage * 0.9);
+          e.burnLeft = Math.max(e.burnLeft, 3);
+          e.burnSource = t.type;
+        }
+        break;
+      case "lightning": {
+        const struck = new Set();
+        for (let i = 0; i < 8; i++) {
+          const e = leaders[Math.floor((i * leaders.length) / 8)];
+          if (!e || struck.has(e.id)) continue;
+          struck.add(e.id);
+          hit(e, 7);
+        }
+        break;
+      }
+      case "grove": {
+        let rooted = 0;
+        for (const e of leaders.slice(0, 10)) {
+          if (e.boss) continue;
+          this.chill(e, 0.05, 2.2);
+          rooted++;
+        }
+        if (rooted) {
+          this.gold += rooted * 12;
+          this.earned += rooted * 12;
+        }
+        break;
+      }
+      case "wind":
+        for (const e of foes) push(e, 130);
+        break;
+      case "rune": {
+        for (let i = 0; i < 6 && this.zones.length < 32; i++) {
+          const a = (i * Math.PI * 2) / 6;
+          this.zones.push({
+            x: t.x + Math.cos(a) * 95,
+            y: t.y + Math.sin(a) * 95,
+            radius: 62,
+            left: 9,
+            damage: stats.damage * 2.2,
+            trap: true,
+            armDelay: 0.3,
+            towerId: t.id,
+            source: t.type,
+            armor: (stats.armorDamage || 0) * 2,
+          });
+        }
+        break;
+      }
+      case "tidecaller":
+        for (const e of leaders.slice(0, 14)) {
+          push(e, 85);
+          hit(e, 2.5);
+        }
+        break;
+    }
+    this.emit("nova", { tower: t });
+  }
   setTargeting(id, priority) {
     const t = this.towers.find((t) => t.id === id);
     if (
@@ -346,11 +495,12 @@ export class Game {
                     : 0))
             : 1 + Math.max(0, this.wave - 1) * 0.055) *
         (this.campaign.mode && !config.boss ? 1 + stage * 0.15 : 1) *
-        // Free Play's endgame: past wave 100 health compounds ~2.8%
-        // per wave, so the board-efficiency ceiling decides the run
-        // long before wave 200 (see FREEPLAY in data/difficulties).
+        // Free Play's endgame: past wave 100 health compounds ~3.4%
+        // per wave (stiffened 2026-10-18 — a real player's optimized
+        // board walked through the original 2.8%), so the board and
+        // its Ascensions decide the run (see FREEPLAY in difficulties).
         (this.campaign.mode === "freeplay" && this.wave > 100
-          ? Math.pow(1.028, this.wave - 100)
+          ? Math.pow(1.034, this.wave - 100)
           : 1);
     // Each enemy walks one trail. Queue spawns are dealt round-robin across
     // the map's trails by step(); children/summons inherit their parent's.
@@ -386,7 +536,16 @@ export class Game {
       spreadTime: 1,
       maxHealth: config.health * scale,
       reward: Math.round(
-        config.reward * (1 + Math.max(0, this.wave - 1) * 0.01),
+        config.reward *
+          (1 + Math.max(0, this.wave - 1) * 0.01) *
+          // Free Play income decay (owner balance pass, 2026-10-18):
+          // kill gold holds through wave 50, then shrinks toward a 25%
+          // floor at wave 150 so late gold stays a real decision.
+          (this.campaign.mode === "freeplay"
+            ? this.wave <= 50
+              ? 1
+              : Math.max(0.25, 1 - (this.wave - 50) * 0.0075)
+            : 1),
       ),
       progress: 0,
       alive: true,
@@ -1054,6 +1213,14 @@ export class Game {
           (e) => e.alive && distance(e, t) <= aura.aura,
         ))
           this.chill(e, aura.auraSlow, 0.1);
+      if (isAscended(t) && this.active && !this.ended) {
+        if (t.novaLeft === undefined) t.novaLeft = 2 + (t.id % 5);
+        t.novaLeft -= dt;
+        if (t.novaLeft <= 0) {
+          t.novaLeft = 11;
+          this.nova(t, aura);
+        }
+      }
       this.participation[t.type].time += dt;
       if (["frost", "grove", "wind", "rune"].includes(t.type))
         this.participation[t.type].control +=
@@ -1093,7 +1260,12 @@ export class Game {
       this.active = false;
       this.projectiles = [];
       this.zones = [];
-      const bonus = 20 + this.wave * 3;
+      const bonus =
+        20 +
+        (this.campaign.mode === "freeplay"
+          ? Math.min(this.wave, 100)
+          : this.wave) *
+          3;
       this.gold += bonus;
       this.earned += bonus;
       this.emit("clear", { bonus });

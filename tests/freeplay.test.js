@@ -162,6 +162,149 @@ test("free play best waves validate, migrate into old saves, and round-trip the 
   assert.deepEqual(legacy.freePlayBest, {});
 });
 
+test("ascension fuses three evolutions into one [3,3,3] tower (free play only)", async () => {
+  const { TOWERS, towerStats, towerName, isAscended } = await import(
+    "../src/data/towers.js"
+  );
+  const spots = (g, n) => {
+    const found = [];
+    for (let y = 70; y <= 600 && found.length < n; y += 26)
+      for (let x = 40; x <= 920 && found.length < n; x += 26)
+        if (
+          g.canPlace("archer", x, y) === null &&
+          found.every((s) => Math.hypot(s.x - x, s.y - y) >= 60)
+        )
+          found.push({ x, y });
+    return found;
+  };
+  const evolve = (g, spot, path) => {
+    const t = g.place("archer", spot.x, spot.y);
+    t.paths = [0, 0, 0];
+    t.paths[path] = 3;
+    t.paths[(path + 1) % 3] = 1;
+    t.invested =
+      TOWERS.archer.cost +
+      TOWERS.archer.prices
+        .slice(0, 3)
+        .reduce((a, c) => a + c, 0) +
+      TOWERS.archer.prices[0];
+    return t;
+  };
+  const g = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "freeplay",
+    profile: freshProfile(),
+  });
+  g.gold = 100000;
+  const [s1, s2, s3] = spots(g, 3);
+  const a = evolve(g, s1, 0);
+  const b = evolve(g, s2, 1);
+  assert.equal(g.canAscend(a), false, "third evolution still missing");
+  const c = evolve(g, s3, 2);
+  assert.equal(g.canAscend(a), true);
+  const formDamage = towerStats(a).damage;
+  assert.equal(g.ascend(a.id), true);
+  assert.equal(g.towers.length, 1, "partners consumed");
+  assert.deepEqual(a.paths, [3, 3, 3]);
+  assert(isAscended(a));
+  assert.equal(towerName(a), "Stormpiercer");
+  assert.equal(
+    a.invested,
+    TOWERS.archer.cost +
+      TOWERS.archer.prices.reduce((x, y) => x + y, 0) * 3,
+    "book value matches the validator formula",
+  );
+  assert(
+    towerStats(a).damage > formDamage,
+    "ascended hits harder than any single form",
+  );
+  // A checkpoint holding the ascended tower validates and restores.
+  g.wave = 88;
+  const saved = battleCheckpoint(g, runStub(g));
+  assert(validateBattle(saved), "free play checkpoint accepts [3,3,3]");
+  const restored = new Game();
+  restoreBattle(restored, saved, freshProfile());
+  assert(isAscended(restored.towers[0]));
+  // The identical board is illegal as an adventure checkpoint.
+  assert(!validateBattle({ ...saved, difficulty: "hard" }));
+  // Adventures can never ascend, even with three evolutions on the field.
+  const adv = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "hard",
+    profile: freshProfile(),
+  });
+  adv.gold = 100000;
+  const [h1, h2, h3] = spots(adv, 3);
+  const ha = evolve(adv, h1, 0);
+  evolve(adv, h2, 1);
+  evolve(adv, h3, 2);
+  assert.equal(adv.canAscend(ha), false);
+  assert.equal(adv.ascend(ha.id), false);
+});
+
+test("free play kill gold decays past wave 50 to a 25% floor", () => {
+  const rewardAt = (difficulty, wave) => {
+    const g = new Game(() => {}, {
+      map: "emerald",
+      difficulty,
+      profile: freshProfile(),
+    });
+    g.wave = wave;
+    return g.spawn("basic").reward;
+  };
+  const base = (w) => Math.round(9 * (1 + (w - 1) * 0.01));
+  assert.equal(rewardAt("freeplay", 40), base(40), "no decay before 50");
+  assert.equal(
+    rewardAt("freeplay", 100),
+    Math.round(9 * (1 + 99 * 0.01) * 0.625),
+  );
+  assert.equal(
+    rewardAt("freeplay", 150),
+    Math.round(9 * (1 + 149 * 0.01) * 0.25),
+    "floor reached at wave 150",
+  );
+  assert.equal(rewardAt("hard", 100), base(100), "adventures never decay");
+});
+
+test("ascension novas fire their signature effects", () => {
+  const g = new Game(() => {}, {
+    map: "emerald",
+    difficulty: "freeplay",
+    profile: freshProfile(),
+  });
+  g.gold = 10000;
+  const found = [];
+  for (let y = 70; y <= 600 && found.length < 3; y += 26)
+    for (let x = 40; x <= 920 && found.length < 3; x += 26)
+      if (
+        g.canPlace("frost", x, y) === null &&
+        found.every((s) => Math.hypot(s.x - x, s.y - y) >= 60)
+      )
+        found.push({ x, y });
+  const mk = (type, spot) => {
+    const t = g.place(type, spot.x, spot.y);
+    t.paths = [3, 3, 3];
+    return t;
+  };
+  const frost = mk("frost", found[0]);
+  const foe = g.spawn("basic");
+  foe.progress = 300;
+  g.nova(frost, g.baseStats(frost));
+  assert(foe.frozen > 0, "eternal winter freezes the field");
+  const wind = mk("wind", found[1]);
+  const runner = g.spawn("runner");
+  runner.progress = 500;
+  g.nova(wind, g.baseStats(wind));
+  assert(runner.progress < 500, "hurricane blows enemies backward");
+  const grove = mk("grove", found[2]);
+  const goldBefore = g.gold;
+  const leader = g.spawn("basic");
+  leader.progress = 700;
+  g.nova(grove, g.baseStats(grove));
+  assert(leader.slow < 1, "worldroot roots the leaders");
+  assert(g.gold > goldBefore, "seedburst pays gold for roots");
+});
+
 test("ProfileStore records only improving free play bests and persists them", () => {
   const store = new ProfileStore(disk());
   store.create("Chaser");

@@ -53,11 +53,21 @@ export function artworkState(paths) {
   const state = paths.join("-");
   return TOWER_STATES.includes(state) ? state : "0-0-0";
 }
+export function isAscendedTower(t) {
+  return (
+    Array.isArray(t?.paths) &&
+    t.paths.length === 3 &&
+    t.paths.every((n) => n === 3)
+  );
+}
 export function towerArtwork(t, usage = "card_512") {
   if (!t || !TOWER_TYPES.includes(t.type)) return null;
+  if (isAscendedTower(t))
+    return `assets/v5/towers/${t.type}/${usage}/${t.type}_ascended.png`;
   return `assets/v5/towers/${t.type}/${usage}/${t.type}_${artworkState(t.paths)}.png`;
 }
 export function artworkTexture(t) {
   if (!t || !TOWER_TYPES.includes(t.type)) return null;
+  if (isAscendedTower(t)) return `v5-${t.type}-ascended`;
   return `v5-${t.type}-${artworkState(t.paths)}`;
 }

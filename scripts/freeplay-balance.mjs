@@ -40,8 +40,14 @@ function run(map, difficulty, roster, hero = null) {
       }
     return best;
   };
+  let ascensions = 0;
   for (let wave = 1; wave <= model.totalWaves && !model.ended; wave++) {
     for (let actions = 0; actions < 60; actions++) {
+      const ascendable = model.towers.find((t) => model.canAscend(t));
+      if (ascendable && model.ascend(ascendable.id)) {
+        ascensions++;
+        continue;
+      }
       const next = roster[model.towers.length];
       const candidates = model.towers
         .map((t, i) => ({ t, p: roster[i]?.[1] ?? 0 }))
@@ -76,24 +82,36 @@ function run(map, difficulty, roster, hero = null) {
       seconds += 0.1;
     }
     if (seconds >= 500)
-      return { result: "stalled", wave, lives: model.lives, towers: model.towers.length };
+      return { result: "stalled", wave, lives: model.lives, towers: model.towers.length, ascensions };
   }
   return {
     result: model.ended || "unfinished",
     wave: model.wave,
     lives: model.lives,
     towers: model.towers.length,
+    ascensions,
   };
 }
 
+// Ascension roster: triples of one kind, one evolution per path, fused
+// as soon as the third lands; the tail plays wide behind them.
+const ascendRoster = [
+  ["frost", 0], ["frost", 1], ["frost", 2],
+  ["cannon", 0], ["cannon", 1], ["cannon", 2],
+  ["lightning", 0], ["lightning", 1], ["lightning", 2],
+  ["archer", 0], ["archer", 1], ["archer", 2],
+  ["fire", 0], ["fire", 1], ["fire", 2],
+  ...wide.slice(0, 12),
+];
 for (const [label, roster] of [
   ["mixed-12", STRATEGIES.mixed],
   ["wide-24", wide],
+  ["ascend", ascendRoster],
 ]) {
   for (const map of ["emerald", "spiral"]) {
     const r = run(map, "freeplay", roster, "dragon");
     console.log(
-      `freeplay ${map} ${label}: ${r.result} at wave ${r.wave} (lives ${r.lives}, towers ${r.towers})`,
+      `freeplay ${map} ${label}: ${r.result} at wave ${r.wave} (lives ${r.lives}, towers ${r.towers}, ascensions ${r.ascensions})`,
     );
   }
 }
