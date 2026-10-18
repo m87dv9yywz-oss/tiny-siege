@@ -25,6 +25,7 @@ import {
   TOWERS,
   towerStats,
   towerTexture,
+  towerMuzzle,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -502,7 +503,7 @@ export class GameScene extends Phaser.Scene {
       this.effects.push({
         type: "jet",
         points: [
-          { x: tower.x, y: tower.y - 35 },
+          towerMuzzle(tower),
           { x: event.target.x, y: event.target.y },
         ],
         heat: event.heat,
@@ -529,7 +530,7 @@ export class GameScene extends Phaser.Scene {
     if (type === "bolt")
       this.effects.push({
         type: "bolt",
-        points: [{ x: tower.x, y: tower.y - 20 }, ...event.points],
+        points: [towerMuzzle(tower), ...event.points],
         age: 0,
         life: 0.18,
         color: attackVisual(tower).color,

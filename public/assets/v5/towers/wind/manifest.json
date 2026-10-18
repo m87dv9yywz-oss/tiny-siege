@@ -46,15 +46,15 @@
    }
   },
   "0-0-3": {
-   "masterSha256": "6bd9a827d1da0d719ee9f27130de9b41815de4899c4845e4bdf15f3e8ed8218b",
+   "masterSha256": "2e8f5e21f6ab34f24bfda724214d3c0c4d4c4179b8fb3ce9a090e49304c8f296",
    "exports": {
-    "battlefield_256": {
-     "bytes": 108644,
-     "sha256": "183f04cd2e74a09f8e4f4d3a20dd1cd3af0e56c1d9d46224c45d7106772ac9ef"
-    },
     "card_512": {
-     "bytes": 351478,
-     "sha256": "ccd13fcbc4420a3b4dad4953bea034a832b5523d96d771b331a86cd0b2e93e67"
+     "bytes": 354232,
+     "sha256": "0ad2a8315076388b17e5bfd579a2beb014f259cb86b3f9724a7eac89dc6208e3"
+    },
+    "battlefield_256": {
+     "bytes": 107697,
+     "sha256": "5d6148e68d28df8b82536aac8cd213ac4d664bd5b07b78a9ec9a01409a0b3911"
     }
    }
   },
@@ -85,28 +85,28 @@
    }
   },
   "0-1-2": {
-   "masterSha256": "8d7f7a4f338949cea416d2b6dc890ebb89a86aee93c7d82eb50c7ae0b782e334",
+   "masterSha256": "234d3d80e849497ddbb82d5fa162346a2c028632c9dbeeb3b6113f521d41235f",
    "exports": {
-    "battlefield_256": {
-     "bytes": 99299,
-     "sha256": "387c61341ff7b3b5ccf799269e6e222d0527711a867e0614f4bc0546f3dc733f"
-    },
     "card_512": {
-     "bytes": 316141,
-     "sha256": "dbfd3185f40cf62a616162fa35a7edb9a04d96e695cd530e6eb3571accad2657"
+     "bytes": 322308,
+     "sha256": "3ce271c0324e7e88e36c2fbccb24054c33c0e370d548c261c0a40a70a45b3f59"
+    },
+    "battlefield_256": {
+     "bytes": 98588,
+     "sha256": "88f8940566b09811cb65438d9e4178ea7e0743f377bb5aa72d78bfe25978414a"
     }
    }
   },
   "0-1-3": {
-   "masterSha256": "b2cda7bad4f9e00dd7046fde566192e1f83f5284564c930cc3b8535d8ce317d4",
+   "masterSha256": "b636a04ee7454ebeac8767f042dda28480c1ebb58db62180e8f7a05018d4ccf3",
    "exports": {
-    "battlefield_256": {
-     "bytes": 90108,
-     "sha256": "a9a8fbc5a04bbcb81aea3e5efb3157dc91a75b22129977587d43bf5368391543"
-    },
     "card_512": {
-     "bytes": 290570,
-     "sha256": "4714a6009c749efebf3506a4b743e06a52cd6903573606b3ee803ac873b35e12"
+     "bytes": 260345,
+     "sha256": "eebad5ff0f3c3729dbb10b7a0736f52bc42b53e7e81804f471686dcbe0e9091b"
+    },
+    "battlefield_256": {
+     "bytes": 79384,
+     "sha256": "bf0f14228fc89bd254514a3177f2a9bcc74bd043d0814846f09d2e882e3f59aa"
     }
    }
   },
@@ -202,15 +202,15 @@
    }
   },
   "1-0-3": {
-   "masterSha256": "df9c56e34fcbd04960fc5fa5454f76da18d7e3da97e80763fe18731a12c220a5",
+   "masterSha256": "1eb7718816acabee93abc8d0baeb575290f5c78f50a08abf060233c84d2b8d5b",
    "exports": {
-    "battlefield_256": {
-     "bytes": 99204,
-     "sha256": "ead7fed9560e2889fc00ca13aca07e2ba9406703e2682055faf447e622cc4909"
-    },
     "card_512": {
-     "bytes": 325785,
-     "sha256": "59b07cc5b6fb4ba7e0c49d97e568cf2a31e89fe3b5c69a50d01235dc5bcb7622"
+     "bytes": 324594,
+     "sha256": "f218c0bd6d4933e7e5c3ce6b7e02378668058986cec171b348d5394c37d17ef8"
+    },
+    "battlefield_256": {
+     "bytes": 97394,
+     "sha256": "ddcc9e7a764e5d9d97c4cf6959c3576a4204a423baf9d1e091e290637ffc4cb2"
     }
    }
   },
@@ -293,15 +293,15 @@
    }
   },
   "3-0-0": {
-   "masterSha256": "20498474915624ceed7356196629a5173010e63804314b4a130d71d3e680583a",
+   "masterSha256": "36a591b59cce9cb1c99e5179c7f96c57db3e77837b82c86bfe4588b7e39ddf2d",
    "exports": {
-    "battlefield_256": {
-     "bytes": 113706,
-     "sha256": "6e3fae47d5eed62535588c0b72e345cc3cec9d222bf1234eec5a0f91b44f71e9"
-    },
     "card_512": {
-     "bytes": 365034,
-     "sha256": "df23931e63b34fac73d66532df830717f1e55a593264685e880858d6c39a353b"
+     "bytes": 341112,
+     "sha256": "96a1f696826867213e97d2ffa76fdebb408dca9d20df0682c8c4598c02bab8fb"
+    },
+    "battlefield_256": {
+     "bytes": 103930,
+     "sha256": "f165a15603205034d101dd15ddd6717d00ddf3506ebc16fa2dfc3dab880444e3"
     }
    }
   },

@@ -497,13 +497,15 @@ main aside,
   z-index: 5;
   min-height: 0;
   /* Translucent with a backdrop blur (owner request, 2026-10-18): the
-     battlefield ghosts through the panel instead of hiding behind it. */
+     battlefield ghosts through the panel instead of hiding behind it.
+     NOTE: the late V5 theme rule for #selection-panel below overrides
+     this background — keep the two in sync. */
   background: linear-gradient(
-    rgba(255, 244, 211, 0.86),
-    rgba(242, 221, 172, 0.86)
+    rgba(255, 248, 219, 0.8),
+    rgba(238, 243, 205, 0.74)
   );
-  backdrop-filter: blur(9px) saturate(1.3);
-  -webkit-backdrop-filter: blur(9px) saturate(1.3);
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
   border: 3px solid #b68d48;
   border-radius: 17px;
   padding: 10px;
@@ -706,6 +708,11 @@ main:has(#selection-panel.open:not(.placing)) aside {
   font-size: 12px;
   color: #80592c;
   padding: 8px;
+}
+/* The placement chip is mostly this button, so the button itself goes
+   translucent too — the field shows through the chip (owner, 2026-10-18). */
+.cancel-button {
+  background: rgba(255, 224, 156, 0.8);
 }
 .ascend-button {
   background: linear-gradient(#ffe9a8, #f7c948);
@@ -2731,7 +2738,7 @@ main:has(#selection-panel.open:not(.placing)) .map-frame {
 #battle-settings summary { list-style: none; cursor: pointer; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 4px; background: linear-gradient(#fff9df, #ebddb2); border: 2px solid #b8ac81; border-radius: 10px; padding: 6px 10px; font-size: 12px; }
 #battle-settings summary::-webkit-details-marker { display: none; }
 #battle-settings summary:focus-visible { outline: 3px solid #3275aa; }
-.settings-actions { position: absolute; top: 48px; right: 0; width: 172px; padding: 8px; display: grid; gap: 6px; border: 2px solid #b68d48; border-radius: 12px; background: #fff3cf; box-shadow: 0 5px 18px #244d4840; }
+.settings-actions { position: absolute; top: 48px; right: 0; width: 172px; padding: 8px; display: grid; gap: 6px; border: 2px solid #b68d48; border-radius: 12px; background: rgba(255, 243, 207, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 5px 18px #244d4840; }
 .settings-actions button { min-height: 44px; }
 main, main:has(#selection-panel.open:not(.placing)) { grid-template-columns: minmax(0, 1fr) 132px; }
 .battle-column, main:has(#selection-panel.open:not(.placing)) .battle-column { grid-column: 1; }
@@ -3942,15 +3949,17 @@ h3,
 }
 .royal-tip-x {
   position: absolute;
-  top: 4px;
-  right: 6px;
-  width: 30px;
-  height: 30px;
+  top: 2px;
+  right: 4px;
+  /* Was 30px — too small to hit reliably on a phone (owner, 2026-10-18).
+     The ::after halo near #close-panel widens the tap zone further. */
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 50%;
   background: transparent;
   color: #7a5410;
-  font-size: 19px;
+  font-size: 21px;
   line-height: 1;
   cursor: pointer;
 }
@@ -4086,9 +4095,16 @@ h3,
   transform-origin: bottom;
   pointer-events: none;
 }
-/* Upgrade / placement panel */
+/* Upgrade / placement panel. Translucent on purpose (owner request,
+   2026-10-18): whatever sits behind the panel — battlefield included —
+   ghosts through, softened by the backdrop blur declared on the base
+   #selection-panel rule. This late theme rule is the one that wins the
+   cascade, so the alpha must live here, not only in the base rule. */
 #selection-panel {
-  background: linear-gradient(#fff8db, #eef3cd);
+  background: linear-gradient(
+    rgba(255, 248, 219, 0.8),
+    rgba(238, 243, 205, 0.74)
+  );
   border: 3px solid var(--v5-bronze);
   font-family: var(--v5-body);
 }
@@ -4102,8 +4118,20 @@ h3,
   border: none;
   color: transparent;
   font-size: 0;
-  min-width: 40px;
-  min-height: 40px;
+  /* 44px, not 40: this late theme rule wins the cascade, so the careful
+     44px rules in the panel breakpoints above never took effect and the
+     button rendered small (owner: the X is hard to trigger, 2026-10-18). */
+  min-width: 44px;
+  min-height: 44px;
+  position: relative;
+}
+/* Fat-finger halo: an invisible 14px-wider tap zone around the little
+   popup X buttons, so a near miss still counts as a tap on the button. */
+#close-panel::after,
+.royal-tip-x::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
 }
 #selection-panel .upgrade-button {
   font-family: var(--v5-display);

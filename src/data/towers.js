@@ -11,6 +11,7 @@ export const TOWERS = {
     icon: "➶",
     color: 0x8acf72,
     hex: "#8acf72",
+    muzzle: [16, -44],
     cost: 75,
     prices: [100, 260, 650],
     base: {
@@ -102,6 +103,7 @@ export const TOWERS = {
     icon: "◉",
     color: 0xf1ad66,
     hex: "#f1ad66",
+    muzzle: [10, -46],
     cost: 160,
     prices: [210, 480, 1150],
     base: {
@@ -184,6 +186,7 @@ export const TOWERS = {
     icon: "❄",
     color: 0x8cdded,
     hex: "#8cdded",
+    muzzle: [0, -62],
     cost: 130,
     prices: [160, 360, 880],
     base: {
@@ -269,6 +272,7 @@ export const TOWERS = {
     icon: "♨",
     color: 0xff8364,
     hex: "#ff8364",
+    muzzle: [0, -56],
     cost: 150,
     prices: [190, 420, 950],
     base: {
@@ -363,6 +367,7 @@ export const TOWERS = {
     icon: "ϟ",
     color: 0xc5a6ff,
     hex: "#c5a6ff",
+    muzzle: [0, -54],
     cost: 200,
     prices: [260, 575, 1350],
     base: {
@@ -449,6 +454,7 @@ export const TOWERS = {
     icon: "❧",
     color: 0x74ce99,
     hex: "#74ce99",
+    muzzle: [0, -58],
     cost: 115,
     prices: [140, 330, 820],
     base: {
@@ -627,6 +633,17 @@ export function isAscended(t) {
     t.paths.length === 3 &&
     t.paths.every((n) => n === 3)
   );
+}
+// Where a tower's shots leave from, in world units relative to its ground
+// anchor (bottom-center of the sprite). Each type's `muzzle` offset is
+// measured from its artwork — the Archer's bow, the Cannon's barrel, the
+// Frost crystal's tip, the Tidecaller's bow harpoon — so projectiles and
+// lightning bolts start at the emitter instead of the tower's base.
+// Ascended towers render at 108px instead of 80px, so theirs scale up.
+export function towerMuzzle(t) {
+  const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
+  const scale = isAscended(t) ? 108 / 80 : 1;
+  return { x: t.x + dx * scale, y: t.y + dy * scale };
 }
 // The merged might of the three evolved forms: best value per stat,
 // fastest cooldown, every effect payload kept, then the ascension

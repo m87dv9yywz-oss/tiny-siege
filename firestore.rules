@@ -110,7 +110,7 @@ service cloud.firestore {
     function checkpoint(c) {
       return c is map && (c.size()==15 || (c.size()==16 && c.skippedWaves is int && c.skippedWaves>=0 && c.skippedWaves<=1000)) && c.version==1 && c.version is int && c.map in mapIds() && c.difficulty in ['easy','medium','hard','freeplay']
         && c.wave is int && c.wave>=0 && c.wave<(c.difficulty=='hard'?100:c.difficulty=='easy'?20:c.difficulty=='medium'?40:200) && c.lives is int && c.lives>=1 && c.lives<=22
-        && number(c.gold) && number(c.kills) && number(c.earned) && number(c.id) && c.speed is int && c.speed in [1,2,3] && real(c.savedAt,0,1000000000000000)
+        && number(c.gold) && number(c.kills) && number(c.earned) && number(c.id) && c.speed is int && c.speed in [1,2,3,4] && real(c.savedAt,0,1000000000000000)
         && unique(c.relics,relicIds(),2) && runState(c.run) && animal(c.hero) && unique(c.towerSlots,slots(),80);
     }
     function v4Battle(d) { return d.present is bool && number(d.revision) && v4Stamp(d) && (d.present ? d.size()==4 && checkpoint(d.checkpoint) : d.size()==3); }

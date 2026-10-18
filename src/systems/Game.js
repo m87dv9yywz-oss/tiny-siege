@@ -7,6 +7,7 @@ import {
   upgradeState,
   attackVisual,
   isAscended,
+  towerMuzzle,
   ASCENSIONS,
 } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
@@ -901,6 +902,7 @@ export class Game {
   attack(t, targets, stats) {
     t.shots++;
     const hitStats = { ...stats, source: t.type };
+    const muzzle = towerMuzzle(t);
     if (stats.critical && t.shots % stats.critEvery === 0)
       hitStats.damage *= stats.critical;
     if (stats.beam) {
@@ -946,9 +948,9 @@ export class Game {
           id: ++this.id,
           towerId: t.id,
           type: t.type,
-          x: t.x,
-          y: t.y - 15,
-          origin: { x: t.x, y: t.y },
+          x: muzzle.x,
+          y: muzzle.y,
+          origin: { x: muzzle.x, y: muzzle.y },
           target,
           stats: hitStats,
           visual: attackVisual(t),
