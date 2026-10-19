@@ -1,20 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
-import {
-  layeredMuzzle,
-  turretAim,
-  leanAim,
-  TURRET_MAX_TILT,
-  LEAN_MAX_TIP,
-} from "../../src/data/towers.js";
+import { layeredMuzzle } from "../../src/data/towers.js";
 import { towerLayer } from "../../src/towerArtwork.js";
 
-// Tower-turning proof, aim model v2 (2026-10-19): front-view tops
-// never spin in-plane (the v1 full spin read as the tower "tipped
-// sideways"). Turret tops (cannon, side profile) flip to the target's
-// side and pitch within ±0.5 rad; crown tops (wind) lean within
-// ±0.45 rad. A fired projectile's draw start rides the transformed
-// emitter. QA stills land in ~/workspace/ts-proof-art/qa/.
+// Tower-turning proof, aim model v3 — HYBRID (2026-10-19): towers
+// are STATIC (Kingdom Rush style). No top rotates, ever: v1's full
+// in-plane spin read as the tower "tipped sideways", and v2's rigid
+// flip + tilt still looked off. Cannon tops instead ship as three
+// DRAWN poses (raised / level / down) with per-pose emitters: the
+// scene shows the pose for the target's elevation band, flipped to
+// the target's side, and a fired projectile's draw start rides the
+// ACTIVE pose's emitter. Wind crowns are fully static. QA stills land
+// in ~/workspace/ts-proof-art/qa/.
 const QA = `${process.env.HOME}/workspace/ts-proof-art/qa`;
 mkdirSync(QA, { recursive: true });
 
@@ -31,25 +28,6 @@ async function enterFreePlay(page) {
   await page.locator("#play").click();
   await page.locator('[data-freeplay="classic"]').click();
 }
-// Live aim state for one layered tower: the top sprite's rotation and
-// flip, plus the bearing from the top (its pivot, modulo a ≤3px
-// recoil offset) to the sim's current target for that tower.
-async function aimState(page, towerId) {
-  return page.evaluate((id) => {
-    const { model: g, ui } = window.__tinySiege;
-    const t = g.towers.find((t) => t.id === id);
-    const top = ui.scene.towerTops.get(id);
-    if (!t || !top) return null;
-    const target = g.targets(t, g.effectiveStats(t))[0];
-    return {
-      rotation: top.rotation,
-      flip: top.flipX,
-      bearing: target
-        ? Math.atan2(target.y - top.y, target.x - top.x)
-        : null,
-    };
-  }, towerId);
-}
 async function moveEnemy(page, progress) {
   await page.evaluate((p) => {
     const { model: g } = window.__tinySiege;
@@ -58,55 +36,37 @@ async function moveEnemy(page, progress) {
     Object.assign(e, g.trails[0].onPath(e.progress));
   }, progress);
 }
-// Poll until the tower's aim matches the shared model's expectation
-// for the live bearing, then sample a few frames of it holding.
-async function expectAim(page, towerId, mode, samples = 5) {
-  const expectedFor = (bearing) =>
-    mode === "turret" ? turretAim(bearing) : { tilt: leanAim(bearing) };
+// Poll until the tower's top shows the wanted texture + flip with
+// rotation exactly 0, then sample a few frames of it holding.
+async function expectPose(page, towerId, key, flip, samples = 3) {
   await page.waitForFunction(
-    ({ id, mode }) => {
-      const { model: g, ui } = window.__tinySiege;
-      const t = g.towers.find((t) => t.id === id);
+    ({ id, key, flip }) => {
+      const { ui } = window.__tinySiege;
       const top = ui.scene.towerTops.get(id);
-      const target = g.targets(t, g.effectiveStats(t))[0];
-      if (!top || !target) return false;
-      const bearing = Math.atan2(target.y - top.y, target.x - top.x);
-      let expected, flip;
-      if (mode === "turret") {
-        flip = Math.cos(bearing) > 0;
-        const facing = flip ? 0 : Math.PI;
-        let d = bearing - facing;
-        while (d > Math.PI) d -= Math.PI * 2;
-        while (d < -Math.PI) d += Math.PI * 2;
-        expected = Math.max(-0.5, Math.min(0.5, d));
-      } else {
-        expected = 0.45 * Math.cos(bearing);
-      }
       return (
-        Math.abs(top.rotation - expected) < 0.06 &&
-        (mode !== "turret" || top.flipX === flip)
+        top &&
+        top.texture.key === key &&
+        top.flipX === flip &&
+        top.rotation === 0
       );
     },
-    { id: towerId, mode },
+    { id: towerId, key, flip },
     { timeout: 10000 },
   );
-  const cap = mode === "turret" ? TURRET_MAX_TILT : LEAN_MAX_TIP;
-  let last = null;
   for (let i = 0; i < samples; i++) {
-    const s = await aimState(page, towerId);
-    expect(s.bearing).not.toBeNull();
-    const expected = expectedFor(s.bearing);
-    expect(Math.abs(s.rotation)).toBeLessThanOrEqual(cap + 1e-9);
-    expect(Math.abs(s.rotation - expected.tilt)).toBeLessThan(0.12);
-    if (mode === "turret") expect(s.flip).toBe(expected.flip);
-    last = s;
-    await page.waitForTimeout(200);
+    const s = await page.evaluate((id) => {
+      const top = window.__tinySiege.ui.scene.towerTops.get(id);
+      return { key: top.texture.key, flip: top.flipX, rotation: top.rotation };
+    }, towerId);
+    expect(s.key).toBe(key);
+    expect(s.flip).toBe(flip);
+    expect(s.rotation).toBe(0);
+    await page.waitForTimeout(150);
   }
-  return last;
 }
-async function expectShot(page, towerId, type, wantFlip) {
+async function expectShot(page, towerId, type, wantPose, wantFlip) {
   // Drop earlier shots from this tower so the wait below only sees a
-  // fresh one fired under the current aim.
+  // fresh one fired under the current pose.
   await page.evaluate((id) => {
     window.__proof.shots = window.__proof.shots.filter(
       (s) => s.towerId !== id,
@@ -123,19 +83,13 @@ async function expectShot(page, towerId, type, wantFlip) {
     const s = window.__proof.shots.find((s) => s.towerId === id);
     return { shot: s, x: t.x, y: t.y, paths: t.paths };
   }, towerId);
+  expect(shot.shot.pose).toBe(wantPose);
   expect(shot.shot.flip).toBe(wantFlip);
   const layer = towerLayer({ type, paths: shot.paths });
   const emitter = layeredMuzzle(
-    {
-      type,
-      x: shot.x,
-      y: shot.y,
-      paths: shot.paths,
-      _aimAngle: shot.shot.aim,
-      _aimFlip: shot.shot.flip,
-    },
+    { type, x: shot.x, y: shot.y, paths: shot.paths },
     layer,
-    shot.shot.aim,
+    shot.shot.pose,
     shot.shot.flip,
   );
   expect(
@@ -143,7 +97,7 @@ async function expectShot(page, towerId, type, wantFlip) {
   ).toBeLessThan(14);
 }
 
-test("turret tops flip + tilt and crowns lean — never tipped sideways", async ({
+test("cannon aims with drawn poses, wind stays static — nothing rotates", async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -163,10 +117,10 @@ test("turret tops flip + tilt and crowns lean — never tipped sideways", async 
     const wind = g.place("wind", 743, 396);
     if (!cannon || !archer || !wind)
       throw new Error("proof placements were rejected");
-    // Capture every shot's draw start together with the aim (tilt +
-    // flip) that produced it, synchronously at fire time (the draw
-    // point races toward the logical position within a few frames,
-    // so polling would miss the muzzle).
+    // Capture every shot's draw start together with the pose + flip
+    // that produced it, synchronously at fire time (the draw point
+    // races toward the logical position within a few frames, so
+    // polling would miss the muzzle).
     window.__proof = {
       cannonId: cannon.id,
       archerId: archer.id,
@@ -182,74 +136,58 @@ test("turret tops flip + tilt and crowns lean — never tipped sideways", async 
           towerId: t.id,
           x: p.draw.x,
           y: p.draw.y,
-          aim: t._aimAngle,
+          pose: t._aimPose,
           flip: t._aimFlip,
         });
     };
     // A pinned, effectively immortal enemy: speed 0 keeps it exactly
     // where its trail progress puts it. Find trail positions in
-    // cannon range for each aim phase by their bearing from the
-    // cannon's pivot (cannon 0-0-0 pivot fractions, display 96).
+    // cannon range for each pose phase by the elevation φ =
+    // atan2(−dy, |dx|) from the cannon's pivot (cannon 0-0-0 pivot
+    // fractions, display 96).
     const trail = g.trails[0],
       pivot = {
         x: cannon.x + (0.499 - 0.5) * 96,
         y: cannon.y + (0.57 - 0.96) * 96,
-      },
-      windPivot = {
-        x: wind.x + (0.493 - 0.5) * 129.6,
-        y: wind.y + (0.532 - 0.96) * 129.6,
       };
-    const wrap = (a) => {
-      while (a > Math.PI) a -= Math.PI * 2;
-      while (a < -Math.PI) a += Math.PI * 2;
-      return a;
-    };
     const find = (ok) => {
       for (let p = 40; p < 2400; p += 5) {
         const pos = trail.onPath(p);
         if (!pos || !Number.isFinite(pos.x)) continue;
-        const d = Math.hypot(pos.x - cannon.x, pos.y - cannon.y);
-        const bearing = Math.atan2(pos.y - pivot.y, pos.x - pivot.x);
-        if (ok(pos, d, bearing)) return p;
+        const dx = pos.x - pivot.x,
+          dy = pos.y - pivot.y,
+          d = Math.hypot(pos.x - cannon.x, pos.y - cannon.y),
+          phi = (Math.atan2(-dy, Math.abs(dx)) * 180) / Math.PI;
+        if (ok({ dx, dy, d, phi })) return p;
       }
       return null;
     };
-    // LEFT: clearly on the left half, elevation unsaturated so the
-    // tilt must track it exactly.
-    const pLeft = find(
-      (pos, d, b) =>
-        d >= 85 && d <= 140 && Math.cos(b) < -0.5 &&
-        Math.abs(wrap(b - Math.PI)) >= 0.08 &&
-        Math.abs(wrap(b - Math.PI)) <= 0.42,
+    // RAISED: up-LEFT, well past the 9° + 2.5° hysteresis edge.
+    const pRaised = find(
+      (i) => i.d >= 85 && i.d <= 140 && i.dx < 0 && i.phi >= 18 && i.phi <= 45,
     );
-    // RIGHT: the trail climbs the cannon's right side — up-right
-    // bearings, flip side, elevation unsaturated.
-    const pRight = find(
-      (pos, d, b) => d >= 85 && d <= 140 && b >= -0.42 && b <= -0.2,
-    );
-    // DOWN: mostly below the pivot (the v1 spin put ~2.6 rad of
-    // rotation here — the "tipped sideways" shot).
+    // DOWN: down-RIGHT, well past the lower edge (the trail dives
+    // steeply below the cannon here, so φ runs past −45°).
     const pDown = find(
-      (pos, d, b) => d >= 85 && d <= 140 && b >= 0.9 && b <= 1.3,
+      (i) => i.d >= 85 && i.d <= 140 && i.dx > 0 && i.phi >= -80 && i.phi <= -18,
     );
-    // WIND LEAN: in wind range with a strongly horizontal bearing
-    // from the crown's pivot.
+    // LEVEL: within the band on either side.
+    const pLevel = find((i) => i.d >= 85 && i.d <= 140 && Math.abs(i.phi) <= 6);
+    // WIND: any position in wind range (the crown must not react).
     const pWind = (() => {
       for (let p = 40; p < 2400; p += 5) {
         const pos = trail.onPath(p);
         if (!pos || !Number.isFinite(pos.x)) continue;
         const d = Math.hypot(pos.x - wind.x, pos.y - wind.y);
-        if (d < 60 || d > 140) continue;
-        const b = Math.atan2(pos.y - windPivot.y, pos.x - windPivot.x);
-        if (Math.abs(Math.cos(b)) >= 0.75) return p;
+        if (d >= 60 && d <= 140) return p;
       }
       return null;
     })();
-    if (pLeft === null || pRight === null || pDown === null || pWind === null)
+    if (pRaised === null || pDown === null || pLevel === null || pWind === null)
       throw new Error(
-        `trail scan missed a phase: left=${pLeft} right=${pRight} down=${pDown} wind=${pWind}`,
+        `trail scan missed a phase: raised=${pRaised} down=${pDown} level=${pLevel} wind=${pWind}`,
       );
-    Object.assign(window.__proof, { pLeft, pRight, pDown, pWind });
+    Object.assign(window.__proof, { pRaised, pDown, pLevel, pWind });
     // Park the enemy mid-trail, out of every tower's range, so the
     // tops start genuinely at rest; it teleports into range below.
     const e = g.spawn("basic");
@@ -266,50 +204,45 @@ test("turret tops flip + tilt and crowns lean — never tipped sideways", async 
   });
   const proof = await page.evaluate(() => window.__proof);
 
-  // The cannon's top layer loads on demand; at rest it faces left
-  // with no tilt (v1 spun to the bearing — v2 must not).
+  // All three cannon pose textures load up front; at rest the top is
+  // the level pose, unflipped, rotation exactly 0.
   await page.waitForFunction(() => {
     const { ui } = window.__tinySiege;
-    const top = ui.scene.towerTops.get(window.__proof.cannonId);
-    return top?.texture.key === "v5-cannon-0-0-0-top";
+    return ["", "-raised", "-down"].every((s) =>
+      ui.scene.textures.exists(`v5-cannon-0-0-0-top${s}`),
+    );
   });
-  const rest = await aimState(page, proof.cannonId);
-  expect(rest.bearing).toBeNull();
-  expect(rest.flip).toBe(false);
-  expect(Math.abs(rest.rotation)).toBeLessThan(0.35);
+  await expectPose(page, proof.cannonId, "v5-cannon-0-0-0-top", false);
 
-  // LEFT: no flip, tilt tracks the (unsaturated) elevation exactly.
-  await moveEnemy(page, proof.pLeft);
-  const left = await expectAim(page, proof.cannonId, "turret");
-  expect(left.flip).toBe(false);
-  await page.screenshot({ path: `${QA}/aim-left-v2.png` });
-  await expectShot(page, proof.cannonId, "cannon", false);
+  // RAISED / LEFT: the raised drawn pose, no flip, and a fired shell
+  // leaves from the raised pose's emitter.
+  await moveEnemy(page, proof.pRaised);
+  await expectPose(page, proof.cannonId, "v5-cannon-0-0-0-top-raised", false);
+  await page.screenshot({ path: `${QA}/pose-raised-v1.png` });
+  await expectShot(page, proof.cannonId, "cannon", "raised", false);
 
-  // RIGHT: flipped, tilt pitches up toward the up-right bearing,
-  // tracked exactly, still inside the ±0.5 clamp.
-  await moveEnemy(page, proof.pRight);
-  const right = await expectAim(page, proof.cannonId, "turret");
-  expect(right.flip).toBe(true);
-  expect(right.rotation).toBeLessThan(-0.12);
-  await page.screenshot({ path: `${QA}/aim-right-v2.png` });
-  await expectShot(page, proof.cannonId, "cannon", true);
-
-  // DOWN: the bearing is mostly below the pivot; the top pitches to
-  // its clamp and NO further (v1 reached ~2.6 rad here).
+  // DOWN / RIGHT: the down drawn pose, flipped, shell from the down
+  // pose's mirrored emitter.
   await moveEnemy(page, proof.pDown);
-  const down = await expectAim(page, proof.cannonId, "turret");
-  expect(Math.abs(down.rotation)).toBeLessThanOrEqual(TURRET_MAX_TILT + 1e-9);
-  await page.screenshot({ path: `${QA}/aim-down-v2.png` });
+  await expectPose(page, proof.cannonId, "v5-cannon-0-0-0-top-down", true);
+  await page.screenshot({ path: `${QA}/pose-down-v1.png` });
+  await expectShot(page, proof.cannonId, "cannon", "down", true);
 
-  // WIND: the crown leans toward the enemy's side — sign follows the
-  // bearing's horizontal component, magnitude within ±0.45.
+  // LEVEL: a near-level bearing settles back to the level pose.
+  await moveEnemy(page, proof.pLevel);
+  await page.waitForFunction((id) => {
+    const top = window.__tinySiege.ui.scene.towerTops.get(id);
+    return top?.texture.key === "v5-cannon-0-0-0-top" && top.rotation === 0;
+  }, proof.cannonId);
+  await page.screenshot({ path: `${QA}/pose-level-v1.png` });
+
+  // WIND: with the enemy in range and firing, the crown's top never
+  // rotates, never flips, never swaps — fully static.
   await page.waitForFunction(() =>
     Boolean(window.__tinySiege.ui.scene.towerTops.get(window.__proof.windId)),
   );
   await moveEnemy(page, proof.pWind);
-  const lean = await expectAim(page, proof.windId, "lean");
-  expect(Math.sign(lean.rotation)).toBe(Math.sign(Math.cos(lean.bearing)));
-  expect(Math.abs(lean.rotation)).toBeGreaterThan(0.2);
+  await expectPose(page, proof.windId, "v5-wind-0-0-0-top", false, 5);
 
   // The archer never grows a top layer and renders exactly as before.
   const archer = await page.evaluate(() => {
@@ -325,8 +258,9 @@ test("turret tops flip + tilt and crowns lean — never tipped sideways", async 
   expect(archer.glow).toBe(false);
   expect(archer.key).toBe("v5-archer-0-0-0");
 
-  // Upgrading swaps the layers to the new state (cannon 3-0-0 is a
-  // turret too)...
+  // Upgrading swaps the layers to the new state (cannon 3-0-0 has
+  // drawn poses too; the enemy is out of its range here, so it rests
+  // at the level pose)...
   await page.evaluate(() => {
     const { model: g } = window.__tinySiege;
     const t = g.towers.find((t) => t.id === window.__proof.cannonId);

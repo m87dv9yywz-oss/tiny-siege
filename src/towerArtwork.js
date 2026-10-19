@@ -73,12 +73,15 @@ export function artworkTexture(t) {
   return `v5-${t.type}-${artworkState(t.paths)}`;
 }
 // Layered states (tower-turning proof): a few states ship as a planted
-// base layer plus a separate TOP layer that aims (turret tops flip and
-// tilt; crown tops lean — see src/data/towerLayers.json modes). The base
-// layer loads under the state's usual texture key, so every existing
-// consumer (hitboxes, audits, fallbacks) sees the same key as before;
-// the top layer gets a "-top" suffixed key. pivot/emitter are fractions
-// of the square canvas (see src/data/towerLayers.json).
+// base layer plus a separate static TOP layer (cannon tops come in
+// three drawn poses — see src/data/towerLayers.json modes; wind tops
+// are a single fixed piece). The base layer loads under the state's
+// usual texture key, so every existing consumer (hitboxes, audits,
+// fallbacks) sees the same key as before; the level top keeps the
+// "-top" suffixed key, and the raised/down poses append their pose
+// ("-top-raised" / "-top-down", files "<state>_top_raised.png" /
+// "<state>_top_down.png"). pivot/emitter are fractions of the square
+// canvas (see src/data/towerLayers.json).
 export function towerLayer(t) {
   if (!t || !TOWER_TYPES.includes(t.type) || isAscendedTower(t)) return null;
   return towerLayers[`tower_${t.type}_${artworkState(t.paths)}`] || null;
@@ -88,10 +91,16 @@ export function towerBaseArtwork(t) {
     return `assets/v5/towers/${t.type}/battlefield_256/${t.type}_${artworkState(t.paths)}_base.png`;
   return towerArtwork(t, "battlefield_256");
 }
-export function towerTopTexture(t) {
-  return towerLayer(t) ? `${artworkTexture(t)}-top` : null;
+export function towerTopTexture(t, pose = "level") {
+  const layer = towerLayer(t);
+  if (!layer) return null;
+  const key = `${artworkTexture(t)}-top`;
+  return layer.mode === "poses" && pose !== "level" ? `${key}-${pose}` : key;
 }
-export function towerTopArtwork(t) {
-  if (!towerLayer(t)) return null;
-  return `assets/v5/towers/${t.type}/battlefield_256/${t.type}_${artworkState(t.paths)}_top.png`;
+export function towerTopArtwork(t, pose = "level") {
+  const layer = towerLayer(t);
+  if (!layer) return null;
+  const suffix =
+    layer.mode === "poses" && pose !== "level" ? `_top_${pose}` : "_top";
+  return `assets/v5/towers/${t.type}/battlefield_256/${t.type}_${artworkState(t.paths)}${suffix}.png`;
 }

@@ -29,8 +29,7 @@ import {
   towerTexture,
   towerMuzzle,
   towerDisplaySize,
-  turretAim,
-  leanAim,
+  poseForBearing,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -241,9 +240,19 @@ export class GameScene extends Phaser.Scene {
     const key = towerTexture(t);
     if (!this.textures.exists(key))
       requestTexture(this, key, import.meta.env.BASE_URL + towerBaseArtwork(t));
-    const topKey = towerTopTexture(t);
-    if (topKey && !this.textures.exists(topKey))
-      requestTexture(this, topKey, import.meta.env.BASE_URL + towerTopArtwork(t));
+    // Poses-mode tops (cannon) need all three drawn poses warmed, so a
+    // pose swap mid-fight never waits on the network.
+    const poses =
+      towerLayer(t)?.mode === "poses" ? ["level", "raised", "down"] : ["level"];
+    for (const pose of poses) {
+      const topKey = towerTopTexture(t, pose);
+      if (topKey && !this.textures.exists(topKey))
+        requestTexture(
+          this,
+          topKey,
+          import.meta.env.BASE_URL + towerTopArtwork(t, pose),
+        );
+    }
     return this.textures.exists(key) ? key : `v5-${t.type}-0-0-0`;
   }
   towerAt(point) {
@@ -493,10 +502,12 @@ export class GameScene extends Phaser.Scene {
         radius: 22,
       });
     if (type === "attack") {
-      // Layered towers kick their rotating top back and flash the
-      // emitter glow on every shot (decayed in the per-frame pass).
+      // Layered towers flash the emitter glow on every shot; poses-mode
+      // tops (cannon) also kick back along the active pose's barrel
+      // (decayed in the per-frame pass). Static crowns do neither beyond
+      // the flash.
       if (towerLayer(tower)) {
-        tower._recoil = 3;
+        if (towerLayer(tower).mode === "poses") tower._recoil = 3;
         tower._glowFlash = 1;
       }
       const sprite = this.towerSprites.get(tower.id);
@@ -757,10 +768,12 @@ export class GameScene extends Phaser.Scene {
           ) *
             (TOWERS[t.type].waterOnly ? 1.9 : 0.7);
       // Layered towers (turning proof): the top layer rides the base
-      // sprite and aims at the tower's current target — turret tops
-      // flip + tilt, crown tops lean (see turretAim/leanAim in
-      // towers.js); front-view art never spins in-plane. Selection,
-      // hitboxes and the aura wash keep following the base sprite alone.
+      // sprite but NEVER rotates (hybrid aim, 2026-10-19 — Kingdom
+      // Rush style: planted static art, aim read from the muzzle).
+      // Poses-mode tops (cannon) show the drawn pose for the sim
+      // target's elevation band and flip to its side; static tops
+      // (wind crowns) just sit planted. Selection, hitboxes and the
+      // aura wash keep following the base sprite alone.
       {
         const layer = artworkTexture(t) !== null ? towerLayer(t) : null;
         let top = this.towerTops.get(t.id),
@@ -774,70 +787,77 @@ export class GameScene extends Phaser.Scene {
             glow.destroy();
             this.towerGlows.delete(t.id);
           }
-          t._aimAngle = undefined;
+          t._aimPose = undefined;
           t._aimFlip = undefined;
+          t._poseDip = undefined;
         } else if (this.textures.exists(towerTopTexture(t))) {
-          const display = towerDisplaySize(t),
-            topKey = towerTopTexture(t);
+          const display = towerDisplaySize(t);
+          const pivotX = sprite.x + (layer.pivot[0] - 0.5) * display,
+            pivotY = sprite.y + (layer.pivot[1] - 0.96) * display;
+          // The sim's own targeting (same stats, same ordering) names
+          // the current target. A poses-mode top tracks it by pose +
+          // flip (poseForBearing carries the band hysteresis); with
+          // no target it settles back to the level pose and keeps its
+          // last flip.
+          const stats = this.model.effectiveStats(t),
+            target = this.model.targets(t, stats)[0];
+          if (layer.mode === "poses") {
+            if (target) {
+              const aim = poseForBearing(
+                target.x - pivotX,
+                target.y - pivotY,
+                t._aimPose,
+              );
+              t._aimFlip = aim.flip;
+              if (aim.pose !== (t._aimPose ?? "level")) t._poseDip = 0.07;
+              t._aimPose = aim.pose;
+            } else if ((t._aimPose ?? "level") !== "level") {
+              t._aimPose = "level";
+              t._poseDip = 0.07;
+            }
+          }
+          const topKey = towerTopTexture(
+            t,
+            layer.mode === "poses" ? (t._aimPose ?? "level") : "level",
+          );
           if (!top) {
             top = this.add.image(0, 0, topKey);
             this.towerTops.set(t.id, top);
           }
-          if (top.texture.key !== topKey) top.setTexture(topKey);
+          // Swap only once the pose art has arrived; until then the
+          // current pose keeps showing (bases behave the same way).
+          if (top.texture.key !== topKey && this.textures.exists(topKey))
+            top.setTexture(topKey);
           top.setOrigin(layer.pivot[0], layer.pivot[1]);
           top.setDisplaySize(display, display);
-          const pivotX = sprite.x + (layer.pivot[0] - 0.5) * display,
-            pivotY = sprite.y + (layer.pivot[1] - 0.96) * display;
-          // The sim's own targeting (same stats, same ordering) names
-          // the current target; the top aims at it per its model —
-          // turret tops flip to the target's side and pitch toward
-          // its height, crown tops lean toward its side — easing at a
-          // capped rate and settling home (tilt/tip -> 0, turrets keep
-          // their last flip) when idle.
-          const stats = this.model.effectiveStats(t),
-            target = this.model.targets(t, stats)[0];
-          let desired = 0;
-          if (target) {
-            const bearing = Math.atan2(
-              target.y - pivotY,
-              target.x - pivotX,
-            );
-            if (layer.mode === "turret") {
-              const aim = turretAim(bearing);
-              t._aimFlip = aim.flip;
-              desired = aim.tilt;
-            } else {
-              desired = leanAim(bearing);
-            }
-          }
-          if (t._aimAngle === undefined) t._aimAngle = 0;
-          if (dt > 0) {
-            let diff = desired - t._aimAngle;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            const maxStep = 10 * dt;
-            t._aimAngle += Math.max(-maxStep, Math.min(maxStep, diff));
-          }
-          top.rotation = t._aimAngle;
-          top.setFlipX(layer.mode === "turret" ? !!t._aimFlip : false);
-          // Recoil: the shot kicks the top ~3px back along its muzzle
-          // direction, settling over ~120ms (set by the attack event
-          // hook).
+          top.rotation = 0;
+          top.setFlipX(layer.mode === "poses" ? !!t._aimFlip : false);
+          // Pose-swap softening: a ~70ms alpha dip to 0.6 and back
+          // hides the pop when the drawn pose changes.
+          if ((t._poseDip || 0) > 0 && dt > 0) {
+            t._poseDip = Math.max(0, t._poseDip - dt);
+            const p = 1 - t._poseDip / 0.07;
+            top.setAlpha(p < 0.5 ? 1 - 0.8 * p : 0.2 + 0.8 * p);
+          } else top.setAlpha(1);
+          // Recoil (poses only): the shot kicks the top ~3px against
+          // the active pose's barrel direction, settling over ~120ms
+          // (set by the attack event hook).
           t._recoil = Math.max(0, (t._recoil || 0) - dt * 25);
-          let dirX = (layer.emitter[0] - layer.pivot[0]) * (t._aimFlip ? -1 : 1),
-            dirY = layer.emitter[1] - layer.pivot[1];
-          const dirCos = Math.cos(t._aimAngle),
-            dirSin = Math.sin(t._aimAngle),
-            rotX = dirX * dirCos - dirY * dirSin,
-            rotY = dirX * dirSin + dirY * dirCos,
-            dirLen = Math.hypot(rotX, rotY) || 1;
-          top.setPosition(
-            pivotX - (rotX / dirLen) * t._recoil,
-            pivotY - (rotY / dirLen) * t._recoil,
-          );
+          let offX = 0,
+            offY = 0;
+          if (layer.mode === "poses" && t._recoil > 0) {
+            const emitter = layer.poses[t._aimPose ?? "level"];
+            let dirX = emitter[0] - layer.pivot[0],
+              dirY = emitter[1] - layer.pivot[1];
+            if (t._aimFlip) dirX = -dirX;
+            const dirLen = Math.hypot(dirX, dirY) || 1;
+            offX = -(dirX / dirLen) * t._recoil;
+            offY = -(dirY / dirLen) * t._recoil;
+          }
+          top.setPosition(pivotX + offX, pivotY + offY);
           top.setDepth(sprite.depth + 2);
-          // Emitter glow at the rotated muzzle point: the model's
-          // cooldown is the charge clock, so the glow brightens as the
+          // Emitter glow at the active pose's muzzle point: the
+          // model's cooldown is the charge clock, so the glow brightens as the
           // next shot charges, flashes on fire (attack event), and
           // idles at a soft pulse while nothing is in range.
           if (!glow) {

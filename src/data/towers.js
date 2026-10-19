@@ -721,51 +721,57 @@ export function towerDisplaySize(t) {
     towerSizeFactor(t)
   );
 }
-// Layered states aim, but front-view artwork must never spin in-plane
-// (owner playtest round 6, 2026-10-19: a full 360° spin reads as the
-// tower "just tipped sideways"). Two models, per layer.mode:
-//  - "turret" (cannon): the top is a SIDE-PROFILE piece drawn pointing
-//    LEFT. It flips horizontally to face the target's side and pitches
-//    (elevation) toward the target's height, clamped to ±TURRET_MAX_TILT
-//    — a real gun on a trunnion, never upside down.
-//  - "lean" (wind crowns): near-radial pieces tip toward the target's
-//    horizontal side by at most LEAN_MAX_TIP, growing with how
-//    horizontal the bearing is; a target straight below tips ~0.
-// `_aimAngle` is the top sprite's Phaser rotation (the tilt/tip) and
-// `_aimFlip` its horizontal flip, both maintained by the scene; unset
-// means "at rest, facing left". The emitter offset is defined in canvas
-// space relative to the pivot; the flip mirrors it before the same
-// standard 2D rotation Phaser applies, so at rest the result is
-// exactly the unrotated emitter position.
-export const TURRET_MAX_TILT = 0.5;
-export const LEAN_MAX_TIP = 0.45;
-function wrapAngle(a) {
-  while (a > Math.PI) a -= Math.PI * 2;
-  while (a < -Math.PI) a += Math.PI * 2;
-  return a;
-}
-// Aim for a turret top from the pivot->target bearing (atan2, y-down
-// canvas space): flip when the target is on the right half, tilt =
-// the bearing's deviation from the facing direction, clamped.
-export function turretAim(bearing) {
-  const flip = Math.cos(bearing) > 0;
-  const facing = flip ? 0 : Math.PI;
-  const tilt = Math.max(
-    -TURRET_MAX_TILT,
-    Math.min(TURRET_MAX_TILT, wrapAngle(bearing - facing)),
-  );
-  return { flip, tilt };
-}
-// Tip for a leaning top from the pivot->target bearing: follows the
-// bearing's horizontal component, so it peaks for side targets and
-// vanishes for targets straight above or below.
-export function leanAim(bearing) {
-  return LEAN_MAX_TIP * Math.cos(bearing);
+// Layered states are STATIC artwork (Kingdom Rush style): the top
+// layer never rotates or leans (owner playtest rounds 6–7, 2026-10-19:
+// a full 360° in-plane spin read as the tower "just tipped sideways",
+// and a rigid flip + tilt still looked off). Aim instead reads from
+// the measured muzzle plus the charge glow. Two modes, per layer.mode:
+//  - "poses" (cannon): the top ships as three DRAWN poses of the same
+//    side-profile gun — barrel raised / level / down — each with its
+//    own measured emitter (layer.poses). The scene shows the pose
+//    matching the target's elevation band (see poseForBearing) and
+//    flips it to the target's side; every pose is drawn whole, so the
+//    carriage stays planted in all of them.
+//  - "static" (wind crowns): one fixed emitter; the crown never moves.
+// The scene maintains `_aimPose` ("level" | "raised" | "down") and
+// `_aimFlip` on poses-mode towers; unset means "level, facing left".
+// Emitters are fractions of the square canvas relative to the pivot;
+// in poses mode the flip mirrors the emitter offset across the pivot
+// (static tops never flip, so their muzzle ignores the channel).
+export const POSE_BAND_DEG = 9;
+export const POSE_HYSTERESIS_DEG = 2.5;
+// Pose + flip for a cannon top from the pivot->target offset (canvas
+// space, y down). Elevation φ = atan2(−dy, |dx|) in degrees, up
+// positive, measured relative to the FACING side: φ above the band →
+// "raised", φ below −band → "down", else "level". The band edges
+// carry POSE_HYSTERESIS_DEG of hysteresis against the CURRENT pose so
+// a target hovering at a boundary cannot flicker the swap: entering
+// a pose needs φ past band + hysteresis, leaving it needs φ back
+// under band − hysteresis.
+export function poseForBearing(dx, dy, current = "level") {
+  const flip = dx > 0;
+  const phi = (Math.atan2(-dy, Math.abs(dx)) * 180) / Math.PI;
+  const enter = POSE_BAND_DEG + POSE_HYSTERESIS_DEG,
+    leave = POSE_BAND_DEG - POSE_HYSTERESIS_DEG;
+  const cur =
+    current === "raised" || current === "down" ? current : "level";
+  let pose = cur;
+  if (cur === "raised") {
+    if (phi < -enter) pose = "down";
+    else if (phi < leave) pose = "level";
+  } else if (cur === "down") {
+    if (phi > enter) pose = "raised";
+    else if (phi > -leave) pose = "level";
+  } else {
+    if (phi > enter) pose = "raised";
+    else if (phi < -enter) pose = "down";
+  }
+  return { pose, flip };
 }
 export function layeredMuzzle(
   t,
   layer,
-  angle = t?._aimAngle ?? 0,
+  pose = t?._aimPose ?? "level",
   flip = t?._aimFlip ?? false,
 ) {
   const display = towerDisplaySize(t);
@@ -773,15 +779,14 @@ export function layeredMuzzle(
     x: t.x + (layer.pivot[0] - 0.5) * display,
     y: t.y + (layer.pivot[1] - 0.96) * display,
   };
-  let ox = (layer.emitter[0] - layer.pivot[0]) * display;
-  const oy = (layer.emitter[1] - layer.pivot[1]) * display;
-  if (flip) ox = -ox;
-  const cos = Math.cos(angle),
-    sin = Math.sin(angle);
-  return {
-    x: pivot.x + ox * cos - oy * sin,
-    y: pivot.y + ox * sin + oy * cos,
-  };
+  const emitter =
+    layer.mode === "poses"
+      ? (layer.poses?.[pose] ?? layer.poses?.level)
+      : layer.emitter;
+  let ox = (emitter[0] - layer.pivot[0]) * display;
+  const oy = (emitter[1] - layer.pivot[1]) * display;
+  if (flip && layer.mode === "poses") ox = -ox;
+  return { x: pivot.x + ox, y: pivot.y + oy };
 }
 export function towerMuzzle(t) {
   const layer = towerLayer(t);

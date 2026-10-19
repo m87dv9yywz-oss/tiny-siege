@@ -6,10 +6,9 @@ import {
   towerStats,
   towerMuzzle,
   layeredMuzzle,
-  turretAim,
-  leanAim,
-  TURRET_MAX_TILT,
-  LEAN_MAX_TIP,
+  poseForBearing,
+  POSE_BAND_DEG,
+  POSE_HYSTERESIS_DEG,
   towerDisplaySize,
   upgradeState,
   towerName,
@@ -525,9 +524,9 @@ test("shots leave from each tower's muzzle, not its base", () => {
     const layer = towerLayer(probe);
     if (layer) {
       // Layered states (turning proof): the muzzle is the artwork's
-      // emitter point, rotated by the top layer's aim — at rest it is
-      // exactly the unrotated emitter position.
-      const rest = layeredMuzzle(probe, layer, 0);
+      // emitter point — for cannon the LEVEL pose's, at rest exactly
+      // the drawn emitter position.
+      const rest = layeredMuzzle(probe, layer);
       assert.equal(m.x, rest.x, `${type} layered muzzle x`);
       assert.equal(m.y, rest.y, `${type} layered muzzle y`);
       assert.ok(m.y < 270, `${type} layered emitter sits high on the art`);
@@ -573,7 +572,7 @@ test("shots leave from each tower's muzzle, not its base", () => {
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
 });
-test("layered towers: exactly five states, turrets flip + tilt, crowns lean", () => {
+test("layered towers: exactly five states, cannon poses aim, wind static", () => {
   // The turning proof layers exactly these five states; every other
   // state of every tower stays on the single-sprite path.
   assert.deepEqual(Object.keys(towerLayers).sort(), [
@@ -596,113 +595,117 @@ test("layered towers: exactly five states, turrets flip + tilt, crowns lean", ()
   for (const key of Object.keys(towerLayers))
     assert.equal(
       towerLayers[key].mode,
-      key.startsWith("tower_cannon") ? "turret" : "lean",
+      key.startsWith("tower_cannon") ? "poses" : "static",
       `${key} aim mode`,
     );
   const close = (a, b) => Math.abs(a - b) < 1e-9;
-  const wrap = (a) => {
-    while (a > Math.PI) a -= Math.PI * 2;
-    while (a < -Math.PI) a += Math.PI * 2;
-    return a;
+  // Pose selection from the pivot->target offset (canvas space, y
+  // down): elevation φ = atan2(−dy, |dx|), up positive, measured
+  // against the FACING side. Bands: φ > +9° raised, φ < −9° down,
+  // else level — with ±2.5° of hysteresis against the current pose.
+  // at(φ°, side): an offset at elevation φ on the given facing side.
+  const at = (phiDeg, side = -1, dist = 100) => {
+    const r = (phiDeg * Math.PI) / 180;
+    return [side * Math.cos(r) * dist, -Math.sin(r) * dist];
   };
-  // Turret muzzle math on the cannon's base state, whose side-profile
-  // emitter sits far LEFT of its trunnion pivot: facing-left rest is
-  // exactly the raw emitter position; flipped rest mirrors it across
-  // the pivot; a tilt rotates the (possibly mirrored) offset.
+  const band = POSE_BAND_DEG,
+    hyst = POSE_HYSTERESIS_DEG;
+  // Facing: flip follows the target's side, dead ahead keeps left.
+  assert.equal(poseForBearing(-100, 0).flip, false);
+  assert.equal(poseForBearing(100, 0).flip, true);
+  assert.equal(poseForBearing(0, -100).flip, false);
+  // From level, a pose engages only past band + hysteresis.
+  assert.equal(poseForBearing(...at(band + hyst - 0.5)).pose, "level");
+  assert.equal(poseForBearing(...at(band + hyst + 0.5)).pose, "raised");
+  assert.equal(poseForBearing(...at(-band - hyst + 0.5)).pose, "level");
+  assert.equal(poseForBearing(...at(-band - hyst - 0.5)).pose, "down");
+  assert.equal(poseForBearing(...at(45)).pose, "raised");
+  assert.equal(poseForBearing(...at(-45)).pose, "down");
+  assert.equal(poseForBearing(...at(0)).pose, "level");
+  // The same elevations read identically on the flipped side.
+  assert.equal(poseForBearing(...at(30, 1)).pose, "raised");
+  assert.equal(poseForBearing(...at(-30, 1)).pose, "down");
+  // Hysteresis: once raised, the pose holds until φ falls back under
+  // band − hysteresis; hovering between the edges never flickers.
+  assert.equal(poseForBearing(...at(band), "raised").pose, "raised");
+  assert.equal(poseForBearing(...at(band - hyst + 0.5), "raised").pose, "raised");
+  assert.equal(poseForBearing(...at(band - hyst - 0.5), "raised").pose, "level");
+  assert.equal(poseForBearing(...at(-band), "down").pose, "down");
+  assert.equal(poseForBearing(...at(-band + hyst - 0.5), "down").pose, "down");
+  assert.equal(poseForBearing(...at(-band + hyst + 0.5), "down").pose, "level");
+  let pose = "level";
+  for (let i = 0; i < 20; i++)
+    pose = poseForBearing(...at(i % 2 ? band - 1 : band + 1), pose).pose;
+  assert.equal(pose, "level", "hovering at the band edge never engages");
+  pose = "raised";
+  for (let i = 0; i < 20; i++)
+    pose = poseForBearing(...at(i % 2 ? band - 1 : band + 1), pose).pose;
+  assert.equal(pose, "raised", "hovering at the band edge never releases");
+  // A swing straight across jumps pose to pose without a level stop.
+  assert.equal(poseForBearing(...at(-45), "raised").pose, "down");
+  assert.equal(poseForBearing(...at(45), "down").pose, "raised");
+  // Straight above/below are pure elevation on either side.
+  assert.equal(poseForBearing(0, -100).pose, "raised");
+  assert.equal(poseForBearing(0, 100).pose, "down");
+  // Muzzle = the ACTIVE pose's emitter, mirrored under flip. Cannon's
+  // side-profile emitters sit far LEFT of the trunnion pivot.
   const t = { type: "cannon", x: 400, y: 300, paths: [0, 0, 0] };
   const layer = towerLayer(t),
     display = towerDisplaySize(t);
-  assert.equal(layer.mode, "turret");
+  assert.equal(layer.mode, "poses");
   const pivot = {
     x: t.x + (layer.pivot[0] - 0.5) * display,
     y: t.y + (layer.pivot[1] - 0.96) * display,
   };
-  const ox = (layer.emitter[0] - layer.pivot[0]) * display,
-    oy = (layer.emitter[1] - layer.pivot[1]) * display;
-  assert.ok(ox < -display * 0.4, "profile emitter sits far left of pivot");
-  const rest = layeredMuzzle(t, layer, 0, false);
-  assert.ok(close(rest.x, pivot.x + ox) && close(rest.y, pivot.y + oy));
-  // towerMuzzle with no aim recorded is the facing-left rest position.
-  const viaMuzzle = towerMuzzle(t);
-  assert.ok(close(viaMuzzle.x, rest.x) && close(viaMuzzle.y, rest.y));
-  const flipped = layeredMuzzle(t, layer, 0, true);
-  assert.ok(
-    close(flipped.x, pivot.x - ox) && close(flipped.y, pivot.y + oy),
-    "flipped rest mirrors the emitter across the pivot",
-  );
-  const tilt = 0.3,
-    cos = Math.cos(tilt),
-    sin = Math.sin(tilt);
-  const tilted = layeredMuzzle(t, layer, tilt, false);
-  assert.ok(
-    close(tilted.x, pivot.x + ox * cos - oy * sin) &&
-      close(tilted.y, pivot.y + ox * sin + oy * cos),
-    "tilt rotates the offset",
-  );
-  const tiltedFlip = layeredMuzzle(t, layer, tilt, true);
-  assert.ok(
-    close(tiltedFlip.x, pivot.x - ox * cos - oy * sin) &&
-      close(tiltedFlip.y, pivot.y - ox * sin + oy * cos),
-    "tilt rotates the mirrored offset",
-  );
-  // And through towerMuzzle's aim channel (angle + flip on the tower).
-  const aimed = towerMuzzle({ ...t, _aimAngle: tilt, _aimFlip: true });
-  assert.ok(close(aimed.x, tiltedFlip.x) && close(aimed.y, tiltedFlip.y));
-  // Turret aim sweep over the full compass: the tilt NEVER exceeds
-  // ±TURRET_MAX_TILT (the top can never tip sideways or upside down),
-  // the flip follows the target's half, and unsaturated bearings are
-  // tracked exactly.
-  for (let deg = 0; deg < 360; deg += 3) {
-    const bearing = (deg * Math.PI) / 180;
-    const aim = turretAim(bearing);
-    assert.equal(aim.flip, Math.cos(bearing) > 0, `flip at ${deg}°`);
-    assert.ok(
-      Math.abs(aim.tilt) <= TURRET_MAX_TILT + 1e-12,
-      `tilt clamp at ${deg}°`,
-    );
-    const deviation = wrap(bearing - (aim.flip ? 0 : Math.PI));
-    if (Math.abs(deviation) <= TURRET_MAX_TILT)
-      assert.ok(close(aim.tilt, deviation), `tilt tracks at ${deg}°`);
-    else
+  const expectMuzzle = (poseName, flip) => {
+    const e = layer.poses[poseName];
+    const ox = (e[0] - layer.pivot[0]) * display,
+      oy = (e[1] - layer.pivot[1]) * display;
+    return { x: pivot.x + (flip ? -ox : ox), y: pivot.y + oy };
+  };
+  for (const poseName of ["level", "raised", "down"])
+    for (const flip of [false, true]) {
+      const m = layeredMuzzle(t, layer, poseName, flip);
+      const want = expectMuzzle(poseName, flip);
       assert.ok(
-        close(Math.abs(aim.tilt), TURRET_MAX_TILT),
-        `tilt saturates at ${deg}°`,
+        close(m.x, want.x) && close(m.y, want.y),
+        `${poseName} muzzle${flip ? " (flipped)" : ""}`,
       );
-  }
-  // Elevation signs: above the facing axis pitches the barrel up,
-  // below pitches it down, on both facings.
-  assert.ok(turretAim(-Math.PI * 0.85).tilt > 0, "up-left pitches up");
-  assert.ok(turretAim(Math.PI * 0.85).tilt < 0, "down-left pitches down");
-  assert.ok(turretAim(-Math.PI * 0.15).tilt < 0, "up-right pitches up");
-  assert.ok(turretAim(Math.PI * 0.15).tilt > 0, "down-right pitches down");
-  // Lean sweep: the tip follows the bearing's horizontal side, peaks
-  // for side targets, vanishes straight above/below, and NEVER
-  // exceeds ±LEAN_MAX_TIP.
-  for (let deg = 0; deg < 360; deg += 3) {
-    const bearing = (deg * Math.PI) / 180;
-    const tip = leanAim(bearing);
-    assert.ok(
-      Math.abs(tip) <= LEAN_MAX_TIP + 1e-12,
-      `lean clamp at ${deg}°`,
-    );
-    assert.ok(
-      close(tip, LEAN_MAX_TIP * Math.cos(bearing)),
-      `lean follows the horizontal side at ${deg}°`,
-    );
-  }
-  assert.ok(close(leanAim(0), LEAN_MAX_TIP), "right target: max right tip");
-  assert.ok(close(leanAim(Math.PI), -LEAN_MAX_TIP), "left target: max left tip");
-  assert.ok(Math.abs(leanAim(Math.PI / 2)) < 1e-12, "straight below: no tip");
-  assert.ok(Math.abs(leanAim(-Math.PI / 2)) < 1e-12, "straight above: no tip");
-  // Lean-mode muzzle: the tip rotates the emitter offset as before.
-  // Wind's storm state has an off-axis emitter, so the tip truly moves
-  // the muzzle in both axes.
+      assert.ok(
+        Math.abs(m.x - pivot.x) > display * 0.35,
+        `${poseName} emitter sits far from the pivot`,
+      );
+    }
+  // The three poses genuinely move the muzzle (raised highest, down
+  // lowest on the page), and towerMuzzle reads the scene's channels.
+  const yOf = (poseName) => layeredMuzzle(t, layer, poseName, false).y;
+  assert.ok(yOf("raised") < yOf("level") && yOf("level") < yOf("down"));
+  const viaMuzzle = towerMuzzle(t);
+  const levelRest = expectMuzzle("level", false);
+  assert.ok(close(viaMuzzle.x, levelRest.x) && close(viaMuzzle.y, levelRest.y));
+  const aimed = towerMuzzle({ ...t, _aimPose: "down", _aimFlip: true });
+  const wantAimed = expectMuzzle("down", true);
+  assert.ok(close(aimed.x, wantAimed.x) && close(aimed.y, wantAimed.y));
+  // Wind is fully static: one fixed emitter, and stray pose/flip
+  // channels can never move its muzzle.
   const w = { type: "wind", x: 100, y: 100, paths: [0, 0, 3] };
-  assert.equal(towerLayer(w).mode, "lean");
+  const wLayer = towerLayer(w);
+  assert.equal(wLayer.mode, "static");
   const wRest = towerMuzzle(w),
-    wTipped = towerMuzzle({ ...w, _aimAngle: LEAN_MAX_TIP });
-  assert.ok(Math.abs(wTipped.x - wRest.x) > 1);
-  assert.ok(Math.abs(wTipped.y - wRest.y) > 1);
+    wStray = towerMuzzle({ ...w, _aimPose: "down", _aimFlip: true });
+  assert.ok(close(wStray.x, wRest.x) && close(wStray.y, wRest.y));
+  const wDisplay = towerDisplaySize(w);
+  assert.ok(
+    close(
+      wRest.x,
+      w.x + (wLayer.emitter[0] - 0.5) * wDisplay,
+    ) &&
+      close(
+        wRest.y,
+        w.y + (wLayer.emitter[1] - 0.96) * wDisplay,
+      ),
+    "wind muzzle is its fixed measured emitter",
+  );
 });
 test("upgrading never shrinks a tower's rendered size", () => {
   // Round 5 regression (owner playtest, 2026-10-19): per-state width
