@@ -721,21 +721,61 @@ export function towerDisplaySize(t) {
     towerSizeFactor(t)
   );
 }
-// Layered states aim: the top layer rotates around its pivot, and the
-// emitter rides with it. `_aimAngle` is the top sprite's Phaser rotation
-// (0 = artwork pointing up, positive clockwise in y-down canvas space),
-// maintained by the scene; unset means "at rest". The offset is defined
-// in canvas space relative to the pivot and rotated by the same standard
-// 2D rotation Phaser applies to the sprite, so at rest the result is
+// Layered states aim, but front-view artwork must never spin in-plane
+// (owner playtest round 6, 2026-10-19: a full 360° spin reads as the
+// tower "just tipped sideways"). Two models, per layer.mode:
+//  - "turret" (cannon): the top is a SIDE-PROFILE piece drawn pointing
+//    LEFT. It flips horizontally to face the target's side and pitches
+//    (elevation) toward the target's height, clamped to ±TURRET_MAX_TILT
+//    — a real gun on a trunnion, never upside down.
+//  - "lean" (wind crowns): near-radial pieces tip toward the target's
+//    horizontal side by at most LEAN_MAX_TIP, growing with how
+//    horizontal the bearing is; a target straight below tips ~0.
+// `_aimAngle` is the top sprite's Phaser rotation (the tilt/tip) and
+// `_aimFlip` its horizontal flip, both maintained by the scene; unset
+// means "at rest, facing left". The emitter offset is defined in canvas
+// space relative to the pivot; the flip mirrors it before the same
+// standard 2D rotation Phaser applies, so at rest the result is
 // exactly the unrotated emitter position.
-export function layeredMuzzle(t, layer, angle = t?._aimAngle ?? 0) {
+export const TURRET_MAX_TILT = 0.5;
+export const LEAN_MAX_TIP = 0.45;
+function wrapAngle(a) {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a < -Math.PI) a += Math.PI * 2;
+  return a;
+}
+// Aim for a turret top from the pivot->target bearing (atan2, y-down
+// canvas space): flip when the target is on the right half, tilt =
+// the bearing's deviation from the facing direction, clamped.
+export function turretAim(bearing) {
+  const flip = Math.cos(bearing) > 0;
+  const facing = flip ? 0 : Math.PI;
+  const tilt = Math.max(
+    -TURRET_MAX_TILT,
+    Math.min(TURRET_MAX_TILT, wrapAngle(bearing - facing)),
+  );
+  return { flip, tilt };
+}
+// Tip for a leaning top from the pivot->target bearing: follows the
+// bearing's horizontal component, so it peaks for side targets and
+// vanishes for targets straight above or below.
+export function leanAim(bearing) {
+  return LEAN_MAX_TIP * Math.cos(bearing);
+}
+export function layeredMuzzle(
+  t,
+  layer,
+  angle = t?._aimAngle ?? 0,
+  flip = t?._aimFlip ?? false,
+) {
   const display = towerDisplaySize(t);
   const pivot = {
     x: t.x + (layer.pivot[0] - 0.5) * display,
     y: t.y + (layer.pivot[1] - 0.96) * display,
   };
-  const ox = (layer.emitter[0] - layer.pivot[0]) * display,
-    oy = (layer.emitter[1] - layer.pivot[1]) * display;
+  let ox = (layer.emitter[0] - layer.pivot[0]) * display;
+  const oy = (layer.emitter[1] - layer.pivot[1]) * display;
+  if (flip) ox = -ox;
   const cos = Math.cos(angle),
     sin = Math.sin(angle);
   return {

@@ -73,7 +73,8 @@ export function artworkTexture(t) {
   return `v5-${t.type}-${artworkState(t.paths)}`;
 }
 // Layered states (tower-turning proof): a few states ship as a planted
-// base layer plus a separate TOP layer that rotates to aim. The base
+// base layer plus a separate TOP layer that aims (turret tops flip and
+// tilt; crown tops lean — see src/data/towerLayers.json modes). The base
 // layer loads under the state's usual texture key, so every existing
 // consumer (hitboxes, audits, fallbacks) sees the same key as before;
 // the top layer gets a "-top" suffixed key. pivot/emitter are fractions

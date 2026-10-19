@@ -6,6 +6,10 @@ import {
   towerStats,
   towerMuzzle,
   layeredMuzzle,
+  turretAim,
+  leanAim,
+  TURRET_MAX_TILT,
+  LEAN_MAX_TIP,
   towerDisplaySize,
   upgradeState,
   towerName,
@@ -569,7 +573,7 @@ test("shots leave from each tower's muzzle, not its base", () => {
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
 });
-test("layered towers: exactly five states, muzzle rotates with the aim", () => {
+test("layered towers: exactly five states, turrets flip + tilt, crowns lean", () => {
   // The turning proof layers exactly these five states; every other
   // state of every tower stays on the single-sprite path.
   assert.deepEqual(Object.keys(towerLayers).sort(), [
@@ -589,46 +593,116 @@ test("layered towers: exactly five states, muzzle rotates with the aim", () => {
         `${type} ${state} layer lookup`,
       );
     }
-  // Rotated-muzzle math on the cannon's base state, whose emitter sits
-  // almost directly above its pivot: at rest the muzzle is the
-  // unrotated emitter; a quarter turn clockwise (Phaser rotation, y
-  // down) swings it to the pivot's right at the same height; a half
-  // turn puts it the same distance below the pivot.
+  for (const key of Object.keys(towerLayers))
+    assert.equal(
+      towerLayers[key].mode,
+      key.startsWith("tower_cannon") ? "turret" : "lean",
+      `${key} aim mode`,
+    );
+  const close = (a, b) => Math.abs(a - b) < 1e-9;
+  const wrap = (a) => {
+    while (a > Math.PI) a -= Math.PI * 2;
+    while (a < -Math.PI) a += Math.PI * 2;
+    return a;
+  };
+  // Turret muzzle math on the cannon's base state, whose side-profile
+  // emitter sits far LEFT of its trunnion pivot: facing-left rest is
+  // exactly the raw emitter position; flipped rest mirrors it across
+  // the pivot; a tilt rotates the (possibly mirrored) offset.
   const t = { type: "cannon", x: 400, y: 300, paths: [0, 0, 0] };
   const layer = towerLayer(t),
     display = towerDisplaySize(t);
+  assert.equal(layer.mode, "turret");
   const pivot = {
     x: t.x + (layer.pivot[0] - 0.5) * display,
     y: t.y + (layer.pivot[1] - 0.96) * display,
   };
   const ox = (layer.emitter[0] - layer.pivot[0]) * display,
     oy = (layer.emitter[1] - layer.pivot[1]) * display;
-  const close = (a, b) => Math.abs(a - b) < 1e-9;
-  const rest = layeredMuzzle(t, layer, 0);
+  assert.ok(ox < -display * 0.4, "profile emitter sits far left of pivot");
+  const rest = layeredMuzzle(t, layer, 0, false);
   assert.ok(close(rest.x, pivot.x + ox) && close(rest.y, pivot.y + oy));
-  // towerMuzzle with no aim recorded is the rest position.
+  // towerMuzzle with no aim recorded is the facing-left rest position.
   const viaMuzzle = towerMuzzle(t);
   assert.ok(close(viaMuzzle.x, rest.x) && close(viaMuzzle.y, rest.y));
-  const quarter = layeredMuzzle(t, layer, Math.PI / 2);
+  const flipped = layeredMuzzle(t, layer, 0, true);
   assert.ok(
-    close(quarter.x, pivot.x - oy) && close(quarter.y, pivot.y + ox),
-    "90° clockwise rotation",
+    close(flipped.x, pivot.x - ox) && close(flipped.y, pivot.y + oy),
+    "flipped rest mirrors the emitter across the pivot",
   );
-  const half = layeredMuzzle(t, layer, Math.PI);
+  const tilt = 0.3,
+    cos = Math.cos(tilt),
+    sin = Math.sin(tilt);
+  const tilted = layeredMuzzle(t, layer, tilt, false);
   assert.ok(
-    close(half.x, pivot.x - ox) && close(half.y, pivot.y - oy),
-    "180° rotation",
+    close(tilted.x, pivot.x + ox * cos - oy * sin) &&
+      close(tilted.y, pivot.y + ox * sin + oy * cos),
+    "tilt rotates the offset",
   );
-  // And through towerMuzzle's aim channel.
-  const aimed = towerMuzzle({ ...t, _aimAngle: Math.PI / 2 });
-  assert.ok(close(aimed.x, quarter.x) && close(aimed.y, quarter.y));
-  // Wind's storm state has an off-axis emitter, so rotation truly moves
+  const tiltedFlip = layeredMuzzle(t, layer, tilt, true);
+  assert.ok(
+    close(tiltedFlip.x, pivot.x - ox * cos - oy * sin) &&
+      close(tiltedFlip.y, pivot.y - ox * sin + oy * cos),
+    "tilt rotates the mirrored offset",
+  );
+  // And through towerMuzzle's aim channel (angle + flip on the tower).
+  const aimed = towerMuzzle({ ...t, _aimAngle: tilt, _aimFlip: true });
+  assert.ok(close(aimed.x, tiltedFlip.x) && close(aimed.y, tiltedFlip.y));
+  // Turret aim sweep over the full compass: the tilt NEVER exceeds
+  // ±TURRET_MAX_TILT (the top can never tip sideways or upside down),
+  // the flip follows the target's half, and unsaturated bearings are
+  // tracked exactly.
+  for (let deg = 0; deg < 360; deg += 3) {
+    const bearing = (deg * Math.PI) / 180;
+    const aim = turretAim(bearing);
+    assert.equal(aim.flip, Math.cos(bearing) > 0, `flip at ${deg}°`);
+    assert.ok(
+      Math.abs(aim.tilt) <= TURRET_MAX_TILT + 1e-12,
+      `tilt clamp at ${deg}°`,
+    );
+    const deviation = wrap(bearing - (aim.flip ? 0 : Math.PI));
+    if (Math.abs(deviation) <= TURRET_MAX_TILT)
+      assert.ok(close(aim.tilt, deviation), `tilt tracks at ${deg}°`);
+    else
+      assert.ok(
+        close(Math.abs(aim.tilt), TURRET_MAX_TILT),
+        `tilt saturates at ${deg}°`,
+      );
+  }
+  // Elevation signs: above the facing axis pitches the barrel up,
+  // below pitches it down, on both facings.
+  assert.ok(turretAim(-Math.PI * 0.85).tilt > 0, "up-left pitches up");
+  assert.ok(turretAim(Math.PI * 0.85).tilt < 0, "down-left pitches down");
+  assert.ok(turretAim(-Math.PI * 0.15).tilt < 0, "up-right pitches up");
+  assert.ok(turretAim(Math.PI * 0.15).tilt > 0, "down-right pitches down");
+  // Lean sweep: the tip follows the bearing's horizontal side, peaks
+  // for side targets, vanishes straight above/below, and NEVER
+  // exceeds ±LEAN_MAX_TIP.
+  for (let deg = 0; deg < 360; deg += 3) {
+    const bearing = (deg * Math.PI) / 180;
+    const tip = leanAim(bearing);
+    assert.ok(
+      Math.abs(tip) <= LEAN_MAX_TIP + 1e-12,
+      `lean clamp at ${deg}°`,
+    );
+    assert.ok(
+      close(tip, LEAN_MAX_TIP * Math.cos(bearing)),
+      `lean follows the horizontal side at ${deg}°`,
+    );
+  }
+  assert.ok(close(leanAim(0), LEAN_MAX_TIP), "right target: max right tip");
+  assert.ok(close(leanAim(Math.PI), -LEAN_MAX_TIP), "left target: max left tip");
+  assert.ok(Math.abs(leanAim(Math.PI / 2)) < 1e-12, "straight below: no tip");
+  assert.ok(Math.abs(leanAim(-Math.PI / 2)) < 1e-12, "straight above: no tip");
+  // Lean-mode muzzle: the tip rotates the emitter offset as before.
+  // Wind's storm state has an off-axis emitter, so the tip truly moves
   // the muzzle in both axes.
   const w = { type: "wind", x: 100, y: 100, paths: [0, 0, 3] };
+  assert.equal(towerLayer(w).mode, "lean");
   const wRest = towerMuzzle(w),
-    wQuarter = towerMuzzle({ ...w, _aimAngle: Math.PI / 2 });
-  assert.ok(Math.abs(wQuarter.x - wRest.x) > 1);
-  assert.ok(Math.abs(wQuarter.y - wRest.y) > 1);
+    wTipped = towerMuzzle({ ...w, _aimAngle: LEAN_MAX_TIP });
+  assert.ok(Math.abs(wTipped.x - wRest.x) > 1);
+  assert.ok(Math.abs(wTipped.y - wRest.y) > 1);
 });
 test("upgrading never shrinks a tower's rendered size", () => {
   // Round 5 regression (owner playtest, 2026-10-19): per-state width

@@ -29,6 +29,8 @@ import {
   towerTexture,
   towerMuzzle,
   towerDisplaySize,
+  turretAim,
+  leanAim,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -755,7 +757,9 @@ export class GameScene extends Phaser.Scene {
           ) *
             (TOWERS[t.type].waterOnly ? 1.9 : 0.7);
       // Layered towers (turning proof): the top layer rides the base
-      // sprite and rotates toward the tower's current target. Selection,
+      // sprite and aims at the tower's current target — turret tops
+      // flip + tilt, crown tops lean (see turretAim/leanAim in
+      // towers.js); front-view art never spins in-plane. Selection,
       // hitboxes and the aura wash keep following the base sprite alone.
       {
         const layer = artworkTexture(t) !== null ? towerLayer(t) : null;
@@ -771,6 +775,7 @@ export class GameScene extends Phaser.Scene {
             this.towerGlows.delete(t.id);
           }
           t._aimAngle = undefined;
+          t._aimFlip = undefined;
         } else if (this.textures.exists(towerTopTexture(t))) {
           const display = towerDisplaySize(t),
             topKey = towerTopTexture(t);
@@ -784,14 +789,27 @@ export class GameScene extends Phaser.Scene {
           const pivotX = sprite.x + (layer.pivot[0] - 0.5) * display,
             pivotY = sprite.y + (layer.pivot[1] - 0.96) * display;
           // The sim's own targeting (same stats, same ordering) names
-          // the current target; the top turns toward it at a capped
-          // rate along the shortest arc and eases home when idle.
+          // the current target; the top aims at it per its model —
+          // turret tops flip to the target's side and pitch toward
+          // its height, crown tops lean toward its side — easing at a
+          // capped rate and settling home (tilt/tip -> 0, turrets keep
+          // their last flip) when idle.
           const stats = this.model.effectiveStats(t),
-            target = this.model.targets(t, stats)[0],
-            desired = target
-              ? Math.atan2(target.y - pivotY, target.x - pivotX) +
-                Math.PI / 2
-              : 0;
+            target = this.model.targets(t, stats)[0];
+          let desired = 0;
+          if (target) {
+            const bearing = Math.atan2(
+              target.y - pivotY,
+              target.x - pivotX,
+            );
+            if (layer.mode === "turret") {
+              const aim = turretAim(bearing);
+              t._aimFlip = aim.flip;
+              desired = aim.tilt;
+            } else {
+              desired = leanAim(bearing);
+            }
+          }
           if (t._aimAngle === undefined) t._aimAngle = 0;
           if (dt > 0) {
             let diff = desired - t._aimAngle;
@@ -801,12 +819,21 @@ export class GameScene extends Phaser.Scene {
             t._aimAngle += Math.max(-maxStep, Math.min(maxStep, diff));
           }
           top.rotation = t._aimAngle;
-          // Recoil: the shot kicks the top ~3px opposite its aim,
-          // settling over ~120ms (set by the attack event hook).
+          top.setFlipX(layer.mode === "turret" ? !!t._aimFlip : false);
+          // Recoil: the shot kicks the top ~3px back along its muzzle
+          // direction, settling over ~120ms (set by the attack event
+          // hook).
           t._recoil = Math.max(0, (t._recoil || 0) - dt * 25);
+          let dirX = (layer.emitter[0] - layer.pivot[0]) * (t._aimFlip ? -1 : 1),
+            dirY = layer.emitter[1] - layer.pivot[1];
+          const dirCos = Math.cos(t._aimAngle),
+            dirSin = Math.sin(t._aimAngle),
+            rotX = dirX * dirCos - dirY * dirSin,
+            rotY = dirX * dirSin + dirY * dirCos,
+            dirLen = Math.hypot(rotX, rotY) || 1;
           top.setPosition(
-            pivotX - Math.sin(t._aimAngle) * t._recoil,
-            pivotY + Math.cos(t._aimAngle) * t._recoil,
+            pivotX - (rotX / dirLen) * t._recoil,
+            pivotY - (rotY / dirLen) * t._recoil,
           );
           top.setDepth(sprite.depth + 2);
           // Emitter glow at the rotated muzzle point: the model's
