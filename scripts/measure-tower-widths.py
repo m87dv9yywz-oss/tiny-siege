@@ -24,10 +24,28 @@ ART = ROOT / "public" / "assets" / "v5" / "towers"
 OUT = ROOT / "src" / "data" / "towerWidths.json"
 
 
+def state_image(png: Path) -> Image.Image:
+    """The full tower for a state: layered states (tower-turning proof)
+    ship as <state>_base.png + <state>_top.png splits, so composite the
+    pair; the layers themselves are not states and are skipped."""
+    stem = png.stem
+    if stem.endswith("_base") or stem.endswith("_top"):
+        return None
+    base = png.with_name(f"{stem}_base.png")
+    if base.exists():
+        merged = Image.open(base).convert("RGBA")
+        merged.alpha_composite(Image.open(png.with_name(f"{stem}_top.png")).convert("RGBA"))
+        return merged
+    return Image.open(png)
+
+
 def main() -> None:
     widths = {}
     for png in sorted(ART.glob("*/battlefield_256/*.png")):
-        with Image.open(png) as im:
+        im = state_image(png)
+        if im is None:
+            continue
+        with im:
             alpha = im.convert("RGBA").getchannel("A")
             bbox = alpha.getbbox()
             if bbox is None:

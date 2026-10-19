@@ -5,11 +5,13 @@ import {
   TOWERS,
   towerStats,
   towerMuzzle,
+  layeredMuzzle,
   towerDisplaySize,
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
-import { TOWER_STATES } from "../src/towerArtwork.js";
+import { TOWER_STATES, towerLayer } from "../src/towerArtwork.js";
+import towerLayers from "../src/data/towerLayers.json" with { type: "json" };
 import { ENEMIES } from "../src/data/enemies.js";
 import { WAVES } from "../src/data/waves.js";
 import { PATH_LENGTH, onPath } from "../src/data/map.js";
@@ -514,7 +516,19 @@ test("shots leave from each tower's muzzle, not its base", () => {
   // above the ground anchor projectiles used to spawn from (y - 15).
   for (const [type, def] of Object.entries(TOWERS)) {
     assert.ok(Array.isArray(def.muzzle), `${type} declares a muzzle`);
-    const m = towerMuzzle({ type, x: 200, y: 300, paths: [0, 0, 0] });
+    const probe = { type, x: 200, y: 300, paths: [0, 0, 0] };
+    const m = towerMuzzle(probe);
+    const layer = towerLayer(probe);
+    if (layer) {
+      // Layered states (turning proof): the muzzle is the artwork's
+      // emitter point, rotated by the top layer's aim — at rest it is
+      // exactly the unrotated emitter position.
+      const rest = layeredMuzzle(probe, layer, 0);
+      assert.equal(m.x, rest.x, `${type} layered muzzle x`);
+      assert.equal(m.y, rest.y, `${type} layered muzzle y`);
+      assert.ok(m.y < 270, `${type} layered emitter sits high on the art`);
+      continue;
+    }
     // Declared offsets are measured at the 80px reference render and
     // scale with the tower state's actual (per-state normalized)
     // display size.
@@ -554,6 +568,67 @@ test("shots leave from each tower's muzzle, not its base", () => {
     TOWERS.frost.muzzle[1] *
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
+});
+test("layered towers: exactly five states, muzzle rotates with the aim", () => {
+  // The turning proof layers exactly these five states; every other
+  // state of every tower stays on the single-sprite path.
+  assert.deepEqual(Object.keys(towerLayers).sort(), [
+    "tower_cannon_0-0-0",
+    "tower_cannon_3-0-0",
+    "tower_wind_0-0-0",
+    "tower_wind_0-0-3",
+    "tower_wind_3-0-0",
+  ]);
+  for (const type of Object.keys(TOWERS))
+    for (const state of TOWER_STATES) {
+      const paths = state.split("-").map(Number);
+      const layered = towerLayer({ type, paths }) !== null;
+      assert.equal(
+        layered,
+        `tower_${type}_${state}` in towerLayers,
+        `${type} ${state} layer lookup`,
+      );
+    }
+  // Rotated-muzzle math on the cannon's base state, whose emitter sits
+  // almost directly above its pivot: at rest the muzzle is the
+  // unrotated emitter; a quarter turn clockwise (Phaser rotation, y
+  // down) swings it to the pivot's right at the same height; a half
+  // turn puts it the same distance below the pivot.
+  const t = { type: "cannon", x: 400, y: 300, paths: [0, 0, 0] };
+  const layer = towerLayer(t),
+    display = towerDisplaySize(t);
+  const pivot = {
+    x: t.x + (layer.pivot[0] - 0.5) * display,
+    y: t.y + (layer.pivot[1] - 0.96) * display,
+  };
+  const ox = (layer.emitter[0] - layer.pivot[0]) * display,
+    oy = (layer.emitter[1] - layer.pivot[1]) * display;
+  const close = (a, b) => Math.abs(a - b) < 1e-9;
+  const rest = layeredMuzzle(t, layer, 0);
+  assert.ok(close(rest.x, pivot.x + ox) && close(rest.y, pivot.y + oy));
+  // towerMuzzle with no aim recorded is the rest position.
+  const viaMuzzle = towerMuzzle(t);
+  assert.ok(close(viaMuzzle.x, rest.x) && close(viaMuzzle.y, rest.y));
+  const quarter = layeredMuzzle(t, layer, Math.PI / 2);
+  assert.ok(
+    close(quarter.x, pivot.x - oy) && close(quarter.y, pivot.y + ox),
+    "90° clockwise rotation",
+  );
+  const half = layeredMuzzle(t, layer, Math.PI);
+  assert.ok(
+    close(half.x, pivot.x - ox) && close(half.y, pivot.y - oy),
+    "180° rotation",
+  );
+  // And through towerMuzzle's aim channel.
+  const aimed = towerMuzzle({ ...t, _aimAngle: Math.PI / 2 });
+  assert.ok(close(aimed.x, quarter.x) && close(aimed.y, quarter.y));
+  // Wind's storm state has an off-axis emitter, so rotation truly moves
+  // the muzzle in both axes.
+  const w = { type: "wind", x: 100, y: 100, paths: [0, 0, 3] };
+  const wRest = towerMuzzle(w),
+    wQuarter = towerMuzzle({ ...w, _aimAngle: Math.PI / 2 });
+  assert.ok(Math.abs(wQuarter.x - wRest.x) > 1);
+  assert.ok(Math.abs(wQuarter.y - wRest.y) > 1);
 });
 test("upgrading never shrinks a tower's rendered size", () => {
   // Round 5 regression (owner playtest, 2026-10-19): per-state width

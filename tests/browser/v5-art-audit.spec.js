@@ -36,7 +36,11 @@ for(const type of TOWER_TYPES) test(`all 25 ${type} paid upgrade appearances, po
 
 test('cold start requests only base tower textures and menu thumbnails; scene input waits for real assets',async({page})=>{
  const requests=[];page.on('request',r=>requests.push(r.url()));await ready(page);
- expect(new Set(requests.filter(u=>u.includes('/battlefield_256/')&&u.includes('/towers/'))).size).toBe(9);
+ // 9 base states; wind + cannon base states are layered (tower-turning
+ // proof), so the scene also fetches their _base layer files while the
+ // menu thumbnails keep the composited files: 11 unique, still only
+ // base-state art — no other states, no top layers, no card art.
+ expect(new Set(requests.filter(u=>u.includes('/battlefield_256/')&&u.includes('/towers/'))).size).toBe(11);
  expect(requests.filter(u=>u.includes('/towers/')&&u.includes('/card_512/'))).toHaveLength(0);
  expect(requests.filter(u=>/\/maps\/map_.*\.png/.test(u))).toHaveLength(1);
  await page.locator('#new-profile').tap();await page.locator('#nickname').fill('Cold Knight');await page.locator('#profile-form button').tap();

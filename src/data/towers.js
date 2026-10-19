@@ -1,5 +1,9 @@
 import { EXPANSION_TOWERS } from "./expansionTowers.js";
-import { artworkState, artworkTexture } from "../towerArtwork.js";
+import {
+  artworkState,
+  artworkTexture,
+  towerLayer,
+} from "../towerArtwork.js";
 import towerWidths from "./towerWidths.json" with { type: "json" };
 // Each tier applies a data patch. Secondary Tier 1 bonuses are added after the
 // primary specialization, so cross-path purchases retain their value.
@@ -717,7 +721,31 @@ export function towerDisplaySize(t) {
     towerSizeFactor(t)
   );
 }
+// Layered states aim: the top layer rotates around its pivot, and the
+// emitter rides with it. `_aimAngle` is the top sprite's Phaser rotation
+// (0 = artwork pointing up, positive clockwise in y-down canvas space),
+// maintained by the scene; unset means "at rest". The offset is defined
+// in canvas space relative to the pivot and rotated by the same standard
+// 2D rotation Phaser applies to the sprite, so at rest the result is
+// exactly the unrotated emitter position.
+export function layeredMuzzle(t, layer, angle = t?._aimAngle ?? 0) {
+  const display = towerDisplaySize(t);
+  const pivot = {
+    x: t.x + (layer.pivot[0] - 0.5) * display,
+    y: t.y + (layer.pivot[1] - 0.96) * display,
+  };
+  const ox = (layer.emitter[0] - layer.pivot[0]) * display,
+    oy = (layer.emitter[1] - layer.pivot[1]) * display;
+  const cos = Math.cos(angle),
+    sin = Math.sin(angle);
+  return {
+    x: pivot.x + ox * cos - oy * sin,
+    y: pivot.y + ox * sin + oy * cos,
+  };
+}
 export function towerMuzzle(t) {
+  const layer = towerLayer(t);
+  if (layer) return layeredMuzzle(t, layer);
   const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
   const scale = towerDisplaySize(t) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };
