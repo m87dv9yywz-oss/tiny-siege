@@ -9,6 +9,7 @@ import {
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
+import { TOWER_STATES } from "../src/towerArtwork.js";
 import { ENEMIES } from "../src/data/enemies.js";
 import { WAVES } from "../src/data/waves.js";
 import { PATH_LENGTH, onPath } from "../src/data/map.js";
@@ -552,5 +553,43 @@ test("shots leave from each tower's muzzle, not its base", () => {
     big.y,
     TOWERS.frost.muzzle[1] *
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
+  );
+});
+test("upgrading never shrinks a tower's rendered size", () => {
+  // Round 5 regression (owner playtest, 2026-10-19): per-state width
+  // normalization scaled each state independently, so a tower SHRANK
+  // on upgrade when the higher-tier artwork was wider — the owner
+  // watched a Windcaller (120.5px at 0-0-0) drop to 96px as Tornado
+  // Master (3-0-0). Effective factors now floor at the largest raw
+  // factor among a state's componentwise ancestors, so display size
+  // is monotonic along every upgrade path.
+  const parse = (s) => s.split("-").map(Number);
+  const leq = (a, b) => a.every((v, i) => v <= b[i]);
+  for (const type of Object.keys(TOWERS)) {
+    const sizes = new Map(
+      TOWER_STATES.map((s) => [
+        s,
+        towerDisplaySize({ type, paths: parse(s) }),
+      ]),
+    );
+    for (const a of TOWER_STATES)
+      for (const b of TOWER_STATES)
+        if (leq(parse(a), parse(b)))
+          assert.ok(
+            sizes.get(b) >= sizes.get(a) - 1e-9,
+            `${type} ${a} -> ${b} must not shrink (${sizes.get(a)} -> ${sizes.get(b)})`,
+          );
+    const ascended = towerDisplaySize({ type, paths: [3, 3, 3] });
+    for (const s of TOWER_STATES)
+      assert.ok(
+        ascended >= sizes.get(s),
+        `${type} ascended must be at least ${s}`,
+      );
+  }
+  // The owner's exact case.
+  assert.ok(
+    towerDisplaySize({ type: "wind", paths: [3, 0, 0] }) >=
+      towerDisplaySize({ type: "wind", paths: [0, 0, 0] }),
+    "Tornado Master renders no smaller than the base Windcaller",
   );
 });

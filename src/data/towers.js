@@ -656,13 +656,60 @@ export const ASCENDED_DISPLAY_SIZE = 128;
 // state up toward the median-width body, never below its flat size and
 // never past +35%. Render-only: placement, ranges and projectile spawn
 // logic are untouched.
-export function towerSizeFactor(t) {
-  const key = isAscended(t)
-    ? `tower_${t.type}_ascended`
-    : `tower_${t.type}_${artworkState(t?.paths)}`;
-  const fraction = towerWidths[key];
+//
+// Round 5 (2026-10-19): the raw per-state factor made towers SHRINK on
+// upgrade whenever the higher-tier artwork was wider (the owner watched
+// a Windcaller render at 120px, then drop to 96px as Tornado Master —
+// its 3-0-0 art is wider, so its raw factor fell to 1). A state's
+// effective factor is now floored at the largest raw factor among all
+// states of the same type that are componentwise <= it in path tiers
+// (its ancestors), so display size is monotonic along every upgrade
+// path; ascended towers floor at the max raw factor over all 25 states
+// of their type.
+function rawSizeFactor(fraction) {
   if (!fraction) return 1;
   return Math.min(1.35, Math.max(1, 0.75 / fraction));
+}
+const effectiveSizeFactors = (() => {
+  const byType = new Map();
+  for (const [key, fraction] of Object.entries(towerWidths)) {
+    const match = key.match(/^tower_(.+)_(ascended|\d-\d-\d)$/);
+    if (!match) continue;
+    const [, type, state] = match;
+    let entry = byType.get(type);
+    if (!entry) byType.set(type, (entry = { raw: new Map(), ascendedRaw: 1 }));
+    if (state === "ascended") entry.ascendedRaw = rawSizeFactor(fraction);
+    else entry.raw.set(state, rawSizeFactor(fraction));
+  }
+  for (const entry of byType.values()) {
+    const states = [...entry.raw.entries()].map(([state, factor]) => ({
+      state,
+      tiers: state.split("-").map(Number),
+      factor,
+    }));
+    entry.effective = new Map();
+    for (const s of states) {
+      let factor = s.factor;
+      for (const a of states)
+        if (
+          a.tiers.every((v, i) => v <= s.tiers[i]) &&
+          a.factor > factor
+        )
+          factor = a.factor;
+      entry.effective.set(s.state, factor);
+    }
+    entry.ascended = Math.max(
+      entry.ascendedRaw,
+      ...states.map((s) => s.factor),
+    );
+  }
+  return byType;
+})();
+export function towerSizeFactor(t) {
+  const entry = effectiveSizeFactors.get(t?.type);
+  if (!entry) return 1;
+  if (isAscended(t)) return entry.ascended;
+  return entry.effective.get(artworkState(t?.paths)) ?? 1;
 }
 export function towerDisplaySize(t) {
   return (

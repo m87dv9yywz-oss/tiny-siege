@@ -9,7 +9,10 @@ import { test, expect } from '@playwright/test';
 // computed-style assertion on the panel alone kept passing. Round 4:
 // 0.55/0.47 was "better but could be more transparent", so the panel
 // went to 0.32/0.26, path cards to 0.32, cancel button to 0.35, and
-// these bounds tightened to <= 0.40 accordingly. These tests assert BOTH
+// these bounds tightened to <= 0.40 accordingly. Round 5 (2026-10-19):
+// 0.32/0.26 still was not enough — "needs to be a lot more transparent"
+// — so the panel dropped to 0.18/0.13, path cards to 0.20, cancel to
+// 0.22, and these bounds tightened to <= 0.25. These tests assert BOTH
 // the computed alphas (panel, path cards, cancel button) AND the
 // rendered pixels: the terrain under the Cancel button must still
 // correlate with itself once the chip is dismissed.
@@ -106,7 +109,7 @@ test('selection panel and placing chip are genuinely translucent on a phone', as
   });
   const alphas = gradientAlphas(panel.bgImage);
   expect(alphas.length).toBeGreaterThan(0);
-  expect(Math.max(...alphas)).toBeLessThanOrEqual(0.4);
+  expect(Math.max(...alphas)).toBeLessThanOrEqual(0.25);
   expect(panel.backdrop).toContain('blur');
 
   // The path cards are children of the panel and cover most of it —
@@ -116,7 +119,7 @@ test('selection panel and placing chip are genuinely translucent on a phone', as
     .first()
     .evaluate((el) => getComputedStyle(el).backgroundColor);
   const cardAlpha = Number(cardBg.match(/rgba\([^)]*?,\s*([\d.]+)\)/)?.[1] ?? 1);
-  expect(cardAlpha).toBeLessThanOrEqual(0.4);
+  expect(cardAlpha).toBeLessThanOrEqual(0.25);
 
   // The placing chip is mostly its Cancel button; the button itself must
   // let the field show through too.
@@ -132,16 +135,17 @@ test('selection panel and placing chip are genuinely translucent on a phone', as
     const btn = getComputedStyle(el.querySelector('.cancel-button'));
     return { bgImage: s.backgroundImage, btnBg: btn.backgroundColor };
   });
-  expect(Math.max(...gradientAlphas(chip.bgImage))).toBeLessThanOrEqual(0.4);
+  expect(Math.max(...gradientAlphas(chip.bgImage))).toBeLessThanOrEqual(0.25);
   const btnAlpha = Number(chip.btnBg.match(/rgba\([^)]*?,\s*([\d.]+)\)/)?.[1] ?? 1);
-  expect(btnAlpha).toBeLessThanOrEqual(0.4);
+  expect(btnAlpha).toBeLessThanOrEqual(0.25);
 
   // Pixel truth: photograph the ground under the Cancel button with
   // the chip open, then dismissed — the terrain's brightness pattern
   // must survive through the button paint (see terrainCorrelation).
   // Measured with the fade settled: ~0.79 at round-4 alphas
-  // (cancel 0.35); the opaque negative control (opaque gradient image
-  // over a translucent background-color) collapses to ~0.037.
+  // (cancel 0.35), 0.847 at round-5 alphas (cancel 0.22); the opaque
+  // negative control (opaque gradient image over a translucent
+  // background-color) collapses to ~0.037.
   const btn = page.locator('#selection-panel .cancel-button');
   // The panel fades in from opacity .3 over 160ms (v5-panel-enter);
   // photographing mid-fade would measure the animation, not the paint.
@@ -163,5 +167,6 @@ test('selection panel and placing chip are genuinely translucent on a phone', as
   });
   const closedShot = await page.screenshot({ clip });
   const corr = await terrainCorrelation(page, closedShot, openShot);
+  console.log(`terrain correlation through Cancel button: ${corr.toFixed(3)}`);
   expect(corr).toBeGreaterThan(0.3);
 });
