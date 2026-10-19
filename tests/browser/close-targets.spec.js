@@ -60,8 +60,10 @@ test('popup X buttons are big enough and forgiving to tap on a phone', async ({ 
     ui.selectTower(g.place('archer', 145, 105));
   });
   const panel = await hitInfo(page, '#close-panel', 'top-inward');
-  expect(panel.w).toBeGreaterThanOrEqual(44);
-  expect(panel.h).toBeGreaterThanOrEqual(44);
+  // The button is 44px in CSS; getBoundingClientRect can report a hair
+  // under (43.999996) from sub-pixel layout rounding, so measure rounded.
+  expect(Math.round(panel.w)).toBeGreaterThanOrEqual(44);
+  expect(Math.round(panel.h)).toBeGreaterThanOrEqual(44);
   expect(panel.centerHit).toBe(true);
   expect(panel.haloHit).toBe(true);
   await page.locator('#close-panel').tap();

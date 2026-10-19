@@ -1,5 +1,6 @@
 import { EXPANSION_TOWERS } from "./expansionTowers.js";
-import { artworkTexture } from "../towerArtwork.js";
+import { artworkState, artworkTexture } from "../towerArtwork.js";
+import towerWidths from "./towerWidths.json" with { type: "json" };
 // Each tier applies a data patch. Secondary Tier 1 bonuses are added after the
 // primary specialization, so cross-path purchases retain their value.
 const tier = (name, description, stats) => ({ name, description, stats });
@@ -646,10 +647,32 @@ export function isAscended(t) {
 // the tower's actual display size.
 export const TOWER_DISPLAY_SIZE = 96;
 export const ASCENDED_DISPLAY_SIZE = 128;
+// Per-state size normalization (owner playtest round 4, 2026-10-18):
+// artwork reframing fits complete auras inside the square frame, so a
+// slim state's tower body renders far smaller than a squat state's at
+// the same display size (measured alpha-bbox width fractions span
+// 0.53-1.00 across the 234 states, median 0.75 — see
+// scripts/measure-tower-widths.py and towerWidths.json). Scale each
+// state up toward the median-width body, never below its flat size and
+// never past +35%. Render-only: placement, ranges and projectile spawn
+// logic are untouched.
+export function towerSizeFactor(t) {
+  const key = isAscended(t)
+    ? `tower_${t.type}_ascended`
+    : `tower_${t.type}_${artworkState(t?.paths)}`;
+  const fraction = towerWidths[key];
+  if (!fraction) return 1;
+  return Math.min(1.35, Math.max(1, 0.75 / fraction));
+}
+export function towerDisplaySize(t) {
+  return (
+    (isAscended(t) ? ASCENDED_DISPLAY_SIZE : TOWER_DISPLAY_SIZE) *
+    towerSizeFactor(t)
+  );
+}
 export function towerMuzzle(t) {
   const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
-  const scale =
-    (isAscended(t) ? ASCENDED_DISPLAY_SIZE : TOWER_DISPLAY_SIZE) / 80;
+  const scale = towerDisplaySize(t) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };
 }
 // The merged might of the three evolved forms: best value per stat,

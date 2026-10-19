@@ -5,8 +5,7 @@ import {
   TOWERS,
   towerStats,
   towerMuzzle,
-  TOWER_DISPLAY_SIZE,
-  ASCENDED_DISPLAY_SIZE,
+  towerDisplaySize,
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
@@ -516,8 +515,9 @@ test("shots leave from each tower's muzzle, not its base", () => {
     assert.ok(Array.isArray(def.muzzle), `${type} declares a muzzle`);
     const m = towerMuzzle({ type, x: 200, y: 300, paths: [0, 0, 0] });
     // Declared offsets are measured at the 80px reference render and
-    // scale with the tower's actual display size.
-    const k = TOWER_DISPLAY_SIZE / 80;
+    // scale with the tower state's actual (per-state normalized)
+    // display size.
+    const k = towerDisplaySize({ type, paths: [0, 0, 0] }) / 80;
     assert.equal(m.x, 200 + def.muzzle[0] * k);
     assert.equal(m.y, 300 + def.muzzle[1] * k);
     assert.ok(def.muzzle[1] <= -28, `${type} muzzle is up at the emitter`);
@@ -548,5 +548,9 @@ test("shots leave from each tower's muzzle, not its base", () => {
   }
   // Ascended towers render larger; the muzzle scales with the sprite.
   const big = towerMuzzle({ type: "frost", x: 0, y: 0, paths: [3, 3, 3] });
-  assert.equal(big.y, TOWERS.frost.muzzle[1] * (ASCENDED_DISPLAY_SIZE / 80));
+  assert.equal(
+    big.y,
+    TOWERS.frost.muzzle[1] *
+      (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
+  );
 });

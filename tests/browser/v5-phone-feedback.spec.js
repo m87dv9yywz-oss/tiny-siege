@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
 import {ENEMIES} from '../../src/data/enemies.js';
 import {enemyDisplaySize} from '../../src/enemyArtwork.js';
+import {towerDisplaySize} from '../../src/data/towers.js';
+import {TOWER_TYPES} from '../../src/towerArtwork.js';
 const ready=async page=>{await page.goto('./');await page.waitForFunction(()=>window.__tinySiege?.ui.scene?.dynamic);await page.evaluate(()=>document.fonts.ready);};
 const textFits=async(page,selector)=>{
  const failures=await page.locator(selector).evaluateAll(elements=>elements.flatMap(e=>{
@@ -51,5 +53,8 @@ test('death fades and tower attacks never enlarge illustrated PNGs to their sour
  },types);
  expect(result.towerCount).toBe(9);
  expect(result.frames.some(f=>f.death.length===19)).toBe(true);
- for(const frame of result.frames){for(const e of frame.death){expect(e.width).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);expect(e.height).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);}for(const w of frame.towers)expect(w).toBeLessThanOrEqual(107);}
+ // Towers sit at their per-state normalized display size; the attack
+ // recoil tween pulses scaleX by 1.1x on top of it.
+ const towerCap=Math.max(...TOWER_TYPES.map(type=>towerDisplaySize({type,paths:[0,0,0]})))*1.1+1;
+ for(const frame of result.frames){for(const e of frame.death){expect(e.width).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);expect(e.height).toBeLessThanOrEqual(enemyDisplaySize(ENEMIES[e.type].radius)+1);}for(const w of frame.towers)expect(w).toBeLessThanOrEqual(towerCap);}
 });

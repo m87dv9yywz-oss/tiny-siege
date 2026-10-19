@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ARCHER_STATES } from "../../src/towerArtwork.js";
+import { towerDisplaySize } from "../../src/data/towers.js";
 test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appearances and touch selection at iPhone landscape size", async ({
   page,
 }) => {
@@ -51,7 +52,13 @@ test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appe
         oy: s.originY,
       };
     });
-    expect(size).toEqual({ w: 96, h: 96, ox: 0.5, oy: 0.96 });
+    // Per-state normalized display size (slim states grow toward the
+    // median body width; wide states stay at the flat 96).
+    const expectedSize = towerDisplaySize({ type: "archer", paths });
+    expect(size.w).toBeCloseTo(expectedSize, 1);
+    expect(size.h).toBeCloseTo(expectedSize, 1);
+    expect(size.ox).toBe(0.5);
+    expect(size.oy).toBe(0.96);
     await page.locator("#close-panel").click();
     const r = await page.locator("canvas").boundingBox();
     await page.touchscreen.tap(
@@ -98,10 +105,18 @@ test("all 25 illustrated states, immediate paid upgrade changes, real Tier3 appe
       await new Promise(requestAnimationFrame);
       widths.push(sprite.displayWidth);
     }
-    return { maximum: Math.max(...widths), end: sprite.displayWidth };
+    return {
+      maximum: Math.max(...widths),
+      end: sprite.displayWidth,
+      type: tower.type,
+      paths: tower.paths,
+    };
   });
-  expect(recoil.maximum).toBeLessThanOrEqual(105.7);
-  expect(recoil.end).toBeCloseTo(96, 1);
+  // The recoil tween pulses scaleX by 1.1x over the state's own
+  // normalized display size, then settles back to it.
+  const recoilBase = towerDisplaySize({ type: recoil.type, paths: recoil.paths });
+  expect(recoil.maximum).toBeLessThanOrEqual(recoilBase * 1.1 + 0.2);
+  expect(recoil.end).toBeCloseTo(recoilBase, 1);
   expect(errors).toEqual([]);
   expect(failed).toEqual([]);
 });
