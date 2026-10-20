@@ -5,6 +5,8 @@ import {
   TOWERS,
   towerStats,
   towerMuzzle,
+  declaredMuzzle,
+  STATE_MUZZLES,
   layeredMuzzle,
   poseForBearing,
   POSE_BAND_DEG,
@@ -534,11 +536,44 @@ test("shots leave from each tower's muzzle, not its base", () => {
     }
     // Declared offsets are measured at the 80px reference render and
     // scale with the tower state's actual (per-state normalized)
-    // display size.
+    // display size. The effective declaration is the per-state
+    // override when the type declares one (STATE_MUZZLES), else the
+    // type muzzle.
+    const declared = declaredMuzzle(probe);
     const k = towerDisplaySize({ type, paths: [0, 0, 0] }) / 80;
-    assert.equal(m.x, 200 + def.muzzle[0] * k);
-    assert.equal(m.y, 300 + def.muzzle[1] * k);
-    assert.ok(def.muzzle[1] <= -28, `${type} muzzle is up at the emitter`);
+    assert.equal(m.x, 200 + declared[0] * k);
+    assert.equal(m.y, 300 + declared[1] * k);
+    assert.ok(declared[1] <= -28, `${type} muzzle is up at the emitter`);
+  }
+  // Archer per-state sweep (owner playtest, 2026-10-20: arrows left
+  // from the tower's lower body): EVERY legal archer state — and the
+  // ascended — declares an override measured on its own weapon, in
+  // the artwork's upper reaches (frame y <= 0.45 at the 80px
+  // reference, i.e. dy <= -44), never down at the old platform point.
+  assert.ok(STATE_MUZZLES.archer, "archer declares per-state muzzles");
+  for (const state of TOWER_STATES) {
+    assert.ok(
+      STATE_MUZZLES.archer[state],
+      `archer ${state} has a measured muzzle`,
+    );
+  }
+  assert.ok(STATE_MUZZLES.archer.ascended, "archer ascended muzzle");
+  for (const [state, [dx, dy]] of Object.entries(STATE_MUZZLES.archer)) {
+    assert.ok(dy <= -44, `archer ${state} muzzle sits up at the weapon`);
+    assert.ok(Math.abs(dx) <= 36, `archer ${state} muzzle stays on the art`);
+    const probe =
+      state === "ascended"
+        ? { type: "archer", x: 200, y: 300, paths: [3, 3, 3] }
+        : {
+            type: "archer",
+            x: 200,
+            y: 300,
+            paths: state.split("-").map(Number),
+          };
+    const m = towerMuzzle(probe);
+    const k = towerDisplaySize(probe) / 80;
+    assert.equal(m.x, 200 + dx * k, `archer ${state} muzzle x`);
+    assert.equal(m.y, 300 + dy * k, `archer ${state} muzzle y`);
   }
   // Integration: the rendered shot starts at the muzzle while the
   // logical flight keeps its classic start (the homing chase is
