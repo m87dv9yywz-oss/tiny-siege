@@ -505,11 +505,14 @@ main aside,
      Round 5 (2026-10-19): still not enough — "needs to be a lot more
      transparent" — so the gradient drops to 0.18/0.13 and the children
      follow (path cards 0.20, cancel button 0.22).
+     Round 6 (2026-10-20): closer — "maybe 5 more percent" — the
+     gradient drops to 0.13/0.08 and the children follow again
+     (path cards 0.15, sell 0.40, cancel button 0.17).
      NOTE: the late V5 theme rule for #selection-panel below overrides
      this background — keep the two in sync. */
   background: linear-gradient(
-    rgba(255, 248, 219, 0.18),
-    rgba(238, 243, 205, 0.13)
+    rgba(255, 248, 219, 0.13),
+    rgba(238, 243, 205, 0.08)
   );
   backdrop-filter: blur(12px) saturate(1.3);
   -webkit-backdrop-filter: blur(12px) saturate(1.3);
@@ -636,8 +639,8 @@ main:has(#selection-panel.open:not(.placing)) aside {
   /* Translucent (owner, 2026-10-18 round 3): these three cards cover
      most of the selection panel, so a solid card made the whole panel
      read as an opaque wall even when the panel itself was translucent.
-     Round 4: down to 0.32 with the panel. Round 5: 0.20. */
-  background: rgba(255, 248, 222, 0.2);
+     Round 4: down to 0.32 with the panel. Round 5: 0.20. Round 6: 0.15. */
+  background: rgba(255, 248, 222, 0.15);
   border: 2px solid #77a461;
   border-radius: 11px;
   padding: 6px;
@@ -712,7 +715,7 @@ main:has(#selection-panel.open:not(.placing)) aside {
 }
 .sell-button,
 .cancel-button {
-  background: rgba(255, 224, 156, 0.45);
+  background: rgba(255, 224, 156, 0.4);
   border: 2px solid #d8ad65;
   border-radius: 10px;
   min-height: 40px;
@@ -725,9 +728,9 @@ main:has(#selection-panel.open:not(.placing)) aside {
    Round 3: 0.8 over the panel's own translucency still stacked to ~96%
    opaque; 0.55 let the field show while placing. Round 4: 0.35 — over
    the 0.32/0.26 panel the stack now stays clearly glassy. Round 5: 0.22
-   over the 0.18/0.13 panel. */
+   over the 0.18/0.13 panel. Round 6: 0.17 over the 0.13/0.08 panel. */
 .cancel-button {
-  background: rgba(255, 224, 156, 0.22);
+  background: rgba(255, 224, 156, 0.17);
 }
 .ascend-button {
   background: linear-gradient(#ffe9a8, #f7c948);
@@ -4117,8 +4120,8 @@ h3,
    cascade, so the alpha must live here, not only in the base rule. */
 #selection-panel {
   background: linear-gradient(
-    rgba(255, 248, 219, 0.18),
-    rgba(238, 243, 205, 0.13)
+    rgba(255, 248, 219, 0.13),
+    rgba(238, 243, 205, 0.08)
   );
   border: 3px solid var(--v5-bronze);
   font-family: var(--v5-body);

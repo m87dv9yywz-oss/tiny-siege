@@ -644,6 +644,9 @@ export function isAscended(t) {
 // measured from its artwork — the Archer's bow, the Cannon's barrel, the
 // Frost crystal's tip, the Tidecaller's bow harpoon — so projectiles and
 // lightning bolts start at the emitter instead of the tower's base.
+// A type whose weapon sits in a different place on each state's artwork
+// declares per-state overrides in STATE_MUZZLES below; the type muzzle
+// is only the fallback for states without an override.
 // Battlefield render sizes. Raised 80 -> 96 (ascended 108 -> 128) on
 // 2026-10-18: reframing the tower art to fit complete auras inside the
 // frame had shrunk placed towers ~15-20% on screen. The muzzle offsets
@@ -788,10 +791,62 @@ export function layeredMuzzle(
   if (flip && layer.mode === "poses") ox = -ox;
   return { x: pivot.x + ox, y: pivot.y + oy };
 }
+// Per-state muzzle overrides, measured on each state's own artwork at
+// the same 80px reference render as the per-type muzzles ([dx, dy] from
+// the ground anchor). Archer (owner playtest, 2026-10-20): the single
+// type muzzle [16, -44] lands inside the tower's wooden platform —
+// frame (0.70, 0.45) — below EVERY state's actual weapon, so arrows
+// visibly left from the tower's lower body ("shoots out the bottom").
+// Each Archer state now points at its own bow / crossbow / ballista:
+// the base bow fixture measured at frame (0.848, 0.385), the slim
+// 0-0-3 tower's top bow at (0.665, 0.235), the ascended's glowing bow
+// at (0.195, 0.384); the rest sit on the platform weapon, frame
+// y 0.36–0.43. The structure-first redo extends this table per type.
+export const STATE_MUZZLES = {
+  archer: {
+    "0-0-0": [28, -49],
+    "0-0-1": [26, -54],
+    "0-0-2": [27, -54],
+    "0-0-3": [13, -61],
+    "0-1-0": [28, -49],
+    "0-1-1": [24, -48],
+    "0-1-2": [28, -50],
+    "0-1-3": [8, -64],
+    "0-2-0": [30, -50],
+    "0-2-1": [30, -50],
+    "0-3-0": [22, -48],
+    "0-3-1": [26, -48],
+    "1-0-0": [29, -48],
+    "1-0-1": [27, -48],
+    "1-0-2": [29, -51],
+    "1-0-3": [18, -58],
+    "1-1-0": [27, -48],
+    "1-2-0": [34, -46],
+    "1-3-0": [29, -48],
+    "2-0-0": [32, -48],
+    "2-0-1": [30, -48],
+    "2-1-0": [30, -48],
+    "3-0-0": [12, -46],
+    "3-0-1": [29, -46],
+    "3-1-0": [34, -46],
+    ascended: [-24, -49],
+  },
+};
+// The muzzle a tower actually declares: per-state override when one
+// exists, else the type's muzzle. Single source of truth for the sim,
+// the renderer and the tests.
+export function declaredMuzzle(t) {
+  const byState = STATE_MUZZLES[t?.type];
+  if (byState) {
+    const key = isAscended(t) ? "ascended" : artworkState(t?.paths);
+    if (byState[key]) return byState[key];
+  }
+  return TOWERS[t?.type]?.muzzle || [0, -40];
+}
 export function towerMuzzle(t) {
   const layer = towerLayer(t);
   if (layer) return layeredMuzzle(t, layer);
-  const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
+  const [dx, dy] = declaredMuzzle(t);
   const scale = towerDisplaySize(t) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };
 }
