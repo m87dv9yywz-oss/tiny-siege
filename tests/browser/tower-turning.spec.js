@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
-import { layeredMuzzle } from "../../src/data/towers.js";
+import { layeredMuzzle, towerDisplaySize } from "../../src/data/towers.js";
 import { towerLayer } from "../../src/towerArtwork.js";
 
 // Tower-turning proof, aim model v3 — HYBRID (2026-10-19): towers
@@ -288,5 +288,183 @@ test("cannon aims with drawn poses, wind stays static — nothing rotates", asyn
         "v5-wind-1-0-0"
     );
   });
+  expect(errors).toEqual([]);
+});
+
+test("cluster, mortar and worldhammer cannons aim with drawn poses too", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  await page.setViewportSize({ width: 844, height: 390 });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await ready(page);
+  await createProfile(page);
+  await enterFreePlay(page);
+
+  // Per-state geometry, from the same data the game ships.
+  const geo = {};
+  for (const [name, paths] of Object.entries({
+    cluster: [0, 3, 0],
+    mortar: [0, 0, 3],
+    anchor: [3, 0, 0],
+    ascended: [3, 3, 3],
+  })) {
+    const layer = towerLayer({ type: "cannon", paths });
+    geo[name] = {
+      pivot: layer.pivot,
+      display: towerDisplaySize({ type: "cannon", paths }),
+    };
+  }
+
+  await page.evaluate((geo) => {
+    const { model: g } = window.__tinySiege;
+    g.reset();
+    g.gold = 100000;
+    const cluster = g.place("cannon", 145, 105);
+    const mortar = g.place("cannon", 342, 263);
+    const anchor = g.place("cannon", 743, 396);
+    if (!cluster || !mortar || !anchor)
+      throw new Error("rollout placements were rejected");
+    for (let i = 0; i < 3; i++) g.upgrade(cluster.id, 1);
+    for (let i = 0; i < 3; i++) g.upgrade(mortar.id, 2);
+    for (let i = 0; i < 3; i++) g.upgrade(anchor.id, 0);
+    window.__proof = {
+      clusterId: cluster.id,
+      mortarId: mortar.id,
+      anchorId: anchor.id,
+      shots: [],
+    };
+    const orig = g.attack.bind(g);
+    g.attack = (t, targets, stats) => {
+      const before = g.projectiles.length;
+      orig(t, targets, stats);
+      for (const p of g.projectiles.slice(before))
+        window.__proof.shots.push({
+          towerId: t.id,
+          x: p.draw.x,
+          y: p.draw.y,
+          pose: t._aimPose,
+          flip: t._aimFlip,
+        });
+    };
+    // Find a trail progress whose position sits at the wanted
+    // elevation band from a tower's pivot (same φ convention as the
+    // proof test: φ = atan2(−dy, |dx|) from the pivot).
+    const findFor = (t, { pivot, display }, ok, rangeOverride) => {
+      const trail = g.trails[0];
+      const pv = {
+        x: t.x + (pivot[0] - 0.5) * display,
+        y: t.y + (pivot[1] - 0.96) * display,
+      };
+      const range = rangeOverride ?? g.effectiveStats(t).range;
+      for (let p = 40; p < 2400; p += 5) {
+        const pos = trail.onPath(p);
+        if (!pos || !Number.isFinite(pos.x)) continue;
+        const dx = pos.x - pv.x,
+          dy = pos.y - pv.y,
+          d = Math.hypot(pos.x - t.x, pos.y - t.y),
+          phi = (Math.atan2(-dy, Math.abs(dx)) * 180) / Math.PI;
+        if (d >= 85 && d <= Math.min(150, range - 15) && ok({ dx, dy, d, phi }))
+          return p;
+      }
+      return null;
+    };
+    const phases = {};
+    phases.mortarRaised = findFor(mortar, geo.mortar, (i) => i.dx < 0 && i.phi >= 18 && i.phi <= 50);
+    phases.clusterDown = findFor(cluster, geo.cluster, (i) => i.dx > 0 && i.phi <= -18 && i.phi >= -85);
+    phases.anchorLevel = findFor(anchor, geo.anchor, (i) => i.dx < 0 && Math.abs(i.phi) <= 6);
+    // The ascended Worldhammer keeps the anchor's spot but pivots
+    // from its own geometry; find its level bearing now (its range
+    // only grows, so the anchor's range window stays valid).
+    phases.ascendedLevel = findFor(
+      anchor,
+      geo.ascended,
+      (i) => i.dx < 0 && Math.abs(i.phi) <= 6,
+      g.effectiveStats(anchor).range,
+    );
+    // Park the enemy where NO tower can reach it.
+    let park = null;
+    for (let p = 40; p < 2400 && park === null; p += 5) {
+      const pos = g.trails[0].onPath(p);
+      if (!pos || !Number.isFinite(pos.x)) continue;
+      const clear = [cluster, mortar, anchor].every(
+        (t) => Math.hypot(pos.x - t.x, pos.y - t.y) > g.effectiveStats(t).range + 30,
+      );
+      if (clear) park = p;
+    }
+    if (
+      phases.mortarRaised === null ||
+      phases.clusterDown === null ||
+      phases.anchorLevel === null ||
+      phases.ascendedLevel === null ||
+      park === null
+    )
+      throw new Error(
+        `trail scan missed a phase: ${JSON.stringify({ ...phases, park })}`,
+      );
+    Object.assign(window.__proof, phases);
+    const e = g.spawn("basic");
+    e.progress = park;
+    e.speed = 0;
+    e.health = 1e12;
+    e.armor = 0;
+    Object.assign(e, g.trails[0].onPath(park));
+    window.__proof.enemyId = e.id;
+    g.startWave();
+    g.queue = [];
+  }, geo);
+  const proof = await page.evaluate(() => window.__proof);
+
+  // At rest all three Tier-3 cannons wear their level pose tops.
+  await expectPose(page, proof.clusterId, "v5-cannon-0-3-0-top", false);
+  await expectPose(page, proof.mortarId, "v5-cannon-0-0-3-top", false);
+  await expectPose(page, proof.anchorId, "v5-cannon-3-0-0-top", false);
+
+  // GRAND MORTAR, raised / left: drawn raised pose, shell from its
+  // raised emitter.
+  await moveEnemy(page, proof.mortarRaised);
+  await expectPose(page, proof.mortarId, "v5-cannon-0-0-3-top-raised", false);
+  await page.screenshot({ path: `${QA}/rollout-mortar-raised.png` });
+  await expectShot(page, proof.mortarId, "cannon", "raised", false);
+
+  // CLUSTER BOMBARD, down / right: drawn down pose, flipped, shell
+  // from the mirrored down emitter.
+  await moveEnemy(page, proof.clusterDown);
+  await expectPose(page, proof.clusterId, "v5-cannon-0-3-0-top-down", true);
+  await page.screenshot({ path: `${QA}/rollout-cluster-down.png` });
+  await expectShot(page, proof.clusterId, "cannon", "down", true);
+
+  // Fuse the three evolutions: the Worldhammer keeps the pose system
+  // (ascended layers resolve under tower_cannon_ascended). Settle the
+  // anchor's aim first (its upgrades reset _aimPose; a shot fired
+  // before the scene's next aim pass would record no pose).
+  await moveEnemy(page, proof.anchorLevel);
+  await expectPose(page, proof.anchorId, "v5-cannon-3-0-0-top", false);
+  await expectShot(page, proof.anchorId, "cannon", "level", false);
+  const ascended = await page.evaluate(() => {
+    const { model: g } = window.__tinySiege;
+    return g.ascend(window.__proof.anchorId);
+  });
+  expect(ascended).toBe(true);
+  await page.waitForFunction(() => {
+    const { ui } = window.__tinySiege;
+    return (
+      ui.scene.towerTops.get(window.__proof.anchorId)?.texture.key ===
+      "v5-cannon-ascended-top"
+    );
+  });
+  await page.screenshot({ path: `${QA}/rollout-worldhammer-level.png` });
+  // The fused tower fires from its own level emitter, still unrotated
+  // (ascension reset its aim too — settle the pose before the shot).
+  await moveEnemy(page, proof.ascendedLevel);
+  await expectPose(page, proof.anchorId, "v5-cannon-ascended-top", false);
+  await expectShot(page, proof.anchorId, "cannon", "level", false);
+  const topState = await page.evaluate((id) => {
+    const top = window.__tinySiege.ui.scene.towerTops.get(id);
+    return { key: top.texture.key, rotation: top.rotation };
+  }, proof.anchorId);
+  expect(topState.key).toBe("v5-cannon-ascended-top");
+  expect(topState.rotation).toBe(0);
   expect(errors).toEqual([]);
 });

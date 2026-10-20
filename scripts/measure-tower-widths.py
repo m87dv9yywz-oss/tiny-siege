@@ -29,7 +29,7 @@ def state_image(png: Path) -> Image.Image:
     ship as <state>_base.png + <state>_top.png splits, so composite the
     pair; the layers themselves are not states and are skipped."""
     stem = png.stem
-    if stem.endswith("_base") or stem.endswith("_top"):
+    if stem.endswith(("_base", "_top", "_top_raised", "_top_down")):
         return None
     base = png.with_name(f"{stem}_base.png")
     if base.exists():
