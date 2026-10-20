@@ -5,7 +5,10 @@ import {
   TOWER_STATES,
   TOWER_TYPES,
   artworkTexture,
-  towerArtwork,
+  towerBaseArtwork,
+  towerLayer,
+  towerTopArtwork,
+  towerTopTexture,
 } from "../towerArtwork.js";
 import {
   ENEMY_TYPES,
@@ -26,6 +29,7 @@ import {
   towerTexture,
   towerMuzzle,
   towerDisplaySize,
+  poseForBearing,
   attackVisual,
   upgradeState,
 } from "../data/towers.js";
@@ -35,6 +39,8 @@ export class GameScene extends Phaser.Scene {
     this.model = model;
     this.ui = ui;
     this.towerSprites = new Map();
+    this.towerTops = new Map();
+    this.towerGlows = new Map();
     this.slips = new Map();
     this.enemySprites = new Map();
     this.effects = [];
@@ -51,10 +57,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image(
           `v5-${type}-${state}`,
           base +
-            towerArtwork(
-              { type, paths: state.split("-").map(Number) },
-              "battlefield_256",
-            ),
+            towerBaseArtwork({ type, paths: state.split("-").map(Number) }),
         );
     for (const type of ENEMY_TYPES)
       this.load.image(enemyTexture(type), base + enemyArtwork(type));
@@ -69,6 +72,18 @@ export class GameScene extends Phaser.Scene {
   }
   create() {
     textures(this);
+    if (!this.textures.exists("emitter-glow")) {
+      const glowCanvas = document.createElement("canvas");
+      glowCanvas.width = glowCanvas.height = 64;
+      const gtx = glowCanvas.getContext("2d");
+      const grad = gtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, "rgba(255,255,255,0.9)");
+      grad.addColorStop(0.4, "rgba(255,255,255,0.35)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      gtx.fillStyle = grad;
+      gtx.fillRect(0, 0, 64, 64);
+      this.textures.addCanvas("emitter-glow", glowCanvas);
+    }
     this.showBattlefield(this.model.campaign.id);
     this.dynamic = this.add.graphics().setDepth(900);
     this.preview = this.add.graphics().setDepth(1000);
@@ -224,7 +239,20 @@ export class GameScene extends Phaser.Scene {
   towerArt(t) {
     const key = towerTexture(t);
     if (!this.textures.exists(key))
-      requestTexture(this, key, import.meta.env.BASE_URL + towerArtwork(t, "battlefield_256"));
+      requestTexture(this, key, import.meta.env.BASE_URL + towerBaseArtwork(t));
+    // Poses-mode tops (cannon) need all three drawn poses warmed, so a
+    // pose swap mid-fight never waits on the network.
+    const poses =
+      towerLayer(t)?.mode === "poses" ? ["level", "raised", "down"] : ["level"];
+    for (const pose of poses) {
+      const topKey = towerTopTexture(t, pose);
+      if (topKey && !this.textures.exists(topKey))
+        requestTexture(
+          this,
+          topKey,
+          import.meta.env.BASE_URL + towerTopArtwork(t, pose),
+        );
+    }
     return this.textures.exists(key) ? key : `v5-${t.type}-0-0-0`;
   }
   towerAt(point) {
@@ -290,7 +318,11 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.resetFX();
       for (const sprite of this.towerSprites.values()) sprite.destroy();
       for (const sprite of this.enemySprites.values()) sprite.destroy();
+      for (const top of this.towerTops.values()) top.destroy();
+      for (const glow of this.towerGlows.values()) glow.destroy();
       this.towerSprites.clear();
+      this.towerTops.clear();
+      this.towerGlows.clear();
       this.enemySprites.clear();
       for (const key of this.textures.getTextureKeys())
         if (TOWER_TYPES.some(type => key.startsWith(`v5-${type}-`)) && !key.endsWith("0-0-0")) this.textures.remove(key);
@@ -470,6 +502,14 @@ export class GameScene extends Phaser.Scene {
         radius: 22,
       });
     if (type === "attack") {
+      // Layered towers flash the emitter glow on every shot; poses-mode
+      // tops (cannon) also kick back along the active pose's barrel
+      // (decayed in the per-frame pass). Static crowns do neither beyond
+      // the flash.
+      if (towerLayer(tower)) {
+        if (towerLayer(tower).mode === "poses") tower._recoil = 3;
+        tower._glowFlash = 1;
+      }
       const sprite = this.towerSprites.get(tower.id);
       if (sprite && !this.tweens.isTweening(sprite))
         this.tweens.add({
@@ -648,6 +688,10 @@ export class GameScene extends Phaser.Scene {
       if (!towerIds.has(id)) {
         sprite.destroy();
         this.towerSprites.delete(id);
+        this.towerTops.get(id)?.destroy();
+        this.towerTops.delete(id);
+        this.towerGlows.get(id)?.destroy();
+        this.towerGlows.delete(id);
       }
     const hero = this.model.hero;
     if (hero) {
@@ -711,8 +755,7 @@ export class GameScene extends Phaser.Scene {
           const state = upgradeState(t, p);
           if (!state.locked && t.paths[p] < 3) {
             const next = { ...t, paths: t.paths.map((n, i) => n + (i === p ? 1 : 0)) };
-            const key = towerTexture(next);
-            if (!this.textures.exists(key)) requestTexture(this, key, import.meta.env.BASE_URL + towerArtwork(next, "battlefield_256"));
+            this.towerArt(next);
           }
         }
       }
@@ -724,6 +767,131 @@ export class GameScene extends Phaser.Scene {
             time * (TOWERS[t.type].waterOnly ? 0.0011 : 0.002) + t.id,
           ) *
             (TOWERS[t.type].waterOnly ? 1.9 : 0.7);
+      // Layered towers (turning proof): the top layer rides the base
+      // sprite but NEVER rotates (hybrid aim, 2026-10-19 — Kingdom
+      // Rush style: planted static art, aim read from the muzzle).
+      // Poses-mode tops (cannon) show the drawn pose for the sim
+      // target's elevation band and flip to its side; static tops
+      // (wind crowns) just sit planted. Selection, hitboxes and the
+      // aura wash keep following the base sprite alone.
+      {
+        const layer = artworkTexture(t) !== null ? towerLayer(t) : null;
+        let top = this.towerTops.get(t.id),
+          glow = this.towerGlows.get(t.id);
+        if (!layer) {
+          if (top) {
+            top.destroy();
+            this.towerTops.delete(t.id);
+          }
+          if (glow) {
+            glow.destroy();
+            this.towerGlows.delete(t.id);
+          }
+          t._aimPose = undefined;
+          t._aimFlip = undefined;
+          t._poseDip = undefined;
+        } else if (this.textures.exists(towerTopTexture(t))) {
+          const display = towerDisplaySize(t);
+          const pivotX = sprite.x + (layer.pivot[0] - 0.5) * display,
+            pivotY = sprite.y + (layer.pivot[1] - 0.96) * display;
+          // The sim's own targeting (same stats, same ordering) names
+          // the current target. A poses-mode top tracks it by pose +
+          // flip (poseForBearing carries the band hysteresis); with
+          // no target it settles back to the level pose and keeps its
+          // last flip.
+          const stats = this.model.effectiveStats(t),
+            target = this.model.targets(t, stats)[0];
+          if (layer.mode === "poses") {
+            if (target) {
+              const aim = poseForBearing(
+                target.x - pivotX,
+                target.y - pivotY,
+                t._aimPose,
+              );
+              t._aimFlip = aim.flip;
+              if (aim.pose !== (t._aimPose ?? "level")) t._poseDip = 0.07;
+              t._aimPose = aim.pose;
+            } else if ((t._aimPose ?? "level") !== "level") {
+              t._aimPose = "level";
+              t._poseDip = 0.07;
+            }
+          }
+          const topKey = towerTopTexture(
+            t,
+            layer.mode === "poses" ? (t._aimPose ?? "level") : "level",
+          );
+          if (!top) {
+            top = this.add.image(0, 0, topKey);
+            this.towerTops.set(t.id, top);
+          }
+          // Swap only once the pose art has arrived; until then the
+          // current pose keeps showing (bases behave the same way).
+          if (top.texture.key !== topKey && this.textures.exists(topKey))
+            top.setTexture(topKey);
+          top.setOrigin(layer.pivot[0], layer.pivot[1]);
+          top.setDisplaySize(display, display);
+          top.rotation = 0;
+          top.setFlipX(layer.mode === "poses" ? !!t._aimFlip : false);
+          // Pose-swap softening: a ~70ms alpha dip to 0.6 and back
+          // hides the pop when the drawn pose changes.
+          if ((t._poseDip || 0) > 0 && dt > 0) {
+            t._poseDip = Math.max(0, t._poseDip - dt);
+            const p = 1 - t._poseDip / 0.07;
+            top.setAlpha(p < 0.5 ? 1 - 0.8 * p : 0.2 + 0.8 * p);
+          } else top.setAlpha(1);
+          // Recoil (poses only): the shot kicks the top ~3px against
+          // the active pose's barrel direction, settling over ~120ms
+          // (set by the attack event hook).
+          t._recoil = Math.max(0, (t._recoil || 0) - dt * 25);
+          let offX = 0,
+            offY = 0;
+          if (layer.mode === "poses" && t._recoil > 0) {
+            const emitter = layer.poses[t._aimPose ?? "level"];
+            let dirX = emitter[0] - layer.pivot[0],
+              dirY = emitter[1] - layer.pivot[1];
+            if (t._aimFlip) dirX = -dirX;
+            const dirLen = Math.hypot(dirX, dirY) || 1;
+            offX = -(dirX / dirLen) * t._recoil;
+            offY = -(dirY / dirLen) * t._recoil;
+          }
+          top.setPosition(pivotX + offX, pivotY + offY);
+          top.setDepth(sprite.depth + 2);
+          // Emitter glow at the active pose's muzzle point: the
+          // model's cooldown is the charge clock, so the glow brightens as the
+          // next shot charges, flashes on fire (attack event), and
+          // idles at a soft pulse while nothing is in range.
+          if (!glow) {
+            glow = this.add.image(0, 0, "emitter-glow");
+            this.towerGlows.set(t.id, glow);
+          }
+          const muzzle = towerMuzzle(t);
+          t._glowFlash = Math.max(0, (t._glowFlash || 0) - dt * 6);
+          const charge = target
+            ? 1 -
+              Math.max(
+                0,
+                Math.min(1, t.cooldown / Math.max(stats.cooldown, 0.01)),
+              )
+            : 0;
+          glow
+            .setPosition(muzzle.x, muzzle.y + (sprite.y - t.y))
+            .setDisplaySize(display * 0.42, display * 0.42)
+            .setTint(TOWERS[t.type].color)
+            .setAlpha(
+              Math.max(
+                charge * 0.5,
+                (t._glowFlash || 0) * 0.85,
+                target
+                  ? 0.12
+                  : 0.06 + Math.sin(time * 0.003 + t.id) * 0.03,
+              ),
+            )
+            .setDepth(sprite.depth + 3)
+            .setVisible(true);
+        }
+        // Layered but top art still downloading: leave any existing
+        // top/glow untouched, like the base keeps its old texture.
+      }
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)
         if (artworkTexture(t) === null && t.paths[path]) {

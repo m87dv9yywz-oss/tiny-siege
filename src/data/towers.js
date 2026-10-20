@@ -1,5 +1,9 @@
 import { EXPANSION_TOWERS } from "./expansionTowers.js";
-import { artworkState, artworkTexture } from "../towerArtwork.js";
+import {
+  artworkState,
+  artworkTexture,
+  towerLayer,
+} from "../towerArtwork.js";
 import towerWidths from "./towerWidths.json" with { type: "json" };
 // Each tier applies a data patch. Secondary Tier 1 bonuses are added after the
 // primary specialization, so cross-path purchases retain their value.
@@ -717,7 +721,76 @@ export function towerDisplaySize(t) {
     towerSizeFactor(t)
   );
 }
+// Layered states are STATIC artwork (Kingdom Rush style): the top
+// layer never rotates or leans (owner playtest rounds 6–7, 2026-10-19:
+// a full 360° in-plane spin read as the tower "just tipped sideways",
+// and a rigid flip + tilt still looked off). Aim instead reads from
+// the measured muzzle plus the charge glow. Two modes, per layer.mode:
+//  - "poses" (cannon): the top ships as three DRAWN poses of the same
+//    side-profile gun — barrel raised / level / down — each with its
+//    own measured emitter (layer.poses). The scene shows the pose
+//    matching the target's elevation band (see poseForBearing) and
+//    flips it to the target's side; every pose is drawn whole, so the
+//    carriage stays planted in all of them.
+//  - "static" (wind crowns): one fixed emitter; the crown never moves.
+// The scene maintains `_aimPose` ("level" | "raised" | "down") and
+// `_aimFlip` on poses-mode towers; unset means "level, facing left".
+// Emitters are fractions of the square canvas relative to the pivot;
+// in poses mode the flip mirrors the emitter offset across the pivot
+// (static tops never flip, so their muzzle ignores the channel).
+export const POSE_BAND_DEG = 9;
+export const POSE_HYSTERESIS_DEG = 2.5;
+// Pose + flip for a cannon top from the pivot->target offset (canvas
+// space, y down). Elevation φ = atan2(−dy, |dx|) in degrees, up
+// positive, measured relative to the FACING side: φ above the band →
+// "raised", φ below −band → "down", else "level". The band edges
+// carry POSE_HYSTERESIS_DEG of hysteresis against the CURRENT pose so
+// a target hovering at a boundary cannot flicker the swap: entering
+// a pose needs φ past band + hysteresis, leaving it needs φ back
+// under band − hysteresis.
+export function poseForBearing(dx, dy, current = "level") {
+  const flip = dx > 0;
+  const phi = (Math.atan2(-dy, Math.abs(dx)) * 180) / Math.PI;
+  const enter = POSE_BAND_DEG + POSE_HYSTERESIS_DEG,
+    leave = POSE_BAND_DEG - POSE_HYSTERESIS_DEG;
+  const cur =
+    current === "raised" || current === "down" ? current : "level";
+  let pose = cur;
+  if (cur === "raised") {
+    if (phi < -enter) pose = "down";
+    else if (phi < leave) pose = "level";
+  } else if (cur === "down") {
+    if (phi > enter) pose = "raised";
+    else if (phi > -leave) pose = "level";
+  } else {
+    if (phi > enter) pose = "raised";
+    else if (phi < -enter) pose = "down";
+  }
+  return { pose, flip };
+}
+export function layeredMuzzle(
+  t,
+  layer,
+  pose = t?._aimPose ?? "level",
+  flip = t?._aimFlip ?? false,
+) {
+  const display = towerDisplaySize(t);
+  const pivot = {
+    x: t.x + (layer.pivot[0] - 0.5) * display,
+    y: t.y + (layer.pivot[1] - 0.96) * display,
+  };
+  const emitter =
+    layer.mode === "poses"
+      ? (layer.poses?.[pose] ?? layer.poses?.level)
+      : layer.emitter;
+  let ox = (emitter[0] - layer.pivot[0]) * display;
+  const oy = (emitter[1] - layer.pivot[1]) * display;
+  if (flip && layer.mode === "poses") ox = -ox;
+  return { x: pivot.x + ox, y: pivot.y + oy };
+}
 export function towerMuzzle(t) {
+  const layer = towerLayer(t);
+  if (layer) return layeredMuzzle(t, layer);
   const [dx, dy] = TOWERS[t.type]?.muzzle || [0, -40];
   const scale = towerDisplaySize(t) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };

@@ -5,11 +5,16 @@ import {
   TOWERS,
   towerStats,
   towerMuzzle,
+  layeredMuzzle,
+  poseForBearing,
+  POSE_BAND_DEG,
+  POSE_HYSTERESIS_DEG,
   towerDisplaySize,
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
-import { TOWER_STATES } from "../src/towerArtwork.js";
+import { TOWER_STATES, towerLayer } from "../src/towerArtwork.js";
+import towerLayers from "../src/data/towerLayers.json" with { type: "json" };
 import { ENEMIES } from "../src/data/enemies.js";
 import { WAVES } from "../src/data/waves.js";
 import { PATH_LENGTH, onPath } from "../src/data/map.js";
@@ -514,7 +519,19 @@ test("shots leave from each tower's muzzle, not its base", () => {
   // above the ground anchor projectiles used to spawn from (y - 15).
   for (const [type, def] of Object.entries(TOWERS)) {
     assert.ok(Array.isArray(def.muzzle), `${type} declares a muzzle`);
-    const m = towerMuzzle({ type, x: 200, y: 300, paths: [0, 0, 0] });
+    const probe = { type, x: 200, y: 300, paths: [0, 0, 0] };
+    const m = towerMuzzle(probe);
+    const layer = towerLayer(probe);
+    if (layer) {
+      // Layered states (turning proof): the muzzle is the artwork's
+      // emitter point — for cannon the LEVEL pose's, at rest exactly
+      // the drawn emitter position.
+      const rest = layeredMuzzle(probe, layer);
+      assert.equal(m.x, rest.x, `${type} layered muzzle x`);
+      assert.equal(m.y, rest.y, `${type} layered muzzle y`);
+      assert.ok(m.y < 270, `${type} layered emitter sits high on the art`);
+      continue;
+    }
     // Declared offsets are measured at the 80px reference render and
     // scale with the tower state's actual (per-state normalized)
     // display size.
@@ -553,6 +570,141 @@ test("shots leave from each tower's muzzle, not its base", () => {
     big.y,
     TOWERS.frost.muzzle[1] *
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
+  );
+});
+test("layered towers: exactly five states, cannon poses aim, wind static", () => {
+  // The turning proof layers exactly these five states; every other
+  // state of every tower stays on the single-sprite path.
+  assert.deepEqual(Object.keys(towerLayers).sort(), [
+    "tower_cannon_0-0-0",
+    "tower_cannon_3-0-0",
+    "tower_wind_0-0-0",
+    "tower_wind_0-0-3",
+    "tower_wind_3-0-0",
+  ]);
+  for (const type of Object.keys(TOWERS))
+    for (const state of TOWER_STATES) {
+      const paths = state.split("-").map(Number);
+      const layered = towerLayer({ type, paths }) !== null;
+      assert.equal(
+        layered,
+        `tower_${type}_${state}` in towerLayers,
+        `${type} ${state} layer lookup`,
+      );
+    }
+  for (const key of Object.keys(towerLayers))
+    assert.equal(
+      towerLayers[key].mode,
+      key.startsWith("tower_cannon") ? "poses" : "static",
+      `${key} aim mode`,
+    );
+  const close = (a, b) => Math.abs(a - b) < 1e-9;
+  // Pose selection from the pivot->target offset (canvas space, y
+  // down): elevation φ = atan2(−dy, |dx|), up positive, measured
+  // against the FACING side. Bands: φ > +9° raised, φ < −9° down,
+  // else level — with ±2.5° of hysteresis against the current pose.
+  // at(φ°, side): an offset at elevation φ on the given facing side.
+  const at = (phiDeg, side = -1, dist = 100) => {
+    const r = (phiDeg * Math.PI) / 180;
+    return [side * Math.cos(r) * dist, -Math.sin(r) * dist];
+  };
+  const band = POSE_BAND_DEG,
+    hyst = POSE_HYSTERESIS_DEG;
+  // Facing: flip follows the target's side, dead ahead keeps left.
+  assert.equal(poseForBearing(-100, 0).flip, false);
+  assert.equal(poseForBearing(100, 0).flip, true);
+  assert.equal(poseForBearing(0, -100).flip, false);
+  // From level, a pose engages only past band + hysteresis.
+  assert.equal(poseForBearing(...at(band + hyst - 0.5)).pose, "level");
+  assert.equal(poseForBearing(...at(band + hyst + 0.5)).pose, "raised");
+  assert.equal(poseForBearing(...at(-band - hyst + 0.5)).pose, "level");
+  assert.equal(poseForBearing(...at(-band - hyst - 0.5)).pose, "down");
+  assert.equal(poseForBearing(...at(45)).pose, "raised");
+  assert.equal(poseForBearing(...at(-45)).pose, "down");
+  assert.equal(poseForBearing(...at(0)).pose, "level");
+  // The same elevations read identically on the flipped side.
+  assert.equal(poseForBearing(...at(30, 1)).pose, "raised");
+  assert.equal(poseForBearing(...at(-30, 1)).pose, "down");
+  // Hysteresis: once raised, the pose holds until φ falls back under
+  // band − hysteresis; hovering between the edges never flickers.
+  assert.equal(poseForBearing(...at(band), "raised").pose, "raised");
+  assert.equal(poseForBearing(...at(band - hyst + 0.5), "raised").pose, "raised");
+  assert.equal(poseForBearing(...at(band - hyst - 0.5), "raised").pose, "level");
+  assert.equal(poseForBearing(...at(-band), "down").pose, "down");
+  assert.equal(poseForBearing(...at(-band + hyst - 0.5), "down").pose, "down");
+  assert.equal(poseForBearing(...at(-band + hyst + 0.5), "down").pose, "level");
+  let pose = "level";
+  for (let i = 0; i < 20; i++)
+    pose = poseForBearing(...at(i % 2 ? band - 1 : band + 1), pose).pose;
+  assert.equal(pose, "level", "hovering at the band edge never engages");
+  pose = "raised";
+  for (let i = 0; i < 20; i++)
+    pose = poseForBearing(...at(i % 2 ? band - 1 : band + 1), pose).pose;
+  assert.equal(pose, "raised", "hovering at the band edge never releases");
+  // A swing straight across jumps pose to pose without a level stop.
+  assert.equal(poseForBearing(...at(-45), "raised").pose, "down");
+  assert.equal(poseForBearing(...at(45), "down").pose, "raised");
+  // Straight above/below are pure elevation on either side.
+  assert.equal(poseForBearing(0, -100).pose, "raised");
+  assert.equal(poseForBearing(0, 100).pose, "down");
+  // Muzzle = the ACTIVE pose's emitter, mirrored under flip. Cannon's
+  // side-profile emitters sit far LEFT of the trunnion pivot.
+  const t = { type: "cannon", x: 400, y: 300, paths: [0, 0, 0] };
+  const layer = towerLayer(t),
+    display = towerDisplaySize(t);
+  assert.equal(layer.mode, "poses");
+  const pivot = {
+    x: t.x + (layer.pivot[0] - 0.5) * display,
+    y: t.y + (layer.pivot[1] - 0.96) * display,
+  };
+  const expectMuzzle = (poseName, flip) => {
+    const e = layer.poses[poseName];
+    const ox = (e[0] - layer.pivot[0]) * display,
+      oy = (e[1] - layer.pivot[1]) * display;
+    return { x: pivot.x + (flip ? -ox : ox), y: pivot.y + oy };
+  };
+  for (const poseName of ["level", "raised", "down"])
+    for (const flip of [false, true]) {
+      const m = layeredMuzzle(t, layer, poseName, flip);
+      const want = expectMuzzle(poseName, flip);
+      assert.ok(
+        close(m.x, want.x) && close(m.y, want.y),
+        `${poseName} muzzle${flip ? " (flipped)" : ""}`,
+      );
+      assert.ok(
+        Math.abs(m.x - pivot.x) > display * 0.35,
+        `${poseName} emitter sits far from the pivot`,
+      );
+    }
+  // The three poses genuinely move the muzzle (raised highest, down
+  // lowest on the page), and towerMuzzle reads the scene's channels.
+  const yOf = (poseName) => layeredMuzzle(t, layer, poseName, false).y;
+  assert.ok(yOf("raised") < yOf("level") && yOf("level") < yOf("down"));
+  const viaMuzzle = towerMuzzle(t);
+  const levelRest = expectMuzzle("level", false);
+  assert.ok(close(viaMuzzle.x, levelRest.x) && close(viaMuzzle.y, levelRest.y));
+  const aimed = towerMuzzle({ ...t, _aimPose: "down", _aimFlip: true });
+  const wantAimed = expectMuzzle("down", true);
+  assert.ok(close(aimed.x, wantAimed.x) && close(aimed.y, wantAimed.y));
+  // Wind is fully static: one fixed emitter, and stray pose/flip
+  // channels can never move its muzzle.
+  const w = { type: "wind", x: 100, y: 100, paths: [0, 0, 3] };
+  const wLayer = towerLayer(w);
+  assert.equal(wLayer.mode, "static");
+  const wRest = towerMuzzle(w),
+    wStray = towerMuzzle({ ...w, _aimPose: "down", _aimFlip: true });
+  assert.ok(close(wStray.x, wRest.x) && close(wStray.y, wRest.y));
+  const wDisplay = towerDisplaySize(w);
+  assert.ok(
+    close(
+      wRest.x,
+      w.x + (wLayer.emitter[0] - 0.5) * wDisplay,
+    ) &&
+      close(
+        wRest.y,
+        w.y + (wLayer.emitter[1] - 0.96) * wDisplay,
+      ),
+    "wind muzzle is its fixed measured emitter",
   );
 });
 test("upgrading never shrinks a tower's rendered size", () => {
