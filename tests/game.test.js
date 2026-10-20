@@ -15,7 +15,12 @@ import {
   upgradeState,
   towerName,
 } from "../src/data/towers.js";
-import { TOWER_STATES, towerLayer } from "../src/towerArtwork.js";
+import {
+  TOWER_STATES,
+  towerLayer,
+  towerBaseArtwork,
+  towerTopArtwork,
+} from "../src/towerArtwork.js";
 import towerLayers from "../src/data/towerLayers.json" with { type: "json" };
 import { ENEMIES } from "../src/data/enemies.js";
 import { WAVES } from "../src/data/waves.js";
@@ -607,12 +612,17 @@ test("shots leave from each tower's muzzle, not its base", () => {
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
 });
-test("layered towers: exactly five states, cannon poses aim, wind static", () => {
-  // The turning proof layers exactly these five states; every other
-  // state of every tower stays on the single-sprite path.
+test("layered towers: exactly eight states, cannon poses aim, wind static", () => {
+  // The turning proof layered five states; the rollout (owner,
+  // 2026-10-20: "do it to the upgrades") added the cannon's other
+  // Tier-3 paths and its ascended. Every other state of every tower
+  // stays on the single-sprite path.
   assert.deepEqual(Object.keys(towerLayers).sort(), [
     "tower_cannon_0-0-0",
+    "tower_cannon_0-0-3",
+    "tower_cannon_0-3-0",
     "tower_cannon_3-0-0",
+    "tower_cannon_ascended",
     "tower_wind_0-0-0",
     "tower_wind_0-0-3",
     "tower_wind_3-0-0",
@@ -633,6 +643,37 @@ test("layered towers: exactly five states, cannon poses aim, wind static", () =>
       key.startsWith("tower_cannon") ? "poses" : "static",
       `${key} aim mode`,
     );
+  // The ascended layer resolves under its own key (artworkState has
+  // no ascended form), its files follow the <type>_ascended stem, and
+  // types without an ascended layer stay single-sprite.
+  const asc = { type: "cannon", x: 200, y: 300, paths: [3, 3, 3] };
+  assert.equal(towerLayer(asc), towerLayers.tower_cannon_ascended);
+  assert.ok(towerBaseArtwork(asc).endsWith("cannon_ascended_base.png"));
+  assert.ok(towerTopArtwork(asc).endsWith("cannon_ascended_top.png"));
+  assert.ok(
+    towerTopArtwork(asc, "raised").endsWith("cannon_ascended_top_raised.png"),
+  );
+  assert.ok(
+    towerTopArtwork(asc, "down").endsWith("cannon_ascended_top_down.png"),
+  );
+  assert.equal(towerLayer({ type: "frost", paths: [3, 3, 3] }), null);
+  // The three rollout states rest at their level-pose emitters,
+  // measured on the drawn guns (batch-2 art: cluster / mortar /
+  // worldhammer), exactly like the proof states.
+  for (const paths of [
+    [0, 3, 0],
+    [0, 0, 3],
+    [3, 3, 3],
+  ]) {
+    const probe = { type: "cannon", x: 200, y: 300, paths };
+    const layer = towerLayer(probe);
+    assert.ok(layer, `cannon ${paths} resolves a layer`);
+    const rest = layeredMuzzle(probe, layer);
+    const m = towerMuzzle(probe);
+    assert.equal(m.x, rest.x, `cannon ${paths} rest muzzle x`);
+    assert.equal(m.y, rest.y, `cannon ${paths} rest muzzle y`);
+    assert.ok(m.y < 270, `cannon ${paths} emitter sits up on the gun`);
+  }
   const close = (a, b) => Math.abs(a - b) < 1e-9;
   // Pose selection from the pivot->target offset (canvas space, y
   // down): elevation φ = atan2(−dy, |dx|), up positive, measured

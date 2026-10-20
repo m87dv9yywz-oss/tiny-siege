@@ -83,12 +83,22 @@ export function artworkTexture(t) {
 // "<state>_top_down.png"). pivot/emitter are fractions of the square
 // canvas (see src/data/towerLayers.json).
 export function towerLayer(t) {
-  if (!t || !TOWER_TYPES.includes(t.type) || isAscendedTower(t)) return null;
+  if (!t || !TOWER_TYPES.includes(t.type)) return null;
+  // Ascended towers layer under their own key (tower_<type>_ascended);
+  // artworkState() has no ascended form, so resolve them first.
+  if (isAscendedTower(t))
+    return towerLayers[`tower_${t.type}_ascended`] || null;
   return towerLayers[`tower_${t.type}_${artworkState(t.paths)}`] || null;
+}
+// The layer files' shared stem: <type>_<state>, or <type>_ascended.
+function layerStem(t) {
+  return isAscendedTower(t)
+    ? `${t.type}_ascended`
+    : `${t.type}_${artworkState(t.paths)}`;
 }
 export function towerBaseArtwork(t) {
   if (towerLayer(t))
-    return `assets/v5/towers/${t.type}/battlefield_256/${t.type}_${artworkState(t.paths)}_base.png`;
+    return `assets/v5/towers/${t.type}/battlefield_256/${layerStem(t)}_base.png`;
   return towerArtwork(t, "battlefield_256");
 }
 export function towerTopTexture(t, pose = "level") {
@@ -102,5 +112,5 @@ export function towerTopArtwork(t, pose = "level") {
   if (!layer) return null;
   const suffix =
     layer.mode === "poses" && pose !== "level" ? `_top_${pose}` : "_top";
-  return `assets/v5/towers/${t.type}/battlefield_256/${t.type}_${artworkState(t.paths)}${suffix}.png`;
+  return `assets/v5/towers/${t.type}/battlefield_256/${layerStem(t)}${suffix}.png`;
 }
