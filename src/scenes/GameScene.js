@@ -27,7 +27,9 @@ import {
   TOWERS,
   towerStats,
   towerTexture,
-  towerMuzzle,
+  towerVisualMuzzle,
+  mirrorDrawnSide,
+  mirrorFlipFor,
   towerDisplaySize,
   poseForBearing,
   attackVisual,
@@ -546,7 +548,7 @@ export class GameScene extends Phaser.Scene {
       this.effects.push({
         type: "jet",
         points: [
-          towerMuzzle(tower),
+          towerVisualMuzzle(tower),
           { x: event.target.x, y: event.target.y },
         ],
         heat: event.heat,
@@ -573,7 +575,7 @@ export class GameScene extends Phaser.Scene {
     if (type === "bolt")
       this.effects.push({
         type: "bolt",
-        points: [towerMuzzle(tower), ...event.points],
+        points: [towerVisualMuzzle(tower), ...event.points],
         age: 0,
         life: 0.18,
         color: attackVisual(tower).color,
@@ -864,7 +866,7 @@ export class GameScene extends Phaser.Scene {
             glow = this.add.image(0, 0, "emitter-glow");
             this.towerGlows.set(t.id, glow);
           }
-          const muzzle = towerMuzzle(t);
+          const muzzle = towerVisualMuzzle(t);
           t._glowFlash = Math.max(0, (t._glowFlash || 0) - dt * 6);
           const charge = target
             ? 1 -
@@ -891,6 +893,31 @@ export class GameScene extends Phaser.Scene {
         }
         // Layered but top art still downloading: leave any existing
         // top/glow untouched, like the base keeps its old texture.
+      }
+      // Mirror-facing weapons (owner, 2026-10-20): flat-art towers
+      // whose drawn weapon points to one side flip horizontally so
+      // the weapon faces the sim's current target — the flat-art
+      // analog of the cannon tops' flip, driven by the same
+      // model.targets call. Inside the deadband (or with no
+      // target) the last facing holds. Layered towers never land
+      // here: mirrorDrawnSide refuses them, their tops aim by
+      // pose instead. flipX is separate from the sprite's scale,
+      // so the per-state display size and the attack kick tween
+      // compose untouched.
+      {
+        const drawn =
+          artworkTexture(t) !== null ? mirrorDrawnSide(t) : null;
+        if (drawn != null) {
+          const target = this.model.targets(
+            t,
+            this.model.effectiveStats(t),
+          )[0];
+          t._mirrorFlip = mirrorFlipFor(t, target ? target.x : null);
+          sprite.setFlipX(!!t._mirrorFlip);
+        } else if (t._mirrorFlip) {
+          t._mirrorFlip = undefined;
+          sprite.setFlipX(false);
+        }
       }
       // Individual path ornaments change on every purchase, including crosspaths.
       for (let path = 0; path < 3; path++)

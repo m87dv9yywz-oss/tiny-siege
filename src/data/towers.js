@@ -882,6 +882,107 @@ export function towerMuzzle(t) {
   const scale = towerDisplaySize(t) / 80;
   return { x: t.x + dx * scale, y: t.y + dy * scale };
 }
+// Mirror-facing weapons (owner request, 2026-10-20, on wind 0-2-1's
+// gust horn: "mirror it when shooting to the left — and if other
+// towers have similar pointing weapons, do the same"). A state is
+// listed when its battlefield art draws a clearly directional
+// weapon pointing to ONE side (a gust horn, a drawn bow, a
+// side-profile barrel, a prow harpoon); the value is the side the
+// weapon points AS DRAWN: +1 right, −1 left. Surveyed state by
+// state from the art (2026-10-20). Absent on purpose:
+//  - symmetric / radial art (rotors, fans, crystals, orbs,
+//    braziers, coils, spires) — flipping would change nothing;
+//  - dual-weapon states carrying the same weapon on BOTH sides
+//    (archer 0-2-0 / 0-3-0 / 1-2-0 / 0-2-1);
+//  - layered states — cannon tops aim with drawn poses and wind
+//    crowns are planted (mirrorDrawnSide refuses layered towers
+//    outright, so an entry here could never take effect anyway).
+// The scene maintains `t._mirrorFlip` on listed towers: true while
+// the sprite is shown mirrored so the weapon faces the target.
+export const MIRRORED_WEAPONS = {
+  // Archer: bows, crossbows and ballistae ride the platform's
+  // right side and point right — except the Siege Ballista
+  // (3-0-0), whose bolt head points left, and the ascended, whose
+  // glowing bow points left (its measured muzzle is [−24, −49]).
+  archer: {
+    "0-0-0": 1, "1-0-0": 1, "0-1-0": 1, "0-0-1": 1, "1-1-0": 1,
+    "1-0-1": 1, "0-1-1": 1, "2-0-0": 1, "0-0-2": 1, "2-1-0": 1,
+    "2-0-1": 1, "1-0-2": 1, "0-1-2": 1, "0-0-3": 1, "3-1-0": 1,
+    "3-0-1": 1, "1-3-0": 1, "0-3-1": 1, "1-0-3": 1, "0-1-3": 1,
+    "3-0-0": -1, ascended: -1,
+  },
+  // Cannon: every flat (non-layered) state's barrel is a side
+  // profile pointing right — except 3-1-0, whose spiked barrel
+  // faces left. The five layered states aim with drawn poses.
+  cannon: {
+    "1-0-0": 1, "0-1-0": 1, "0-0-1": 1, "1-1-0": 1, "1-0-1": 1,
+    "0-1-1": 1, "2-0-0": 1, "0-2-0": 1, "0-0-2": 1, "2-1-0": 1,
+    "2-0-1": 1, "1-2-0": 1, "0-2-1": 1, "1-0-2": 1, "0-1-2": 1,
+    "3-0-1": 1, "1-3-0": 1, "0-3-1": 1, "1-0-3": 1, "0-1-3": 1,
+    "3-1-0": -1,
+  },
+  // Wind: only the gust-horn states — rotors, fans and vents are
+  // radial or point up. Horns blow right on 0-0-1 / 0-1-1 /
+  // 0-2-1 / 2-0-1 and left on 1-0-1 / 0-3-1 / 3-0-1.
+  wind: {
+    "0-0-1": 1, "0-1-1": 1, "0-2-1": 1, "2-0-1": 1,
+    "1-0-1": -1, "0-3-1": -1, "3-0-1": -1,
+  },
+  // Tidecaller: every ship's prow harpoon — or, on the gun ships,
+  // its deck cannon — points left, off the bow (the type muzzle
+  // [−26, −30] sits there). The two maelstrom ships (0-0-3 /
+  // 0-1-3) carry no prow weapon — their portal is radial — and
+  // the ascended sovereign has none either.
+  tidecaller: {
+    "0-0-0": -1, "1-0-0": -1, "0-1-0": -1, "0-0-1": -1, "1-1-0": -1,
+    "1-0-1": -1, "0-1-1": -1, "2-0-0": -1, "0-2-0": -1, "0-0-2": -1,
+    "2-1-0": -1, "2-0-1": -1, "1-2-0": -1, "0-2-1": -1, "1-0-2": -1,
+    "0-1-2": -1, "3-0-0": -1, "0-3-0": -1, "3-1-0": -1, "3-0-1": -1,
+    "1-3-0": -1, "0-3-1": -1, "1-0-3": -1,
+  },
+};
+// Frost, fire, lightning, grove and rune draw no pointing weapon
+// in any state (crystals, braziers, coils, vines, rings) — no
+// entries for them above.
+// The side a tower's pointing weapon faces as drawn (+1 right,
+// −1 left), or null when the state has none — or is layered.
+export function mirrorDrawnSide(t) {
+  if (!t || towerLayer(t)) return null;
+  const byState = MIRRORED_WEAPONS[t.type];
+  if (!byState) return null;
+  const key = isAscended(t) ? "ascended" : artworkState(t.paths);
+  return byState[key] ?? null;
+}
+// Horizontal deadband (world units) around the tower's axis: a
+// target inside it never changes the facing, so a tower engaging
+// enemies straddling its axis cannot flicker — the flat-art
+// analog of the cannon pose bands' hysteresis.
+export const MIRROR_DEADBAND = 16;
+// Should the sprite be mirrored right now? Follows the current
+// target's side so the weapon ends up facing the target. No
+// target (or a target inside the deadband) keeps the current
+// facing; placement and preview never call this, so a fresh
+// tower stands as-drawn until it first engages.
+export function mirrorFlipFor(t, targetX, current = t?._mirrorFlip ?? false) {
+  const drawn = mirrorDrawnSide(t);
+  if (drawn == null) return false;
+  if (targetX == null || !Number.isFinite(targetX)) return !!current;
+  const dx = targetX - t.x;
+  if (Math.abs(dx) <= MIRROR_DEADBAND) return !!current;
+  return (dx > 0 ? 1 : -1) !== drawn;
+}
+// The muzzle the RENDERER uses: towerMuzzle mirrored across the
+// tower's axis while the sprite is mirrored, so the shot leaves
+// the weapon that is actually pointing at the enemy. Purely
+// visual — Game.attack's logical spawn stays (t.x, t.y − 15)
+// whatever this returns, and the canonical towerMuzzle never
+// reads the flip flag.
+export function towerVisualMuzzle(t) {
+  const m = towerMuzzle(t);
+  if (t?._mirrorFlip && mirrorDrawnSide(t) != null)
+    return { x: t.x * 2 - m.x, y: m.y };
+  return m;
+}
 // The merged might of the three evolved forms: best value per stat,
 // fastest cooldown, every effect payload kept, then the ascension
 // damage blessing. Forms are the real sacrificed shapes ([3,1,0] and

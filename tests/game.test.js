@@ -5,8 +5,13 @@ import {
   TOWERS,
   towerStats,
   towerMuzzle,
+  towerVisualMuzzle,
   declaredMuzzle,
   STATE_MUZZLES,
+  MIRRORED_WEAPONS,
+  mirrorDrawnSide,
+  mirrorFlipFor,
+  MIRROR_DEADBAND,
   layeredMuzzle,
   poseForBearing,
   POSE_BAND_DEG,
@@ -681,6 +686,127 @@ test("shots leave from each tower's muzzle, not its base", () => {
     TOWERS.frost.muzzle[1] *
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
+});
+test("mirror-facing weapons flip to the target's side — visuals only", () => {
+  // Eligibility is pinned per type (surveyed state by state from
+  // the battlefield art — see MIRRORED_WEAPONS in towers.js).
+  const counts = Object.fromEntries(
+    Object.entries(MIRRORED_WEAPONS).map(([k, v]) => [
+      k,
+      Object.keys(v).length,
+    ]),
+  );
+  assert.deepEqual(counts, {
+    archer: 22,
+    cannon: 21,
+    wind: 7,
+    tidecaller: 23,
+  });
+  const side = (type, state) =>
+    mirrorDrawnSide(
+      state === "ascended"
+        ? { type, paths: [3, 3, 3] }
+        : { type, paths: state.split("-").map(Number) },
+    );
+  // Spot signs: the tower the owner named, plus the left-drawn art.
+  assert.equal(side("wind", "0-2-1"), 1); // the owner's horn tower
+  assert.equal(side("wind", "0-0-1"), 1);
+  assert.equal(side("wind", "3-0-1"), -1); // chimney keep, horn left
+  assert.equal(side("archer", "0-0-0"), 1);
+  assert.equal(side("archer", "3-0-0"), -1); // ballista bolt points left
+  assert.equal(side("archer", "ascended"), -1); // glowing bow points left
+  assert.equal(side("cannon", "1-0-0"), 1);
+  assert.equal(side("cannon", "3-1-0"), -1); // the one left-facing barrel
+  assert.equal(side("tidecaller", "0-0-0"), -1); // prow harpoon
+  assert.equal(side("tidecaller", "3-0-0"), -1); // deck cannon
+  // Layered states never mirror — cannon tops aim with drawn poses
+  // and wind crowns are planted; the layered ascended included.
+  for (const [type, state] of [
+    ["cannon", "0-0-0"],
+    ["cannon", "3-0-0"],
+    ["cannon", "0-3-0"],
+    ["cannon", "0-0-3"],
+    ["cannon", "ascended"],
+    ["wind", "0-0-0"],
+    ["wind", "0-0-3"],
+    ["wind", "3-0-0"],
+  ])
+    assert.equal(side(type, state), null, `${type} ${state} is layered`);
+  // Dual-weapon archers (same weapon both sides) and the radial
+  // maelstrom ships stay put, as does every state of the five
+  // types with no pointing weapon at all.
+  for (const s of ["0-2-0", "1-2-0", "0-2-1", "0-3-0"])
+    assert.equal(side("archer", s), null, `archer ${s} is dual-sided`);
+  for (const s of ["0-0-3", "0-1-3", "ascended"])
+    assert.equal(side("tidecaller", s), null, `tidecaller ${s} has no prow weapon`);
+  for (const type of ["frost", "fire", "lightning", "grove", "rune"])
+    assert.equal(side(type, "0-0-0"), null, `${type} has no pointing weapon`);
+
+  // Facing resolution: the deadband holds the facing, a clearly
+  // sided target flips (or un-flips), no target holds the last.
+  const horn = { type: "wind", x: 400, y: 300, paths: [0, 2, 1] }; // drawn +1
+  assert.equal(mirrorFlipFor(horn, 500, false), false); // right: as drawn
+  assert.equal(mirrorFlipFor(horn, 300, false), true); // left: mirror
+  assert.equal(mirrorFlipFor(horn, 300, true), true);
+  assert.equal(mirrorFlipFor(horn, 400 + MIRROR_DEADBAND, true), true); // in band: hold
+  assert.equal(mirrorFlipFor(horn, 400 - MIRROR_DEADBAND, false), false); // in band: hold
+  assert.equal(mirrorFlipFor(horn, 400 + MIRROR_DEADBAND + 1, true), false); // past band: settle
+  assert.equal(mirrorFlipFor(horn, null, true), true); // no target: hold
+  assert.equal(mirrorFlipFor(horn, undefined, false), false);
+  const keep = { type: "wind", x: 400, y: 300, paths: [3, 0, 1] }; // drawn −1
+  assert.equal(mirrorFlipFor(keep, 300, false), false); // left: as drawn
+  assert.equal(mirrorFlipFor(keep, 500, false), true); // right: mirror
+  const frost = { type: "frost", x: 400, y: 300, paths: [0, 0, 0] };
+  assert.equal(mirrorFlipFor(frost, 100, true), false); // ineligible never flips
+
+  // The visual muzzle mirrors across the tower's axis while the
+  // sprite is flipped; the canonical muzzle never reads the flag.
+  const probe = { type: "wind", x: 400, y: 300, paths: [0, 2, 1] };
+  const m = towerMuzzle(probe);
+  assert.deepEqual(towerVisualMuzzle(probe), m);
+  probe._mirrorFlip = true;
+  const vm = towerVisualMuzzle(probe);
+  assert.equal(vm.x, 800 - m.x);
+  assert.equal(vm.y, m.y);
+  assert.deepEqual(towerMuzzle(probe), m);
+  // Sweep: every eligible state's visual muzzle mirrors exactly.
+  for (const [type, states] of Object.entries(MIRRORED_WEAPONS))
+    for (const state of Object.keys(states)) {
+      const p =
+        state === "ascended"
+          ? { type, x: 200, y: 300, paths: [3, 3, 3] }
+          : { type, x: 200, y: 300, paths: state.split("-").map(Number) };
+      const base = towerMuzzle(p);
+      p._mirrorFlip = true;
+      const flipped = towerVisualMuzzle(p);
+      assert.equal(flipped.x, 400 - base.x, `${type} ${state} visual muzzle x`);
+      assert.equal(flipped.y, base.y, `${type} ${state} visual muzzle y`);
+    }
+  // A stray flip flag on an ineligible or layered tower is inert.
+  const inert = [
+    { type: "frost", x: 400, y: 300, paths: [0, 0, 0], _mirrorFlip: true },
+    { type: "cannon", x: 400, y: 300, paths: [0, 0, 0], _mirrorFlip: true },
+    { type: "archer", x: 400, y: 300, paths: [0, 2, 0], _mirrorFlip: true },
+  ];
+  for (const p of inert)
+    assert.deepEqual(towerVisualMuzzle(p), towerMuzzle(p));
+
+  // Integration: a shot fired while flipped draws from the
+  // mirrored muzzle; the logical spawn stays (t.x, t.y − 15).
+  const g = new Game();
+  g.gold = 10000;
+  const t = g.place("archer", 145, 105);
+  const e = g.spawn("basic");
+  e.x = t.x - 60;
+  e.y = t.y;
+  t._mirrorFlip = true; // the scene would set this from the target's side
+  g.attack(t, [e], towerStats(t));
+  const p = g.projectiles.at(-1);
+  const mm = towerMuzzle(t);
+  assert.equal(p.draw.x, t.x * 2 - mm.x);
+  assert.equal(p.draw.y, mm.y);
+  assert.equal(p.x, t.x);
+  assert.equal(p.y, t.y - 15);
 });
 test("layered towers: exactly eight states, cannon poses aim, wind static", () => {
   // The turning proof layered five states; the rollout (owner,
