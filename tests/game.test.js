@@ -680,10 +680,14 @@ test("shots leave from each tower's muzzle, not its base", () => {
     assert.equal(g.projectiles[0].draw.y, g.projectiles[0].y);
   }
   // Ascended towers render larger; the muzzle scales with the sprite.
+  // Frost was the table-less type this pinned to the type muzzle
+  // until its own per-state table landed (frost pass, 2026-10-21):
+  // the ascended now declares [0, -64], grounded on the current
+  // Eternal Winter art, so the expectation reads the declaration.
   const big = towerMuzzle({ type: "frost", x: 0, y: 0, paths: [3, 3, 3] });
   assert.equal(
     big.y,
-    TOWERS.frost.muzzle[1] *
+    declaredMuzzle({ type: "frost", paths: [3, 3, 3] })[1] *
       (towerDisplaySize({ type: "frost", paths: [3, 3, 3] }) / 80),
   );
 });
