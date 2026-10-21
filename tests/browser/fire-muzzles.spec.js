@@ -94,7 +94,7 @@ async function setup(page) {
     const { model: g } = window.__tinySiege;
     g.reset();
     g.gold = 1000000;
-    window.__proof = { shots: [], towerId: null };
+    window.__proof = { shots: [], jets: [], towerId: null };
     const orig = g.attack.bind(g);
     g.attack = (t, targets, stats) => {
       const before = g.projectiles.length;
@@ -105,6 +105,31 @@ async function setup(page) {
           x: p.draw.x,
           y: p.draw.y,
         });
+    };
+    // Beam origins, captured with exact provenance: the model's
+    // "jet" emit runs the scene handler synchronously (main.js
+    // wires onEvent -> ui.event), so the instant origEmit returns,
+    // the scene has already pushed this beam's effect — the newest
+    // jet in its list. Scanning scene.effects by type alone is NOT
+    // safe: the dragon hero's breath is also a "jet" effect (via
+    // "heroAttack" events) and in CI it fired first, 242px off.
+    // Hero breath never passes through this emit, so the tower id
+    // recorded here is unambiguous.
+    const origEmit = g.emit.bind(g);
+    g.emit = (type, payload = {}) => {
+      origEmit(type, payload);
+      if (type === "jet" && payload.tower) {
+        const fx = window.__tinySiege.ui.scene.effects;
+        for (let i = fx.length - 1; i >= 0; i--) {
+          if (fx[i].type !== "jet") continue;
+          window.__proof.jets.push({
+            towerId: payload.tower.id,
+            x: fx[i].points[0].x,
+            y: fx[i].points[0].y,
+          });
+          break;
+        }
+      }
     };
     const e = g.spawn("basic");
     e.speed = 0;
@@ -176,36 +201,31 @@ test("fire shots leave from each state's own muzzle", async ({ page }) => {
       { paths: state, upgrades },
     );
     const want = towerMuzzle({ type: "fire", x: built.x, y: built.y, paths });
+    let origin;
     if (BEAM.has(state)) {
-      // Beam tower: no projectile — the scene's jet effect starts
-      // at towerVisualMuzzle(tower). Catch one and compare origins.
-      // Only a jet effect created after this move counts: effects
-      // live 0.28s, and the previous beam state's dying jet sits at
-      // ITS muzzle (3-0-0's is exactly 4.86px above 3-0-1's at
-      // their shared 1.62 scale — close enough to fool a naive
-      // find). Snapshot the live ones by identity and ignore them.
-      await page.evaluate((p) => {
-        window.__proof.jet = null;
-        window.__proof.oldJets = new Set(
-          window.__tinySiege.ui.scene.effects.filter((e) => e.type === "jet"),
-        );
-        window.__proof.moveEnemy(p);
-      }, built.at);
-      await page.waitForFunction(
-        () => {
-          const jet = window.__tinySiege.ui.scene.effects.find(
-            (e) => e.type === "jet" && !window.__proof.oldJets.has(e),
+      // Beam tower: no projectile — its origin is the scene jet
+      // effect's start point, captured by tower id in setup's emit
+      // wrapper (hero breath and other towers cannot pollute it).
+      await page.evaluate(
+        ({ id, at }) => {
+          window.__proof.jets = window.__proof.jets.filter(
+            (j) => j.towerId !== id,
           );
-          if (!jet) return false;
-          window.__proof.jet = { x: jet.points[0].x, y: jet.points[0].y };
-          return true;
+          window.__proof.moveEnemy(at);
         },
-        null,
+        { id: built.id, at: built.at },
+      );
+      await page.waitForFunction(
+        (id) => window.__proof.jets.some((j) => j.towerId === id),
+        built.id,
         { timeout: 20000 },
       );
-      const jet = await page.evaluate(() => window.__proof.jet);
-      expect(Math.abs(jet.x - want.x), `${state} jet x`).toBeLessThan(1.5);
-      expect(Math.abs(jet.y - want.y), `${state} jet y`).toBeLessThan(1.5);
+      origin = await page.evaluate(
+        (id) => window.__proof.jets.find((j) => j.towerId === id),
+        built.id,
+      );
+      expect(Math.abs(origin.x - want.x), `${state} jet x`).toBeLessThan(1.5);
+      expect(Math.abs(origin.y - want.y), `${state} jet y`).toBeLessThan(1.5);
     } else {
       await page.evaluate(
         ({ id, at }) => {
@@ -221,24 +241,18 @@ test("fire shots leave from each state's own muzzle", async ({ page }) => {
         built.id,
         { timeout: 20000 },
       );
-      const shot = await page.evaluate(
+      origin = await page.evaluate(
         (id) => window.__proof.shots.find((s) => s.towerId === id),
         built.id,
       );
-      expect(Math.abs(shot.x - want.x), `${state} draw x`).toBeLessThan(1.5);
-      expect(Math.abs(shot.y - want.y), `${state} draw y`).toBeLessThan(1.5);
+      expect(Math.abs(origin.x - want.x), `${state} draw x`).toBeLessThan(1.5);
+      expect(Math.abs(origin.y - want.y), `${state} draw y`).toBeLessThan(1.5);
     }
     if (BIG.has(state)) {
       // The correction must be real: the origin sits measurably
       // off the old type muzzle [0, -56] at this state's scale.
       const scale = towerDisplaySize({ type: "fire", paths }) / 80;
       const old = { x: built.x, y: built.y - 56 * scale };
-      const origin = BEAM.has(state)
-        ? await page.evaluate(() => window.__proof.jet)
-        : await page.evaluate(
-            (id) => window.__proof.shots.find((s) => s.towerId === id),
-            built.id,
-          );
       expect(
         Math.hypot(origin.x - old.x, origin.y - old.y),
         `${state} off old muzzle`,
@@ -284,25 +298,26 @@ test("fire redo stills — spires, crown bowl and forge firing", async ({
     );
     await page.evaluate((p) => window.__proof.moveEnemy(p), built.at);
     // Screenshot on a frame where the tower is visibly firing.
-    // Beam: poll until a jet effect is on screen (it recurs every
-    // cooldown). Projectile towers: wait for the attack wrapper to
-    // record a FRESH shot, then shoot immediately — the projectile
-    // is within a frame or two of the muzzle it left from. (An
-    // earlier proximity poll — draw within 45px of the muzzle —
-    // raced the draw's convergence and missed whole volleys.)
+    // Beam: wait for the emit wrapper to record a jet FROM THIS
+    // TOWER (its effect was created that same tick and lives
+    // 0.28s), then shoot immediately. Projectile towers: wait for
+    // the attack wrapper to record a FRESH shot, then shoot
+    // immediately — the projectile is within a frame or two of
+    // the muzzle it left from. (An earlier proximity poll — draw
+    // within 45px of the muzzle — raced the draw's convergence
+    // and missed whole volleys.)
     if (scene.beam) {
-      let captured = false;
-      for (let i = 0; i < 40 && !captured; i++) {
-        captured = await page.evaluate(() =>
-          window.__tinySiege.ui.scene.effects.some((e) => e.type === "jet"),
+      await page.evaluate((id) => {
+        window.__proof.jets = window.__proof.jets.filter(
+          (j) => j.towerId !== id,
         );
-        if (captured) {
-          await page.screenshot({ path: `${QA}/fire-${scene.state}.png` });
-        } else {
-          await page.waitForTimeout(120);
-        }
-      }
-      expect(captured, `${scene.state} firing still`).toBe(true);
+      }, built.id);
+      await page.waitForFunction(
+        (id) => window.__proof.jets.some((j) => j.towerId === id),
+        built.id,
+        { timeout: 20000 },
+      );
+      await page.screenshot({ path: `${QA}/fire-${scene.state}.png` });
     } else {
       await page.evaluate((id) => {
         window.__proof.shots = window.__proof.shots.filter(
