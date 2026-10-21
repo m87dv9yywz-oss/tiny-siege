@@ -863,6 +863,48 @@ export const STATE_MUZZLES = {
     "3-1-0": [0, -72],
     ascended: [0, -45],
   },
+  // Fire (structure-first redo, 2026-10-21): every state measured on
+  // its own artwork. The old type muzzle [0, -56] sat inside the
+  // body for the Magma Forge line — the forge trio fires from its
+  // crucible bowl, NOT the chimney behind it (0-0-3 [0, -45],
+  // 0-1-3 [-1, -51], 1-0-3 [0, -47]) — and ~15px under the spire
+  // crowns (3-0-0 [0, -74]). Seven states also carry new
+  // structure-first art from this pass (3-0-0 / 3-0-1 / 3-1-0
+  // spires, 0-3-0 / 0-3-1 crown bowls, 1-3-0, 1-2-0) and their
+  // muzzles are grounded on that new art: spire crowns point at the
+  // flame-jet nozzle tip, crown-bowl states at the bowl's center.
+  // The ascended entry is grounded on the CURRENT ascended art —
+  // the glowing sun-heart in its arch, frame (0.502, 0.645) →
+  // [0, -28]. (A staged replacement ascended artwork exists but is
+  // held out pending the owner's call; its muzzle differs.)
+  fire: {
+    "0-0-0": [0, -59],
+    "0-0-1": [0, -55],
+    "0-0-2": [0, -62],
+    "0-0-3": [0, -45],
+    "0-1-0": [0, -58],
+    "0-1-1": [-1, -56],
+    "0-1-2": [0, -58],
+    "0-1-3": [-1, -51],
+    "0-2-0": [0, -59],
+    "0-2-1": [0, -56],
+    "0-3-0": [0, -67],
+    "0-3-1": [1, -68],
+    "1-0-0": [0, -54],
+    "1-0-1": [0, -58],
+    "1-0-2": [0, -57],
+    "1-0-3": [0, -47],
+    "1-1-0": [0, -63],
+    "1-2-0": [0, -70],
+    "1-3-0": [0, -73],
+    "2-0-0": [-1, -56],
+    "2-0-1": [0, -50],
+    "2-1-0": [0, -54],
+    "3-0-0": [0, -74],
+    "3-0-1": [0, -71],
+    "3-1-0": [0, -72],
+    ascended: [0, -28],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
