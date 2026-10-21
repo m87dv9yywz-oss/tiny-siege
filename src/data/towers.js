@@ -911,16 +911,12 @@ export const MIRRORED_WEAPONS = {
     "3-0-1": 1, "1-3-0": 1, "0-3-1": 1, "1-0-3": 1, "0-1-3": 1,
     "3-0-0": -1, ascended: -1,
   },
-  // Cannon: every flat (non-layered) state's barrel is a side
-  // profile pointing right — except 3-1-0, whose spiked barrel
-  // faces left. The five layered states aim with drawn poses.
-  cannon: {
-    "1-0-0": 1, "0-1-0": 1, "0-0-1": 1, "1-1-0": 1, "1-0-1": 1,
-    "0-1-1": 1, "2-0-0": 1, "0-2-0": 1, "0-0-2": 1, "2-1-0": 1,
-    "2-0-1": 1, "1-2-0": 1, "0-2-1": 1, "1-0-2": 1, "0-1-2": 1,
-    "3-0-1": 1, "1-3-0": 1, "0-3-1": 1, "1-0-3": 1, "0-1-3": 1,
-    "3-1-0": -1,
-  },
+  // Cannon: NO entries — every cannon state is layered now (the
+  // mid-tier pose rollout, 2026-10-21, layered the last 21 flat
+  // states), and its tops aim with drawn poses. While those states
+  // were still flat (PR #43) their side-profile barrels were listed
+  // here (right, except 3-1-0's left-facing spiked barrel); the
+  // entries could never take effect on a layered tower anyway.
   // Wind: only the gust-horn states — rotors, fans and vents are
   // radial or point up. Horns blow right on 0-0-1 / 0-1-1 /
   // 0-2-1 / 2-0-1 and left on 1-0-1 / 0-3-1 / 3-0-1.

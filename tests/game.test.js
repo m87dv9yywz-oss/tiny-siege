@@ -698,7 +698,6 @@ test("mirror-facing weapons flip to the target's side — visuals only", () => {
   );
   assert.deepEqual(counts, {
     archer: 22,
-    cannon: 21,
     wind: 7,
     tidecaller: 23,
   });
@@ -715,17 +714,38 @@ test("mirror-facing weapons flip to the target's side — visuals only", () => {
   assert.equal(side("archer", "0-0-0"), 1);
   assert.equal(side("archer", "3-0-0"), -1); // ballista bolt points left
   assert.equal(side("archer", "ascended"), -1); // glowing bow points left
-  assert.equal(side("cannon", "1-0-0"), 1);
-  assert.equal(side("cannon", "3-1-0"), -1); // the one left-facing barrel
   assert.equal(side("tidecaller", "0-0-0"), -1); // prow harpoon
   assert.equal(side("tidecaller", "3-0-0"), -1); // deck cannon
   // Layered states never mirror — cannon tops aim with drawn poses
   // and wind crowns are planted; the layered ascended included.
+  // Since the mid-tier pose rollout (2026-10-21) EVERY cannon state
+  // is layered, so the whole family reads null here.
   for (const [type, state] of [
     ["cannon", "0-0-0"],
-    ["cannon", "3-0-0"],
-    ["cannon", "0-3-0"],
+    ["cannon", "0-0-1"],
+    ["cannon", "0-0-2"],
     ["cannon", "0-0-3"],
+    ["cannon", "0-1-0"],
+    ["cannon", "0-1-1"],
+    ["cannon", "0-1-2"],
+    ["cannon", "0-1-3"],
+    ["cannon", "0-2-0"],
+    ["cannon", "0-2-1"],
+    ["cannon", "0-3-0"],
+    ["cannon", "0-3-1"],
+    ["cannon", "1-0-0"],
+    ["cannon", "1-0-1"],
+    ["cannon", "1-0-2"],
+    ["cannon", "1-0-3"],
+    ["cannon", "1-1-0"],
+    ["cannon", "1-2-0"],
+    ["cannon", "1-3-0"],
+    ["cannon", "2-0-0"],
+    ["cannon", "2-0-1"],
+    ["cannon", "2-1-0"],
+    ["cannon", "3-0-0"],
+    ["cannon", "3-0-1"],
+    ["cannon", "3-1-0"],
     ["cannon", "ascended"],
     ["wind", "0-0-0"],
     ["wind", "0-0-3"],
@@ -808,16 +828,40 @@ test("mirror-facing weapons flip to the target's side — visuals only", () => {
   assert.equal(p.x, t.x);
   assert.equal(p.y, t.y - 15);
 });
-test("layered towers: exactly eight states, cannon poses aim, wind static", () => {
+test("layered towers: twenty-nine states, cannon poses aim, wind static", () => {
   // The turning proof layered five states; the rollout (owner,
   // 2026-10-20: "do it to the upgrades") added the cannon's other
-  // Tier-3 paths and its ascended. Every other state of every tower
-  // stays on the single-sprite path.
+  // Tier-3 paths and its ascended, and the mid-tier rollout
+  // (2026-10-21: "do them all to the standard") layered the 21
+  // remaining cannon states — every cannon state now aims with
+  // drawn poses. Every state of every OTHER tower (besides the
+  // three static wind crowns) stays on the single-sprite path.
   assert.deepEqual(Object.keys(towerLayers).sort(), [
     "tower_cannon_0-0-0",
+    "tower_cannon_0-0-1",
+    "tower_cannon_0-0-2",
     "tower_cannon_0-0-3",
+    "tower_cannon_0-1-0",
+    "tower_cannon_0-1-1",
+    "tower_cannon_0-1-2",
+    "tower_cannon_0-1-3",
+    "tower_cannon_0-2-0",
+    "tower_cannon_0-2-1",
     "tower_cannon_0-3-0",
+    "tower_cannon_0-3-1",
+    "tower_cannon_1-0-0",
+    "tower_cannon_1-0-1",
+    "tower_cannon_1-0-2",
+    "tower_cannon_1-0-3",
+    "tower_cannon_1-1-0",
+    "tower_cannon_1-2-0",
+    "tower_cannon_1-3-0",
+    "tower_cannon_2-0-0",
+    "tower_cannon_2-0-1",
+    "tower_cannon_2-1-0",
     "tower_cannon_3-0-0",
+    "tower_cannon_3-0-1",
+    "tower_cannon_3-1-0",
     "tower_cannon_ascended",
     "tower_wind_0-0-0",
     "tower_wind_0-0-3",
@@ -853,22 +897,33 @@ test("layered towers: exactly eight states, cannon poses aim, wind static", () =
     towerTopArtwork(asc, "down").endsWith("cannon_ascended_top_down.png"),
   );
   assert.equal(towerLayer({ type: "frost", paths: [3, 3, 3] }), null);
-  // The three rollout states rest at their level-pose emitters,
-  // measured on the drawn guns (batch-2 art: cluster / mortar /
-  // worldhammer), exactly like the proof states.
-  for (const paths of [
-    [0, 3, 0],
-    [0, 0, 3],
-    [3, 3, 3],
-  ]) {
+  // Every layered cannon state rests at its level-pose emitter,
+  // measured on the drawn gun (batch-1/2 proof + rollout art and
+  // the batch-3 mid-tier art), never the old per-type muzzle. The
+  // height bound is 280 rather than the Tier-3 sweep's 270: the
+  // low-slung 1-0-2 twin rests at 270.2 — still ~30px up on the
+  // gun at display 96, far from the platform spawn (y − 15).
+  for (const key of Object.keys(towerLayers).filter((k) =>
+    k.startsWith("tower_cannon"),
+  )) {
+    const state = key.replace("tower_cannon_", "");
+    const paths =
+      state === "ascended" ? [3, 3, 3] : state.split("-").map(Number);
     const probe = { type: "cannon", x: 200, y: 300, paths };
     const layer = towerLayer(probe);
-    assert.ok(layer, `cannon ${paths} resolves a layer`);
+    assert.ok(layer, `cannon ${state} resolves a layer`);
     const rest = layeredMuzzle(probe, layer);
     const m = towerMuzzle(probe);
-    assert.equal(m.x, rest.x, `cannon ${paths} rest muzzle x`);
-    assert.equal(m.y, rest.y, `cannon ${paths} rest muzzle y`);
-    assert.ok(m.y < 270, `cannon ${paths} emitter sits up on the gun`);
+    assert.equal(m.x, rest.x, `cannon ${state} rest muzzle x`);
+    assert.equal(m.y, rest.y, `cannon ${state} rest muzzle y`);
+    assert.ok(m.y < 280, `cannon ${state} emitter sits up on the gun`);
+    // The three poses genuinely step the muzzle: raised highest,
+    // down lowest on the page, on every layered cannon state.
+    const yOf = (poseName) => layeredMuzzle(probe, layer, poseName, false).y;
+    assert.ok(
+      yOf("raised") < yOf("level") && yOf("level") < yOf("down"),
+      `cannon ${state} poses step the muzzle`,
+    );
   }
   const close = (a, b) => Math.abs(a - b) < 1e-9;
   // Pose selection from the pivot->target offset (canvas space, y

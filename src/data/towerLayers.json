@@ -1,1 +1,581 @@
-{"tower_cannon_0-0-0":{"mode":"poses","pivot":[0.499,0.57],"poses":{"down":[0.039,0.696],"level":[0.023,0.553],"raised":[0.09,0.453]}},"tower_cannon_3-0-0":{"mode":"poses","pivot":[0.518,0.51],"poses":{"down":[0.023,0.662],"level":[0.016,0.492],"raised":[0.012,0.433]}},"tower_wind_0-0-0":{"emitter":[0.496,0.039],"mode":"static","pivot":[0.493,0.532]},"tower_wind_0-0-3":{"emitter":[0.5,0.134],"mode":"static","pivot":[0.496,0.226]},"tower_wind_3-0-0":{"emitter":[0.52,0.05],"mode":"static","pivot":[0.501,0.509]},"tower_cannon_0-0-3":{"mode":"poses","pivot":[0.772,0.568],"poses":{"down":[0.128,0.826],"level":[0.112,0.584],"raised":[0.138,0.482]}},"tower_cannon_0-3-0":{"mode":"poses","pivot":[0.64,0.689],"poses":{"down":[0.108,0.675],"level":[0.107,0.517],"raised":[0.133,0.446]}},"tower_cannon_ascended":{"mode":"poses","pivot":[0.557,0.6],"poses":{"down":[0.131,0.784],"level":[0.088,0.56],"raised":[0.101,0.466]}}}
+{
+  "tower_cannon_0-0-0": {
+    "mode": "poses",
+    "pivot": [
+      0.499,
+      0.57
+    ],
+    "poses": {
+      "down": [
+        0.039,
+        0.696
+      ],
+      "level": [
+        0.023,
+        0.553
+      ],
+      "raised": [
+        0.09,
+        0.453
+      ]
+    }
+  },
+  "tower_cannon_3-0-0": {
+    "mode": "poses",
+    "pivot": [
+      0.518,
+      0.51
+    ],
+    "poses": {
+      "down": [
+        0.023,
+        0.662
+      ],
+      "level": [
+        0.016,
+        0.492
+      ],
+      "raised": [
+        0.012,
+        0.433
+      ]
+    }
+  },
+  "tower_wind_0-0-0": {
+    "emitter": [
+      0.496,
+      0.039
+    ],
+    "mode": "static",
+    "pivot": [
+      0.493,
+      0.532
+    ]
+  },
+  "tower_wind_0-0-3": {
+    "emitter": [
+      0.5,
+      0.134
+    ],
+    "mode": "static",
+    "pivot": [
+      0.496,
+      0.226
+    ]
+  },
+  "tower_wind_3-0-0": {
+    "emitter": [
+      0.52,
+      0.05
+    ],
+    "mode": "static",
+    "pivot": [
+      0.501,
+      0.509
+    ]
+  },
+  "tower_cannon_0-0-3": {
+    "mode": "poses",
+    "pivot": [
+      0.772,
+      0.568
+    ],
+    "poses": {
+      "down": [
+        0.128,
+        0.826
+      ],
+      "level": [
+        0.112,
+        0.584
+      ],
+      "raised": [
+        0.138,
+        0.482
+      ]
+    }
+  },
+  "tower_cannon_0-3-0": {
+    "mode": "poses",
+    "pivot": [
+      0.64,
+      0.689
+    ],
+    "poses": {
+      "down": [
+        0.108,
+        0.675
+      ],
+      "level": [
+        0.107,
+        0.517
+      ],
+      "raised": [
+        0.133,
+        0.446
+      ]
+    }
+  },
+  "tower_cannon_ascended": {
+    "mode": "poses",
+    "pivot": [
+      0.557,
+      0.6
+    ],
+    "poses": {
+      "down": [
+        0.131,
+        0.784
+      ],
+      "level": [
+        0.088,
+        0.56
+      ],
+      "raised": [
+        0.101,
+        0.466
+      ]
+    }
+  },
+  "tower_cannon_0-0-1": {
+    "mode": "poses",
+    "pivot": [
+      0.492,
+      0.622
+    ],
+    "poses": {
+      "down": [
+        0.155,
+        0.758
+      ],
+      "level": [
+        0.136,
+        0.608
+      ],
+      "raised": [
+        0.148,
+        0.504
+      ]
+    }
+  },
+  "tower_cannon_0-0-2": {
+    "mode": "poses",
+    "pivot": [
+      0.555,
+      0.639
+    ],
+    "poses": {
+      "down": [
+        0.185,
+        0.746
+      ],
+      "level": [
+        0.151,
+        0.601
+      ],
+      "raised": [
+        0.186,
+        0.523
+      ]
+    }
+  },
+  "tower_cannon_0-1-0": {
+    "mode": "poses",
+    "pivot": [
+      0.618,
+      0.608
+    ],
+    "poses": {
+      "down": [
+        0.192,
+        0.735
+      ],
+      "level": [
+        0.158,
+        0.59
+      ],
+      "raised": [
+        0.189,
+        0.507
+      ]
+    }
+  },
+  "tower_cannon_0-1-1": {
+    "mode": "poses",
+    "pivot": [
+      0.618,
+      0.628
+    ],
+    "poses": {
+      "down": [
+        0.18,
+        0.741
+      ],
+      "level": [
+        0.162,
+        0.613
+      ],
+      "raised": [
+        0.215,
+        0.481
+      ]
+    }
+  },
+  "tower_cannon_0-1-2": {
+    "mode": "poses",
+    "pivot": [
+      0.545,
+      0.666
+    ],
+    "poses": {
+      "down": [
+        0.175,
+        0.782
+      ],
+      "level": [
+        0.148,
+        0.623
+      ],
+      "raised": [
+        0.178,
+        0.522
+      ]
+    }
+  },
+  "tower_cannon_0-1-3": {
+    "mode": "poses",
+    "pivot": [
+      0.599,
+      0.692
+    ],
+    "poses": {
+      "down": [
+        0.127,
+        0.636
+      ],
+      "level": [
+        0.113,
+        0.472
+      ],
+      "raised": [
+        0.129,
+        0.423
+      ]
+    }
+  },
+  "tower_cannon_0-2-0": {
+    "mode": "poses",
+    "pivot": [
+      0.626,
+      0.547
+    ],
+    "poses": {
+      "down": [
+        0.168,
+        0.625
+      ],
+      "level": [
+        0.15,
+        0.481
+      ],
+      "raised": [
+        0.191,
+        0.396
+      ]
+    }
+  },
+  "tower_cannon_0-2-1": {
+    "mode": "poses",
+    "pivot": [
+      0.561,
+      0.585
+    ],
+    "poses": {
+      "down": [
+        0.159,
+        0.617
+      ],
+      "level": [
+        0.147,
+        0.526
+      ],
+      "raised": [
+        0.17,
+        0.45
+      ]
+    }
+  },
+  "tower_cannon_0-3-1": {
+    "mode": "poses",
+    "pivot": [
+      0.637,
+      0.578
+    ],
+    "poses": {
+      "down": [
+        0.182,
+        0.607
+      ],
+      "level": [
+        0.124,
+        0.413
+      ],
+      "raised": [
+        0.193,
+        0.3
+      ]
+    }
+  },
+  "tower_cannon_1-0-0": {
+    "mode": "poses",
+    "pivot": [
+      0.619,
+      0.639
+    ],
+    "poses": {
+      "down": [
+        0.192,
+        0.787
+      ],
+      "level": [
+        0.162,
+        0.623
+      ],
+      "raised": [
+        0.196,
+        0.505
+      ]
+    }
+  },
+  "tower_cannon_1-0-1": {
+    "mode": "poses",
+    "pivot": [
+      0.493,
+      0.566
+    ],
+    "poses": {
+      "down": [
+        0.145,
+        0.671
+      ],
+      "level": [
+        0.13,
+        0.549
+      ],
+      "raised": [
+        0.148,
+        0.469
+      ]
+    }
+  },
+  "tower_cannon_1-0-2": {
+    "mode": "poses",
+    "pivot": [
+      0.556,
+      0.685
+    ],
+    "poses": {
+      "down": [
+        0.171,
+        0.788
+      ],
+      "level": [
+        0.152,
+        0.65
+      ],
+      "raised": [
+        0.197,
+        0.555
+      ]
+    }
+  },
+  "tower_cannon_1-0-3": {
+    "mode": "poses",
+    "pivot": [
+      0.619,
+      0.662
+    ],
+    "poses": {
+      "down": [
+        0.143,
+        0.552
+      ],
+      "level": [
+        0.133,
+        0.446
+      ],
+      "raised": [
+        0.168,
+        0.32
+      ]
+    }
+  },
+  "tower_cannon_1-1-0": {
+    "mode": "poses",
+    "pivot": [
+      0.567,
+      0.637
+    ],
+    "poses": {
+      "down": [
+        0.164,
+        0.747
+      ],
+      "level": [
+        0.149,
+        0.618
+      ],
+      "raised": [
+        0.172,
+        0.549
+      ]
+    }
+  },
+  "tower_cannon_1-2-0": {
+    "mode": "poses",
+    "pivot": [
+      0.627,
+      0.503
+    ],
+    "poses": {
+      "down": [
+        0.168,
+        0.552
+      ],
+      "level": [
+        0.154,
+        0.433
+      ],
+      "raised": [
+        0.184,
+        0.369
+      ]
+    }
+  },
+  "tower_cannon_1-3-0": {
+    "mode": "poses",
+    "pivot": [
+      0.637,
+      0.543
+    ],
+    "poses": {
+      "down": [
+        0.148,
+        0.529
+      ],
+      "level": [
+        0.123,
+        0.38
+      ],
+      "raised": [
+        0.175,
+        0.288
+      ]
+    }
+  },
+  "tower_cannon_2-0-0": {
+    "mode": "poses",
+    "pivot": [
+      0.633,
+      0.579
+    ],
+    "poses": {
+      "down": [
+        0.18,
+        0.702
+      ],
+      "level": [
+        0.17,
+        0.56
+      ],
+      "raised": [
+        0.22,
+        0.465
+      ]
+    }
+  },
+  "tower_cannon_2-0-1": {
+    "mode": "poses",
+    "pivot": [
+      0.603,
+      0.611
+    ],
+    "poses": {
+      "down": [
+        0.196,
+        0.764
+      ],
+      "level": [
+        0.168,
+        0.592
+      ],
+      "raised": [
+        0.192,
+        0.525
+      ]
+    }
+  },
+  "tower_cannon_2-1-0": {
+    "mode": "poses",
+    "pivot": [
+      0.632,
+      0.575
+    ],
+    "poses": {
+      "down": [
+        0.201,
+        0.742
+      ],
+      "level": [
+        0.175,
+        0.559
+      ],
+      "raised": [
+        0.212,
+        0.474
+      ]
+    }
+  },
+  "tower_cannon_3-0-1": {
+    "mode": "poses",
+    "pivot": [
+      0.518,
+      0.591
+    ],
+    "poses": {
+      "down": [
+        0.169,
+        0.694
+      ],
+      "level": [
+        0.134,
+        0.574
+      ],
+      "raised": [
+        0.186,
+        0.459
+      ]
+    }
+  },
+  "tower_cannon_3-1-0": {
+    "mode": "poses",
+    "pivot": [
+      0.651,
+      0.513
+    ],
+    "poses": {
+      "down": [
+        0.161,
+        0.665
+      ],
+      "level": [
+        0.14,
+        0.476
+      ],
+      "raised": [
+        0.172,
+        0.395
+      ]
+    }
+  }
+}
