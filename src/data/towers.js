@@ -905,6 +905,57 @@ export const STATE_MUZZLES = {
     "3-1-0": [0, -72],
     ascended: [0, -28],
   },
+  // Lightning (structure-first redo, 2026-10-21): every state
+  // measured on its own artwork. The old type muzzle [0, -54] sat
+  // inside the tower body — worst on the effect-dominated states,
+  // whose bolts left from mid-cloud (1-3-0's old art grounded at
+  // [0, -44]). Sixteen states carry new structure-first art from
+  // this pass and their muzzles are grounded on it: the A-path
+  // arc fountains became conductor prongs / coil masts with the
+  // crystal at the crown (3-0-0 [0, -73], 2-1-0 [0, -73]), the
+  // Thunderlord cloud stacks became gold-banded masts (0-3-0
+  // [-1, -68]), the Stormcaller line fires from the crystal at
+  // the center of its conductor-rod ring (0-0-3 / 0-1-3 [0, -64]),
+  // and 1-3-0's orb sits between its conductor prongs ([0, -66]).
+  // Crystal-cluster dx was cross-checked against the violet-pixel
+  // centroid (the grounding point alone latched onto the
+  // brightest shard, up to +7 off). Eight redo states whose new
+  // art is wider/shorter (0-3-0, 1-3-0, 0-1-3, 2-0-1, 1-2-0,
+  // 1-0-1, 1-0-0, 0-0-3) carry compensated towerWidths entries —
+  // stepped down just enough that each state's drawn on-screen
+  // height stays >= its old art's (the towers-grow-never-shrink
+  // rule applied to drawn height, not just frame factor). The ascended entry is
+  // grounded on the CURRENT ascended art ([0, -65], crowned orb
+  // center) — a staged replacement artwork exists but is held
+  // out pending the owner's call; its muzzle differs ([0, -71]).
+  lightning: {
+    "0-0-0": [-1, -68],
+    "0-0-1": [-1, -69],
+    "0-0-2": [0, -67],
+    "0-0-3": [0, -64],
+    "0-1-0": [-1, -69],
+    "0-1-1": [-1, -70],
+    "0-1-2": [0, -68],
+    "0-1-3": [0, -64],
+    "0-2-0": [0, -68],
+    "0-2-1": [1, -69],
+    "0-3-0": [-1, -68],
+    "0-3-1": [0, -68],
+    "1-0-0": [0, -68],
+    "1-0-1": [0, -69],
+    "1-0-2": [0, -67],
+    "1-0-3": [0, -60],
+    "1-1-0": [0, -64],
+    "1-2-0": [0, -69],
+    "1-3-0": [0, -66],
+    "2-0-0": [0, -72],
+    "2-0-1": [0, -68],
+    "2-1-0": [0, -73],
+    "3-0-0": [0, -73],
+    "3-0-1": [0, -66],
+    "3-1-0": [0, -69],
+    ascended: [0, -65],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
