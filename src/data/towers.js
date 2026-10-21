@@ -956,6 +956,54 @@ export const STATE_MUZZLES = {
     "3-1-0": [0, -69],
     ascended: [0, -65],
   },
+  // Frost (structure-first redo, 2026-10-21): every state measured
+  // on its own artwork. Frost was the last type with NO per-state
+  // table at all — every state fired from the type fallback
+  // [0, -62], a few units off each state's own crystal. The
+  // measured values ground every state on its central crystal;
+  // the exceptions are the burst crowns sitting slightly lower
+  // (0-3-1 [2, -57], 2-1-0 [1, -57]) and the six states carrying
+  // new structure-first art from this pass, whose muzzles are
+  // grounded on the new art (dy -64...-71): 0-3-0 Shatterstorm's
+  // swirling vortex ring and floating shards became a crystal-
+  // burst crown with solid ice spikes at the base, the Chilling
+  // Aura line's glowing rune rings/discs (0-0-2, 0-1-2, 1-0-2)
+  // became carved stone guard-ring parapets, 0-1-3's floating
+  // halo disc became a solid stone ring platform on pillars, and
+  // 0-0-3 Winter Guardian's feather ice wings + aura ring became
+  // a round tower with shield battlements and crystal fins. The
+  // ascended entry is grounded on the CURRENT ascended art
+  // ([0, -64], the floating heart crystal) — a staged replacement
+  // artwork exists but is held out pending the owner's call; its
+  // muzzle differs ([-4, -26]).
+  frost: {
+    "0-0-0": [0, -61],
+    "0-0-1": [0, -61],
+    "0-0-2": [0, -69],
+    "0-0-3": [-1, -64],
+    "0-1-0": [2, -64],
+    "0-1-1": [0, -60],
+    "0-1-2": [0, -70],
+    "0-1-3": [1, -71],
+    "0-2-0": [3, -61],
+    "0-2-1": [1, -59],
+    "0-3-0": [1, -69],
+    "0-3-1": [2, -57],
+    "1-0-0": [1, -65],
+    "1-0-1": [1, -62],
+    "1-0-2": [0, -69],
+    "1-0-3": [0, -65],
+    "1-1-0": [2, -61],
+    "1-2-0": [1, -59],
+    "1-3-0": [0, -61],
+    "2-0-0": [0, -60],
+    "2-0-1": [1, -59],
+    "2-1-0": [1, -57],
+    "3-0-0": [2, -63],
+    "3-0-1": [1, -59],
+    "3-1-0": [0, -58],
+    ascended: [0, -64],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
