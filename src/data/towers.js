@@ -831,6 +831,38 @@ export const STATE_MUZZLES = {
     "3-1-0": [34, -46],
     ascended: [-24, -49],
   },
+  // Wind (structure-first redo, 2026-10-20): every state measured on
+  // its own artwork the same way. The horn is the emitter ONLY for
+  // 0-0-1 (the shallow [19, -37]); dual-weapon states point at their
+  // rotor/hub, the 3-0-1 / 3-1-0 pair at the hood vent. The three
+  // layered states (0-0-0, 0-0-3, 3-0-0) are absent on purpose —
+  // towerMuzzle resolves them through towerLayers.json first, so
+  // their emitters live there, not here.
+  wind: {
+    "0-0-1": [19, -37],
+    "0-0-2": [3, -57],
+    "0-1-0": [2, -64],
+    "0-1-1": [3, -65],
+    "0-1-2": [0, -65],
+    "0-1-3": [6, -43],
+    "0-2-0": [6, -66],
+    "0-2-1": [1, -61],
+    "0-3-0": [1, -60],
+    "0-3-1": [6, -63],
+    "1-0-0": [4, -68],
+    "1-0-1": [4, -65],
+    "1-0-2": [2, -63],
+    "1-0-3": [-6, -59],
+    "1-1-0": [4, -67],
+    "1-2-0": [2, -66],
+    "1-3-0": [4, -66],
+    "2-0-0": [2, -68],
+    "2-0-1": [3, -67],
+    "2-1-0": [0, -75],
+    "3-0-1": [1, -72],
+    "3-1-0": [0, -72],
+    ascended: [0, -45],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,

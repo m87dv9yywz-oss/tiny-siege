@@ -580,6 +580,76 @@ test("shots leave from each tower's muzzle, not its base", () => {
     assert.equal(m.x, 200 + dx * k, `archer ${state} muzzle x`);
     assert.equal(m.y, 300 + dy * k, `archer ${state} muzzle y`);
   }
+  // Wind per-state sweep (structure-first redo, 2026-10-20): every
+  // non-layered wind state — and the ascended — declares an override
+  // measured on its own artwork (the horn only on 0-0-1, rotor/hub on
+  // the dual-weapon states, the hood vent on 3-0-1 / 3-1-0). The
+  // three layered states stay out of the table on purpose:
+  // towerMuzzle resolves them through their layer emitter instead.
+  assert.ok(STATE_MUZZLES.wind, "wind declares per-state muzzles");
+  const WIND_LAYERED = ["0-0-0", "0-0-3", "3-0-0"];
+  for (const state of TOWER_STATES) {
+    if (WIND_LAYERED.includes(state)) {
+      assert.equal(
+        STATE_MUZZLES.wind[state],
+        undefined,
+        `wind ${state} is layered — no table entry`,
+      );
+      continue;
+    }
+    assert.ok(
+      STATE_MUZZLES.wind[state],
+      `wind ${state} has a measured muzzle`,
+    );
+  }
+  assert.ok(STATE_MUZZLES.wind.ascended, "wind ascended muzzle");
+  for (const [state, [dx, dy]] of Object.entries(STATE_MUZZLES.wind)) {
+    assert.ok(
+      dy <= -35 && dy >= -80,
+      `wind ${state} muzzle sits up at the emitter`,
+    );
+    assert.ok(Math.abs(dx) <= 36, `wind ${state} muzzle stays on the art`);
+    const probe =
+      state === "ascended"
+        ? { type: "wind", x: 200, y: 300, paths: [3, 3, 3] }
+        : {
+            type: "wind",
+            x: 200,
+            y: 300,
+            paths: state.split("-").map(Number),
+          };
+    assert.deepEqual(
+      declaredMuzzle(probe),
+      [dx, dy],
+      `wind ${state} declared muzzle`,
+    );
+    const m = towerMuzzle(probe);
+    const k = towerDisplaySize(probe) / 80;
+    assert.equal(m.x, 200 + dx * k, `wind ${state} muzzle x`);
+    assert.equal(m.y, 300 + dy * k, `wind ${state} muzzle y`);
+  }
+  // The layered wind states resolve through their (Phase-1 corrected)
+  // layer emitters, never the table or the type muzzle.
+  for (const state of WIND_LAYERED) {
+    const probe = {
+      type: "wind",
+      x: 200,
+      y: 300,
+      paths: state.split("-").map(Number),
+    };
+    const layer = towerLayer(probe);
+    assert.ok(layer, `wind ${state} has a layer`);
+    const rest = layeredMuzzle(probe, layer);
+    const m = towerMuzzle(probe);
+    assert.equal(m.x, rest.x, `wind ${state} layered muzzle x`);
+    assert.equal(m.y, rest.y, `wind ${state} layered muzzle y`);
+  }
+  assert.deepEqual(towerLayer({ type: "wind", paths: [0, 0, 3] }).emitter, [
+    0.5, 0.134,
+  ]);
+  assert.deepEqual(towerLayer({ type: "wind", paths: [3, 0, 0] }).emitter, [
+    0.52, 0.05,
+  ]);
   // Integration: the rendered shot starts at the muzzle while the
   // logical flight keeps its classic start (the homing chase is
   // balance-tuned around it — see the spawn comment in Game.js). The
