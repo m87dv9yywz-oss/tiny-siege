@@ -7,7 +7,7 @@ import {
   upgradeState,
   attackVisual,
   isAscended,
-  towerMuzzle,
+  towerVisualMuzzle,
   ASCENSIONS,
 } from "../data/towers.js";
 import { ENEMIES } from "../data/enemies.js";
@@ -902,7 +902,11 @@ export class Game {
   attack(t, targets, stats) {
     t.shots++;
     const hitStats = { ...stats, source: t.type };
-    const muzzle = towerMuzzle(t);
+    // The VISUAL muzzle (mirrored with the sprite while a
+    // mirror-facing tower's weapon points the other way). It only
+    // ever feeds projectile `draw` below — never the logical
+    // spawn, damage or targeting.
+    const muzzle = towerVisualMuzzle(t);
     if (stats.critical && t.shots % stats.critEvery === 0)
       hitStats.damage *= stats.critical;
     if (stats.beam) {
