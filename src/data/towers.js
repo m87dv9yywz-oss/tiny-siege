@@ -1004,6 +1004,58 @@ export const STATE_MUZZLES = {
     "3-1-0": [0, -58],
     ascended: [0, -64],
   },
+  // Tidecaller (per-state muzzles, 2026-10-21): every state
+  // measured on its own artwork. Tidecaller was the last type
+  // with NO per-state table at all — every state, ascended
+  // included, fired from the type fallback [-26, -30], a point
+  // measured on the BASE ship's prow harpoon. The ships' real
+  // emitters are their own prow harpoon / deck cannon tips
+  // (dx -14...-35, dy -26...-49 — the fallback sat up to ~19
+  // units low and up to ~9 units off the bow on several
+  // states); the two pure maelstrom ships fire from the center
+  // of the portal disc mounted in its spiked ring on the mast
+  // (0-0-3 [-7, -58], 0-1-3 [-7, -64] — the fallback was ~30
+  // units off their emitter). 1-0-3 carries BOTH a prow
+  // harpoon and the portal; it is grounded on the harpoon,
+  // matching its MIRRORED_WEAPONS listing, so its visual
+  // muzzle mirrors with the sprite. 0-1-1's [-30, -49] is the
+  // table's outlier — a raised bow post with an upward-angled
+  // harpoon, verified against the art. The entries are the
+  // drawn (left-facing) emitters; mirroring (PR #43) consumes
+  // the table through towerVisualMuzzle exactly as it does for
+  // archer/wind. No art changed this pass (25 KEEP / 0 REDO)
+  // and no display sizes moved. The ascended entry is grounded
+  // on the CURRENT ascended art ([0, -71], the crown burst
+  // center) — a staged replacement artwork exists but is held
+  // out pending the owner's call; its muzzle differs ([-3, -65]).
+  tidecaller: {
+    "0-0-0": [-24, -38],
+    "0-0-1": [-30, -39],
+    "0-0-2": [-29, -38],
+    "0-0-3": [-7, -58],
+    "0-1-0": [-31, -41],
+    "0-1-1": [-30, -49],
+    "0-1-2": [-29, -41],
+    "0-1-3": [-7, -64],
+    "0-2-0": [-21, -38],
+    "0-2-1": [-25, -41],
+    "0-3-0": [-30, -32],
+    "0-3-1": [-33, -37],
+    "1-0-0": [-32, -37],
+    "1-0-1": [-32, -34],
+    "1-0-2": [-32, -36],
+    "1-0-3": [-32, -34],
+    "1-1-0": [-30, -40],
+    "1-2-0": [-35, -46],
+    "1-3-0": [-30, -38],
+    "2-0-0": [-25, -39],
+    "2-0-1": [-27, -40],
+    "2-1-0": [-21, -36],
+    "3-0-0": [-14, -30],
+    "3-0-1": [-16, -26],
+    "3-1-0": [-18, -30],
+    ascended: [0, -71],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
