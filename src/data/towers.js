@@ -1133,11 +1133,13 @@ export const STATE_MUZZLES = {
   // energy rings became solid interlocking stone rings
   // ([0, -62]), and 3-1-0's glow sunburst corona became a
   // thick bracketed stone ring crown ([0, -68]). The ascended
-  // entry is grounded on the CURRENT ascended art ([0, -73],
-  // the temple core) — a staged replacement artwork (The
-  // Archrunesmith) exists but is held out pending the owner's
-  // call; its muzzle is the same value ([0, -73]), so a future
-  // swap changes art only.
+  // entry is grounded on the ascended art ([0, -73], the
+  // temple core of the original Archrunesmith).
+  // SWAPPED 2026-10-22: the owner approved the staged
+  // replacement (the ziggurat Archrunesmith with the old art's
+  // purple ground rune ring composited in); the ascended entry
+  // is unchanged ([0, -73]) — on the new art the same point is
+  // the crown core, so the swap changed art only.
   rune: {
     "0-0-0": [0, -67],
     "0-0-1": [0, -70],

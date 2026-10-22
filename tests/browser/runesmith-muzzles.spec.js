@@ -37,10 +37,11 @@ mkdirSync(QA, { recursive: true });
 
 // Phase 1 grounded values (measurements.json), [dx, dy] at the
 // 80px reference render. The ascended entry is grounded on the
-// CURRENT ascended art (the temple core, [0, -73]) — the staged
-// replacement art (The Archrunesmith) is held out pending the
-// owner's call; its muzzle is the same value ([0, -73]), so
-// nothing here would change if he approves the swap.
+// ascended art ([0, -73]) — originally the temple core of the
+// first Archrunesmith; the art was SWAPPED 2026-10-22 (owner
+// approved the ziggurat replacement with the old art's purple
+// ground rune ring) and the same value lands on the new art's
+// crown core, so the swap changed art only.
 const EXPECTED = {
   "0-0-0": [0, -67], "0-0-1": [0, -70], "0-0-2": [0, -68],
   "0-0-3": [0, -67], "0-1-0": [0, -66], "0-1-1": [0, -67],
@@ -324,7 +325,7 @@ test("rune shots leave from each state's own muzzle", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("ascended runesmith fires from the temple core of its current art", async ({
+test("ascended runesmith fires from the crown core of its swapped-in art", async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -338,10 +339,9 @@ test("ascended runesmith fires from the temple core of its current art", async (
 
   const built = await page.evaluate(() => window.__proof.buildAscended());
   const origin = await fireAndCapture(page, built);
-  // The ascended is grounded on the CURRENT Archrunesmith art
-  // ([0, -73], the temple core); the replacement art is the
-  // owner's call and stays out — and its muzzle is the same
-  // value, so this proof survives the swap either way.
+  // The ascended is grounded on the swapped-in Archrunesmith
+  // art ([0, -73], the crown core of the ziggurat; the value
+  // is unchanged from the original art's temple core).
   const want = towerMuzzle({
     type: "rune",
     x: built.x,
