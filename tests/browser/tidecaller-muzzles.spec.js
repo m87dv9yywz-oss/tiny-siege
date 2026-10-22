@@ -32,9 +32,9 @@ mkdirSync(QA, { recursive: true });
 
 // Phase 1 grounded values (measurements.json), [dx, dy] at the
 // 80px reference render. The ascended entry is grounded on the
-// CURRENT ascended art (the crown burst, [0, -71]) — the staged
-// replacement art is held out pending the owner's call, so its
-// value ([-3, -65]) is deliberately NOT pinned here.
+// swapped-in Leviathan Sovereign art (owner-approved ascended
+// swap, 2026-10-21) — the trident masthead, [-3, -65]. (The
+// original art grounded on its crown burst at [0, -71].)
 const EXPECTED = {
   "0-0-0": [-24, -38], "0-0-1": [-30, -39], "0-0-2": [-29, -38],
   "0-0-3": [-7, -58], "0-1-0": [-31, -41], "0-1-1": [-30, -49],
@@ -44,7 +44,7 @@ const EXPECTED = {
   "1-0-3": [-32, -34], "1-1-0": [-30, -40], "1-2-0": [-35, -46],
   "1-3-0": [-30, -38], "2-0-0": [-25, -39], "2-0-1": [-27, -40],
   "2-1-0": [-21, -36], "3-0-0": [-14, -30], "3-0-1": [-16, -26],
-  "3-1-0": [-18, -30], ascended: [0, -71],
+  "3-1-0": [-18, -30], ascended: [-3, -65],
 };
 const OLD_FALLBACK = [-26, -30];
 // Every state is sampled in-game: all three paths tier by tier
@@ -331,7 +331,7 @@ test("tidecaller shots leave from each state's own muzzle", async ({
   expect(errors).toEqual([]);
 });
 
-test("ascended tidecaller fires from the crown burst of its current art", async ({
+test("ascended tidecaller fires from the trident masthead of its swapped-in art", async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -347,7 +347,7 @@ test("ascended tidecaller fires from the crown burst of its current art", async 
   const origin = await fireAndCapture(page, built);
   // The ascended carries no pointing weapon, so it never
   // mirrors: the visual muzzle IS the canonical one, grounded
-  // on the current art's crown burst ([0, -71]).
+  // on the swapped-in art's trident masthead ([-3, -65]).
   const want = towerMuzzle({
     type: "tidecaller",
     x: built.x,

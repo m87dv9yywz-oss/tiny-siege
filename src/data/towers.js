@@ -1028,6 +1028,11 @@ export const STATE_MUZZLES = {
   // on the CURRENT ascended art ([0, -71], the crown burst
   // center) — a staged replacement artwork exists but is held
   // out pending the owner's call; its muzzle differs ([-3, -65]).
+  // SWAPPED 2026-10-21: the owner approved the staged replacement
+  // (the shell-galleon "New boat"); the ascended entry below is
+  // grounded on the swapped-in art — the trident masthead →
+  // [-3, -65]. (The original Leviathan Sovereign entry was
+  // [0, -71], the crown burst center.)
   tidecaller: {
     "0-0-0": [-24, -38],
     "0-0-1": [-30, -39],
@@ -1054,7 +1059,7 @@ export const STATE_MUZZLES = {
     "3-0-0": [-14, -30],
     "3-0-1": [-16, -26],
     "3-1-0": [-18, -30],
-    ascended: [0, -71],
+    ascended: [-3, -65],
   },
   // Grove (structure-first redo, 2026-10-21): every state
   // measured on its own artwork. Grove had NO per-state table
