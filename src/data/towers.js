@@ -1108,6 +1108,59 @@ export const STATE_MUZZLES = {
     "3-1-0": [0, -63],
     ascended: [0, -68],
   },
+  // Runesmith (per-state muzzles + structure-first redo,
+  // 2026-10-21): every state measured on its own artwork. Rune
+  // had NO per-state table at all — every state fired from the
+  // type fallback [0, -56], a point inside the obelisk body
+  // below every state's ring crown. The family's emitters are
+  // its floating stone ring crowns (dy -61...-71), the mounted
+  // crystal spires on the Armorbreaker mixes (0-3-1 [0, -75],
+  // 1-3-0 [0, -76]) and 1-0-1's lower ring ([0, -63], its
+  // pillar is shorter). Six states also carry new
+  // structure-first art from this pass, and their muzzles are
+  // grounded on that new art: the Fracture Sigils debris-vortex
+  // crowns became an iron circlet crown (0-2-0 [0, -62]) and a
+  // bracketed stone ring (1-2-0 [0, -71]), 0-3-0's swirling
+  // energy ribbons became the huge runic anvil its own
+  // description promises ([3, -74], the anvil top), the Arcane
+  // Empowerer's radial light-burst halo became stacked stone
+  // gyroscope rings (3-0-0 [0, -61]), 3-0-1's translucent
+  // energy rings became solid interlocking stone rings
+  // ([0, -62]), and 3-1-0's glow sunburst corona became a
+  // thick bracketed stone ring crown ([0, -68]). The ascended
+  // entry is grounded on the CURRENT ascended art ([0, -73],
+  // the temple core) — a staged replacement artwork (The
+  // Archrunesmith) exists but is held out pending the owner's
+  // call; its muzzle is the same value ([0, -73]), so a future
+  // swap changes art only.
+  rune: {
+    "0-0-0": [0, -67],
+    "0-0-1": [0, -70],
+    "0-0-2": [0, -68],
+    "0-0-3": [0, -67],
+    "0-1-0": [0, -66],
+    "0-1-1": [0, -67],
+    "0-1-2": [0, -68],
+    "0-1-3": [0, -67],
+    "0-2-0": [0, -62],
+    "0-2-1": [0, -68],
+    "0-3-0": [3, -74],
+    "0-3-1": [0, -75],
+    "1-0-0": [0, -66],
+    "1-0-1": [0, -63],
+    "1-0-2": [1, -67],
+    "1-0-3": [0, -67],
+    "1-1-0": [1, -68],
+    "1-2-0": [0, -71],
+    "1-3-0": [0, -76],
+    "2-0-0": [0, -67],
+    "2-0-1": [0, -66],
+    "2-1-0": [0, -68],
+    "3-0-0": [0, -61],
+    "3-0-1": [0, -62],
+    "3-1-0": [0, -68],
+    ascended: [0, -73],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
