@@ -681,6 +681,47 @@ export class GameScene extends Phaser.Scene {
     Object.values(this.particles).forEach(
       (p) => (p.timeScale = stopped ? 0 : this.model.speed),
     );
+    // Facing BEFORE the sim steps: Game.attack reads _mirrorFlip /
+    // _aimPose (via towerVisualMuzzle) to place the muzzle a shot is
+    // drawn from, so this frame's facing is computed from the
+    // current targets before model.update runs — otherwise a shot
+    // fired on the first frame of a facing/pose change leaves from
+    // last frame's weapon side. These are the same pure helpers the
+    // render pass below applies to the sprites; that application is
+    // unchanged, this pass only primes the flags the sim reads. The
+    // pose bearing uses the tower anchor (the same geometry
+    // layeredMuzzle uses), not the bobbing sprite position.
+    if (!stopped)
+      for (const t of this.model.towers) {
+        if (artworkTexture(t) === null) continue;
+        const layer = towerLayer(t);
+        if (layer?.mode === "poses") {
+          const target = this.model.targets(
+            t,
+            this.model.effectiveStats(t),
+          )[0];
+          if (target) {
+            const display = towerDisplaySize(t),
+              aim = poseForBearing(
+                target.x - (t.x + (layer.pivot[0] - 0.5) * display),
+                target.y - (t.y + (layer.pivot[1] - 0.96) * display),
+                t._aimPose,
+              );
+            t._aimFlip = aim.flip;
+            if (aim.pose !== (t._aimPose ?? "level")) t._poseDip = 0.07;
+            t._aimPose = aim.pose;
+          } else if ((t._aimPose ?? "level") !== "level") {
+            t._aimPose = "level";
+            t._poseDip = 0.07;
+          }
+        } else if (!layer && mirrorDrawnSide(t) != null) {
+          const target = this.model.targets(
+            t,
+            this.model.effectiveStats(t),
+          )[0];
+          t._mirrorFlip = mirrorFlipFor(t, target ? target.x : null);
+        }
+      }
     if (!stopped) this.model.update(Math.min(delta / 1000, 0.08));
     const dt = stopped ? 0 : Math.min(delta / 1000, 0.08) * this.model.speed;
     const g = this.dynamic;
