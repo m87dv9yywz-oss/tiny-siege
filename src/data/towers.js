@@ -873,10 +873,10 @@ export const STATE_MUZZLES = {
   // spires, 0-3-0 / 0-3-1 crown bowls, 1-3-0, 1-2-0) and their
   // muzzles are grounded on that new art: spire crowns point at the
   // flame-jet nozzle tip, crown-bowl states at the bowl's center.
-  // The ascended entry is grounded on the CURRENT ascended art —
-  // the glowing sun-heart in its arch, frame (0.502, 0.645) →
-  // [0, -28]. (A staged replacement ascended artwork exists but is
-  // held out pending the owner's call; its muzzle differs.)
+  // The ascended entry is grounded on the swapped-in ascended
+  // art (owner-approved swap, 2026-10-21) — the sun disc in the
+  // iron-wing forge's arch → [-3, -28]. (The original flame-wing
+  // Sunforge grounded on its sun-heart at [0, -28].)
   fire: {
     "0-0-0": [0, -59],
     "0-0-1": [0, -55],
@@ -903,7 +903,7 @@ export const STATE_MUZZLES = {
     "3-0-0": [0, -74],
     "3-0-1": [0, -71],
     "3-1-0": [0, -72],
-    ascended: [0, -28],
+    ascended: [-3, -28],
   },
   // Lightning (structure-first redo, 2026-10-21): every state
   // measured on its own artwork. The old type muzzle [0, -54] sat
