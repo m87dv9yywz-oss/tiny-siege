@@ -1056,6 +1056,58 @@ export const STATE_MUZZLES = {
     "3-1-0": [-18, -30],
     ascended: [0, -71],
   },
+  // Grove (structure-first redo, 2026-10-21): every state
+  // measured on its own artwork. Grove had NO per-state table
+  // at all — every state fired from the type fallback [0, -58].
+  // The crowns are consistently centered (dx 0...+4), but the
+  // real emitters sit higher than the fallback on most states
+  // (dy -63...-70), so several states were firing up to ~12
+  // units low (worst: 1-0-1 at a measured -70); the exceptions
+  // are the rose-pair crowns, which sit lower (3-0-0 [2, -57],
+  // 3-0-1 [2, -58]). Five states also carry new structure-first
+  // art from this pass and their muzzles are grounded on that
+  // new art: 0-3-0 Seedburst Orchard's translucent mist rings
+  // and plume crown became a woven orchard platform with
+  // hanging striped pods, 0-2-1's glow-wisp crown cloud became
+  // thick solid vines and a woven basket crown, 1-2-0's glowing
+  // energy ribbons and eye-gem became solid climbing roots and
+  // mushrooms under a bud crown, 1-3-0's translucent fountain
+  // plumes became a woven basket canopy loaded with pods, and
+  // 0-0-3 Elderwood Guardian's flat glowing halo ring — floating
+  // behind the crown, attached to no fixture — became a woven
+  // living-wood battlement on the same root trunk. The ascended
+  // entry is grounded on the CURRENT ascended art ([0, -68],
+  // the stone tower top inside the great tree) — a staged
+  // replacement artwork (Worldroot Elder) exists but is held
+  // out pending the owner's call; its muzzle differs ([1, -72]).
+  grove: {
+    "0-0-0": [3, -68],
+    "0-0-1": [1, -66],
+    "0-0-2": [3, -68],
+    "0-0-3": [1, -69],
+    "0-1-0": [3, -69],
+    "0-1-1": [0, -66],
+    "0-1-2": [1, -66],
+    "0-1-3": [3, -65],
+    "0-2-0": [0, -66],
+    "0-2-1": [1, -66],
+    "0-3-0": [0, -66],
+    "0-3-1": [2, -63],
+    "1-0-0": [0, -66],
+    "1-0-1": [3, -70],
+    "1-0-2": [2, -69],
+    "1-0-3": [0, -67],
+    "1-1-0": [0, -68],
+    "1-2-0": [1, -69],
+    "1-3-0": [1, -71],
+    "2-0-0": [2, -65],
+    "2-0-1": [3, -66],
+    "2-1-0": [3, -63],
+    "3-0-0": [2, -57],
+    "3-0-1": [2, -58],
+    "3-1-0": [0, -63],
+    ascended: [0, -68],
+  },
 };
 // The muzzle a tower actually declares: per-state override when one
 // exists, else the type's muzzle. Single source of truth for the sim,
