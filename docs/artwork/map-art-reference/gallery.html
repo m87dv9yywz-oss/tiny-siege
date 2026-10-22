@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>Tiny Siege — map geometry reference</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #18222e;
+      color: #edf6ed;
+      font: 16px system-ui;
+    }
+    h1 {
+      margin: 0 0 8px;
+    }
+    p {
+      max-width: 950px;
+      line-height: 1.5;
+    }
+    nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+    select {
+      font: inherit;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+      gap: 20px;
+    }
+    article {
+      padding: 14px;
+      border: 1px solid #678282;
+      border-radius: 12px;
+      background: #243342;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: repeating-conic-gradient(#334354 0% 25%, #435162 0% 50%)
+        0/16px 16px;
+    }
+    a {
+      color: #abe9f4;
+      margin-right: 14px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    small {
+      display: block;
+      margin: 10px 0;
+    }
+    footer {
+      margin-top: 20px;
+    }
+  </style>
+  <h1>Tiny Siege · V5 map-art reference</h1>
+  <p>
+    Read-only geometry guides from the existing game. Green marks valid centers
+    for a first tower, cyan is the exact interpolated enemy route, tan is the
+    renderer's painted trail, red marks collision obstacles, and peach rings
+    show their tower-center keepout. The 44-unit placement path and wider
+    painted path are deliberately distinguished. Classic and Emerald share
+    geometry.
+  </p>
+  <nav>
+    <label
+      >Layer
+      <select id="layer">
+        <option value="guide">Annotated guide</option>
+        <option value="valid-centers">Exact valid-center mask</option>
+        <option value="painted-path">Painted route, transparent</option>
+      </select></label
+    ><label
+      >Resolution
+      <select id="resolution">
+        <option>960x640</option>
+        <option>1920x1280</option>
+      </select></label
+    >
+  </nav>
+  <main id="maps"></main>
+  <footer>
+    <a href="MAP_ART_SPEC.md">Map-art specification</a
+    ><a href="geometry.json">Exact geometry JSON</a
+    ><a href="manifest.json">Checksums and source provenance</a>
+    <p>
+      Nothing here changes game placement, pathing, artwork or production.
+      Decorative ponds, trees and rocks are not additional collision zones.
+    </p>
+  </footer>
+  <script>
+    const maps = {
+      classic: "Emerald Trail · Classic",
+      emerald: "Emerald Trail · Beginner",
+      amber: "Amber Pass",
+      moon: "Moonlit Marsh",
+      garden: "Sunflower Gardens",
+      crystal: "Crystal Caverns",
+      coast: "Ember Coast",
+    };
+    function render() {
+      document.querySelector("#maps").replaceChildren();
+      for (const [id, name] of Object.entries(maps)) {
+        const card = document.createElement("article");
+        card.innerHTML = `<h2>${id} · ${name}</h2><img src="${id}-${document.querySelector("#layer").value}-${document.querySelector("#resolution").value}.png" alt="${name} geometry guide"><small>World origin top-left · x right / y down · 960 × 640</small><a href="${id}-guide-960x640.png">960 PNG</a><a href="${id}-guide-1920x1280.png">1920 PNG</a>`;
+        document.querySelector("#maps").append(card);
+      }
+    }
+    document.querySelectorAll("select").forEach((s) => (s.onchange = render));
+    render();
+  </script>
+</html>

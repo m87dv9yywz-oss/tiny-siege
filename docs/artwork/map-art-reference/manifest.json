@@ -1,0 +1,488 @@
+{
+  "world": [
+    960,
+    640
+  ],
+  "maps": {
+    "crystal": {
+      "name": "Crystal Caverns",
+      "files": {
+        "crystal-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 100411,
+          "sha256": "468c27b0ee6b960498ce447ae01dcc7ee034c19a75b9e754f7c71e9cea702a4e"
+        },
+        "crystal-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3950,
+          "sha256": "21df86cf66dfff07b49e63ab147ebfe39536f5fad5212c37e52a1a836ceb2293"
+        },
+        "crystal-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 116939,
+          "sha256": "357ce117bbfaee2537a7957af09d4e507cc42b0b6ff24e5b37604b248e0ddf72"
+        },
+        "crystal-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 222865,
+          "sha256": "ed94dea5dcef70c6a663e25a3ebb35c1001571a4dcb1df631321055e48d1fc58"
+        },
+        "crystal-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 8909,
+          "sha256": "181f63952f6ad5b429cfd4d4afd2789d1fcb4862fcb8015dc9d57a44201b3a58"
+        },
+        "crystal-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 273902,
+          "sha256": "7dd9721703334114e03e515bc067d1b798e56bdb22757287cc0de69a5a4f640f"
+        }
+      },
+      "obstacles": [
+        {
+          "x": 60,
+          "y": 290,
+          "r": 34
+        },
+        {
+          "x": 440,
+          "y": 320,
+          "r": 32
+        },
+        {
+          "x": 840,
+          "y": 330,
+          "r": 33
+        }
+      ],
+      "spawn": {
+        "x": -30,
+        "y": 100
+      },
+      "end": {
+        "x": 990,
+        "y": 560
+      },
+      "routeLength": 2599.047511735689
+    },
+    "coast": {
+      "name": "Ember Coast",
+      "files": {
+        "coast-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 72349,
+          "sha256": "c7ae16f6810f89990317e4c1fb7b3e4482362ff2f9d25f7992fb358c2a918860"
+        },
+        "coast-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3077,
+          "sha256": "550e3fcb4d224b01e0b7bc97c20b55e1412c80d98f18d2e1a0f1c576b3d2f596"
+        },
+        "coast-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 105573,
+          "sha256": "21f6cbecfe797e2fc74b17a34a3fee33d86e06434ac012ae92899fde22149717"
+        },
+        "coast-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 156342,
+          "sha256": "a0e3e1fc3cd201343d64a4702b7d9a228c03596b78386eafbd05d1b79e5e1784"
+        },
+        "coast-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 7170,
+          "sha256": "98a74d8753fee3873d379408cb0d4d09f838e6266f926788b5e15ea65e70296a"
+        },
+        "coast-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 244383,
+          "sha256": "ce9bf76511854b8414efe04862109eb986e09d679f56e3a6dcadab26d989be3d"
+        }
+      },
+      "obstacles": [
+        {
+          "x": 450,
+          "y": 100,
+          "r": 80
+        },
+        {
+          "x": 470,
+          "y": 320,
+          "r": 35
+        },
+        {
+          "x": 810,
+          "y": 475,
+          "r": 24
+        }
+      ],
+      "spawn": {
+        "x": 100,
+        "y": -30
+      },
+      "end": {
+        "x": 990,
+        "y": 550
+      },
+      "routeLength": 2531.092645650348
+    },
+    "classic": {
+      "name": "Emerald Trail \u00b7 Classic",
+      "files": {
+        "classic-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 79309,
+          "sha256": "493c235f2cfede43c91890d90569adaf788c7f47e36f5a5a5ddbb22b5fc20c5d"
+        },
+        "classic-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3246,
+          "sha256": "abdb8ee0089fd1966a679404a8d9cea8390624fb9e36e4dfe7019d2ba79a0f20"
+        },
+        "classic-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 99942,
+          "sha256": "0420a45a0db6f712d53965d9f312d4173e967f0b9f2ec02efd2134097de9cd7f"
+        },
+        "classic-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 173872,
+          "sha256": "38fdca375933c0c25a9f3a950acecd1766a9fa384ee63ad3ed9b02401873fe69"
+        },
+        "classic-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 7542,
+          "sha256": "d532aa2eb6e624b0cd069e9b80710f5a5ea3c8d90086ed6bcfa7764e717fd2b4"
+        },
+        "classic-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 236262,
+          "sha256": "369fc80aee4099479162840f6d76ea13a1e3d3cd3ab62ade1137edebaa57f93a"
+        }
+      },
+      "obstacles": [],
+      "spawn": {
+        "x": -30,
+        "y": 170
+      },
+      "end": {
+        "x": 990,
+        "y": 270
+      },
+      "routeLength": 2256.311120750887
+    },
+    "emerald": {
+      "name": "Emerald Trail \u00b7 Beginner",
+      "files": {
+        "emerald-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 79347,
+          "sha256": "f6f527f68150565d264ef7e0b33e0adcf1d1c07b648cd8b95054debb510c02e6"
+        },
+        "emerald-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3246,
+          "sha256": "abdb8ee0089fd1966a679404a8d9cea8390624fb9e36e4dfe7019d2ba79a0f20"
+        },
+        "emerald-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 99942,
+          "sha256": "0420a45a0db6f712d53965d9f312d4173e967f0b9f2ec02efd2134097de9cd7f"
+        },
+        "emerald-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 174035,
+          "sha256": "4a92793c585c88e88ba827531a60950edef31c2534525dc01531d057be0cdd3a"
+        },
+        "emerald-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 7542,
+          "sha256": "d532aa2eb6e624b0cd069e9b80710f5a5ea3c8d90086ed6bcfa7764e717fd2b4"
+        },
+        "emerald-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 236262,
+          "sha256": "369fc80aee4099479162840f6d76ea13a1e3d3cd3ab62ade1137edebaa57f93a"
+        }
+      },
+      "obstacles": [],
+      "spawn": {
+        "x": -30,
+        "y": 170
+      },
+      "end": {
+        "x": 990,
+        "y": 270
+      },
+      "routeLength": 2256.311120750887
+    },
+    "amber": {
+      "name": "Amber Pass",
+      "files": {
+        "amber-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 85175,
+          "sha256": "1ba64a103aceb4564e0ed71893f17db3b44f468ee55b96bc09daa9755a57acce"
+        },
+        "amber-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3402,
+          "sha256": "1d5db6c6f94328d822c00a2509755a6f030f7fea27402c06e12ed7a8c5017ef8"
+        },
+        "amber-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 107992,
+          "sha256": "5c005ddff883df42eac6b7776385ead20b815cf22c2fa66f344919f1a26aaaf1"
+        },
+        "amber-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 188439,
+          "sha256": "470d9651d7cf3c00c3195e5a1c0dec35af3a897130c21563dc41fc8d63ddf083"
+        },
+        "amber-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 7960,
+          "sha256": "daeabff62ad538062514642bbb0789a8b3a8b051419aaccb0691ebf2f393356b"
+        },
+        "amber-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 252989,
+          "sha256": "e9a43a9bfc71211cfcea0469c4b0ae9aea30dbd1209d241cbf9363cda3d228c6"
+        }
+      },
+      "obstacles": [],
+      "spawn": {
+        "x": -30,
+        "y": 163.19521492309812
+      },
+      "end": {
+        "x": 990,
+        "y": 292.6917026146171
+      },
+      "routeLength": 2265.9759722581975
+    },
+    "moon": {
+      "name": "Moonlit Marsh",
+      "files": {
+        "moon-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 80454,
+          "sha256": "157adffb4549516f69999c927dee7f37e2a0937d3fce33382d422ed0e7009e94"
+        },
+        "moon-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3284,
+          "sha256": "bba8d4e3526999007c10d79c6f2a2688c9ea8eba51883ac94867ac8738e36faa"
+        },
+        "moon-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 99890,
+          "sha256": "355671ef45308b031362567a42918a705437a16c57afc9d2d4967c39bf89f427"
+        },
+        "moon-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 177031,
+          "sha256": "e4c1778cff3a5cf4efa9caa9dbd484fcf4a66861c004db297a53b289eb20fb61"
+        },
+        "moon-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 7707,
+          "sha256": "b6dc2f71a702c9f370110a3af8ac08c3b41fe2828758ef8943ba5eb6594b4206"
+        },
+        "moon-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 236925,
+          "sha256": "5ae3bd4a5941d6772920d5e23fafd560c44b1c39388979358ca95c3d9582cb56"
+        }
+      },
+      "obstacles": [],
+      "spawn": {
+        "x": -30,
+        "y": 470
+      },
+      "end": {
+        "x": 990,
+        "y": 370
+      },
+      "routeLength": 2256.3111207508878
+    },
+    "garden": {
+      "name": "Sunflower Gardens",
+      "files": {
+        "garden-guide-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 86445,
+          "sha256": "9ae9ddccbea59bbd0af937c84413e0a87192ace2a68bf40ae3527be4c3b84d06"
+        },
+        "garden-valid-centers-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 3564,
+          "sha256": "38369468ad94c098f40916820214645ff85ab2802015ef26ac1cb82542f77896"
+        },
+        "garden-painted-path-960x640.png": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 110453,
+          "sha256": "38f20730e755a1b02a540fab5bc572267b5ef6662e35a5e823e06e2af72c0f85"
+        },
+        "garden-guide-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 190788,
+          "sha256": "dc7963c1898f92daa54376e7cfc580ab1c19ef8e44d8d4046f81f8f429a8ab6a"
+        },
+        "garden-valid-centers-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 8162,
+          "sha256": "1924b2bfcd427a24709610d0b211fb6ac22842187049f50da7172c0ec1195170"
+        },
+        "garden-painted-path-1920x1280.png": {
+          "dimensions": [
+            1920,
+            1280
+          ],
+          "bytes": 255735,
+          "sha256": "510ffbb4b840bb09c2b2664e492c39d78cdacedb26173ae09ffd6239157b73d4"
+        }
+      },
+      "obstacles": [],
+      "spawn": {
+        "x": -30,
+        "y": 162.25028585471028
+      },
+      "end": {
+        "x": 990,
+        "y": 231.46968032141564
+      },
+      "routeLength": 2270.6700246847367
+    }
+  },
+  "sourceCommit": "29ee7a856d1b3e1ce57d97721c5a28a0088eb079",
+  "sources": {
+    "src/data/map.js": "cb1dfafd3cae4e7e6934ba7c34a1ce993ad785be89370e8a68dfaae10756a433",
+    "src/systems/Game.js": "6c16caa88fd8935773fca4fdeb02fb0d59e1bb50acd60dc5d9e15ad67caa6e44",
+    "src/scenes/art.js": "655f9c37b3a4faca141a0782892ca8fc2ced3e1a2642fd139f7889ade62706b0"
+  },
+  "maskCoordinates": "pixel center: ((column+0.5)/scale, (row+0.5)/scale)"
+}
