@@ -76,6 +76,10 @@ export class Game {
       active: false,
       paused: false,
       speed: 1,
+      // Sim time left in the update() currently running (set by
+      // update itself; 0 outside it). A projectile spawned mid-update
+      // pins its rendered position at the muzzle for this span.
+      frameRemainder: 0,
       skippedWaves: 0,
       trailCursor: 0,
       goldenSpawned: false,
@@ -955,11 +959,15 @@ export class Game {
           // The logical flight still starts at the classic point: the
           // homing chase is balance-tuned around it (moving the start
           // flipped a whole progression route in the balance report).
-          // `draw` carries the muzzle for the renderer only and races
-          // to join the logical position within the first frames.
+          // `draw` carries the muzzle for the renderer only: it stays
+          // pinned there for the rest of the update that spawned it
+          // (drawPin — at 4x the substeps would otherwise drag it off
+          // the weapon before the first render), then flies a pursuit
+          // curve onto the logical position (see the projectile step).
           x: t.x,
           y: t.y - 15,
           draw: { x: muzzle.x, y: muzzle.y },
+          drawPin: this.frameRemainder,
           origin: { x: t.x, y: t.y },
           target,
           stats: hitStats,
@@ -1072,9 +1080,17 @@ export class Game {
     let remaining = realDelta * this.speed;
     while (remaining > 1e-8 && !this.ended) {
       const dt = Math.min(remaining, 0.025);
+      // Sim time left in this update, the step about to run
+      // included: a projectile spawned during the step pins its
+      // rendered position at the muzzle for exactly this span, so
+      // the first rendered frame shows the shot at the weapon even
+      // at 4x (whose substeps would otherwise drag it away before
+      // any render). Direct step()/attack() callers see 0 — no pin.
+      this.frameRemainder = remaining;
       this.step(dt);
       remaining -= dt;
     }
+    this.frameRemainder = 0;
   }
   step(dt) {
     stepHero(this, dt);
@@ -1258,17 +1274,33 @@ export class Game {
       }
       p.x += ((p.target.x - p.x) * move) / d;
       p.y += ((p.target.y - p.y) * move) / d;
-      // The rendered shot starts at the tower's muzzle and catches up
-      // to the logical position almost immediately (see spawn comment).
+      // The rendered shot flies a pursuit curve from the muzzle onto
+      // the logical position. While drawPin lasts (the remainder of
+      // the update that spawned it) it stays exactly at the muzzle.
+      // After that it chases the logical point at 2.4x flight speed
+      // plus two closing terms: one proportional to the gap over
+      // the remaining flight (d, the distance to the target
+      // computed above — it dominates as the shot closes in, so
+      // the gap always reaches zero before impact, even
+      // point-blank) and one proportional to the gap itself (it
+      // dominates at long range, where a tall tower's muzzle can
+      // sit ~100px from the spawn point). The gap therefore
+      // reaches zero well inside ~60px of travel at any range,
+      // and the chase clamps at the logical point — no overshoot.
       if (p.draw) {
-        const dd = distance(p.draw, p),
-          dm = Math.max(p.speed * 3.2, 900) * dt;
-        if (dd <= dm) {
-          p.draw.x = p.x;
-          p.draw.y = p.y;
-        } else {
-          p.draw.x += ((p.x - p.draw.x) * dm) / dd;
-          p.draw.y += ((p.y - p.draw.y) * dm) / dd;
+        if (p.drawPin > 0) p.drawPin -= dt;
+        else {
+          const gx = p.x - p.draw.x,
+            gy = p.y - p.draw.y,
+            gap = Math.hypot(gx, gy),
+            dm = move * (2.4 + gap / Math.max(d, move)) + gap * 0.14;
+          if (gap <= dm) {
+            p.draw.x = p.x;
+            p.draw.y = p.y;
+          } else {
+            p.draw.x += (gx * dm) / gap;
+            p.draw.y += (gy * dm) / gap;
+          }
         }
       }
       return true;
