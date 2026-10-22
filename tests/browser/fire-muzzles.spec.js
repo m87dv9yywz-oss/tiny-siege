@@ -23,9 +23,9 @@ const QA = `${process.env.HOME}/workspace/ts-proof-art/qa`;
 mkdirSync(QA, { recursive: true });
 
 // Phase 1 grounded values (measurements.json), [dx, dy] at the
-// 80px reference render. The ascended entry is grounded separately
-// on the CURRENT ascended art (sun-heart in its arch) — the staged
-// replacement art is held out, so its value is pinned too.
+// 80px reference render. The ascended entry is grounded on the
+// swapped-in Sunforge art (owner-approved ascended swap,
+// 2026-10-21) — the sun disc in the iron-wing forge's arch.
 const EXPECTED = {
   "0-0-0": [0, -59], "0-0-1": [0, -55], "0-0-2": [0, -62],
   "0-0-3": [0, -45], "0-1-0": [0, -58], "0-1-1": [-1, -56],
@@ -35,7 +35,7 @@ const EXPECTED = {
   "1-0-3": [0, -47], "1-1-0": [0, -63], "1-2-0": [0, -70],
   "1-3-0": [0, -73], "2-0-0": [-1, -56], "2-0-1": [0, -50],
   "2-1-0": [0, -54], "3-0-0": [0, -74], "3-0-1": [0, -71],
-  "3-1-0": [0, -72], ascended: [0, -28],
+  "3-1-0": [0, -72], ascended: [-3, -28],
 };
 // States sampled in-game: all three paths tier by tier, the forge
 // trio, and every redo state. Upgrade sequences build the primary
